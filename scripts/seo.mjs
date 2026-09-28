@@ -3,7 +3,7 @@ import {JSDOM} from 'jsdom';
 import {build} from 'esbuild';
 const built=await build({entryPoints:['src/main.js'],bundle:true,write:false,format:'iife',loader:{'.css':'empty'},define:{'import.meta.env.VITE_POSTHOG_KEY':'""','import.meta.env.VITE_POSTHOG_HOST':'"https://eu.i.posthog.com"'},logLevel:'silent'});
 const html=await readFile('dist/index.html','utf8'),origin='https://cv-hapi.quara0n.chatgpt.site';
-const live=process.env.PUBLIC_LAUNCH==='true';
+const live=process.env.PUBLIC_LAUNCH!=='false';
 for(const [route,language] of [['','en'],['en/','en'],['mk/','mk']]){
  const dom=new JSDOM(html,{url:origin+'/'+route,runScripts:'outside-only'});dom.window.structuredClone=structuredClone;dom.window.eval(built.outputFiles[0].text);
  const doc=dom.window.document,canonicalURL=origin+'/'+language+'/';

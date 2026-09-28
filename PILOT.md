@@ -10,7 +10,7 @@ Gratis CV/PDF beholdes. Betalingshypotesen er 10 NOK én gang for hjelp til en k
 - Et samlet PDF-dokument med CV først og søknadsbrev etterpå. Ingen erfaring fjernes eller diktes opp automatisk.
 - Gratis grunnprodukt, og ærlig merking av fast mal, inaktiv AI og inaktiv betaling. Språkvelgeren oversetter ikke kandidatens tekst.
 - Egne `/mk/` og `/en/` sider med forhåndsrendret innhold, canonical og hreflang. Indeksering fortsatt av mens siden er privat.
-- Hendelser for søknadsstart, valideringsfeil, utkast, PDF og uttrykt interesse for betalt AI. Ingen CV-tekst, annonsetekst eller fritekst sendes til analyse. Ingen øktopptak. PostHog-nøkkel er ennå ikke konfigurert, så det samles ingen analysehendelser.
+- Hendelser for søknadsstart, valideringsfeil, utkast, PDF og uttrykt interesse for betalt AI. Ingen CV-tekst, annonsetekst eller fritekst sendes til analyse. Ingen øktopptak. GA4 G-JYTW6J3BRZ er opprettet og kobles til ved lansering. Måling lastes bare etter samtykke på produksjonsdomenet. Utvidet automatisk måling er slått av. PostHog er ikke aktivert.
 
 ## Før offentlig salg og annonser
 
@@ -23,7 +23,7 @@ Gratis CV/PDF beholdes. Betalingshypotesen er 10 NOK én gang for hjelp til en k
 
 ## Google Ads-utkast
 
-Foreslått læringsbudsjett: 300 NOK totalt, ikke godkjent ennå. Bruk en kampanjetype som støtter sluttdato og totalbudsjett der tilgjengelig; ellers må dagbudsjett, sluttdato og faktisk forbruk følges opp. Et Google Ads-dagbudsjett er ikke et hardt dagstak. Ingen automatisk videreføring eller påfyll.
+Godkjent læringsbudsjett: maksimalt 300 NOK totalt (brukerens instruks 28. september 2026). Bruk en kampanjetype som støtter sluttdato og totalbudsjett der tilgjengelig; ellers må dagbudsjett, sluttdato og faktisk forbruk følges opp. Et Google Ads-dagbudsjett er ikke et hardt dagstak. Ingen automatisk videreføring eller påfyll.
 
 - Kun Google-søk. Ikke Display, Performance Max eller søkepartnere i første test.
 - Nord-Makedonia, lokasjonsvalg «tilstede i eller regelmessig i» området, ikke bare interesse for landet.

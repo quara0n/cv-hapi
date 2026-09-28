@@ -8,11 +8,11 @@ Requires Node 22+. `npm ci`, then `npm run dev`. Build with `npm run build`; ver
 
 ## Privacy and analytics
 
-CV content stays in the browser. Saving is opt-in and labelled device-local. No signup, CV uploads or cloud CV storage. `.env.example` documents optional consent-gated PostHog EU analytics. No events are sent while its key is empty. See [GROWTH-AND-ANALYTICS.md](GROWTH-AND-ANALYTICS.md) for metrics and activation. No screen recording or autocapture.
+CV content stays in the browser. Saving is opt-in and labelled device-local. No signup, CV uploads or cloud CV storage. `.env.example` documents optional consent-gated PostHog EU analytics. PostHog is disabled while its key is empty. Production uses GA4 G-JYTW6J3BRZ after consent, with automatic enhanced measurement disabled. See [GROWTH-AND-ANALYTICS.md](GROWTH-AND-ANALYTICS.md) for metrics and activation. No screen recording or autocapture.
 
 ## Launch
 
-The Sites identity is in `.openai/hosting.json`. Source is built to `dist`. The current canonical origin is configured in `scripts/seo.mjs`. Private builds are noindex. Set `PUBLIC_LAUNCH=true` only for an intentionally public launch after confirming the final origin and legal/contact details.
+The Sites identity is in `.openai/hosting.json`. Source is built to `dist`. The current canonical origin is configured in `scripts/seo.mjs`. Public builds are indexable by default. Set `PUBLIC_LAUNCH=false` for a private test build. Site access is managed separately by Sites.
 
 Before charging: finish owner Stripe onboarding, verify fees and currencies, implement server-side Checkout plus signed webhook and paid entitlement, set seller/contact/refund information, and remove the free-demo messaging only when real payments are tested. Client-side PDF generation in this test is intentionally not a secure paywall. A real paid download needs server-side enforcement or a different explicitly chosen business model.
 
