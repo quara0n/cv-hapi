@@ -1,0 +1,2 @@
+import {defineConfig} from 'vite';
+export default defineConfig({build:{outDir:'dist/client'},plugins:[{name:'local-review-api',configureServer(server){server.middlewares.use('/api/',(req,res)=>{res.setHeader('Content-Type','application/json');res.setHeader('Cache-Control','no-store');res.statusCode=req.url?.startsWith('review/status')?200:503;res.end(JSON.stringify(req.url?.startsWith('review/status')?{available:false}:{error:'unavailable'}))})}}]});
