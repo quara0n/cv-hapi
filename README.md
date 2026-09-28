@@ -1,23 +1,45 @@
-# Чекор / Čekor CV builder
+# CV Hapi
 
-Macedonian/English CV and application pilot with 3 CV styles, live preview, optional device-local CV storage and Unicode PDF export. Basic CV remains free. The application workspace combines selected real evidence with an editable, fixed-template cover letter and downloads both in one PDF. Vacancy text is a reference only, not automatically analysed. Application drafts remain in tab memory. AI writing/translation and Stripe are not connected. The planned AI-assisted package is NOK 10 once; it is not currently sold. See [PILOT.md](PILOT.md) for launch gates, prepared Google Ads copy and acquisition economics.
+English/Macedonian CV pilot for North Macedonia. Live: https://cv-hapi.quara0n.chatgpt.site/en/ (also /mk/).
 
-## Run
+## Current product
 
-Requires Node 22+. `npm ci`, then `npm run dev`. Build with `npm run build`; verify with `npm test`. PDF QA fixtures: `node scripts/pdf-check.mjs`.
+- Free CV builder with three designs, live preview and Unicode PDF export.
+- Editable fixed-template cover letter and combined application PDF.
+- PDF, DOCX and TXT import, read in the browser (5 MB; PDFs up to 12 pages; CV text up to 20,000 characters). Scans need OCR elsewhere.
+- Optional DeepSeek feedback against a job advertisement, exact source quotes and individually accepted wording suggestions.
+- Revised text can be edited and downloaded as a clean text-layout PDF or TXT. Uploaded layout is not preserved.
+- No signup, Stripe, subscription, OCR or automatic translation. Everything remains free during this pilot.
 
-## Privacy and analytics
+## Run and verify
 
-CV content stays in the browser. Saving is opt-in and labelled device-local. No signup, CV uploads or cloud CV storage. `.env.example` documents optional consent-gated PostHog EU analytics. PostHog is disabled while its key is empty. Production uses GA4 G-JYTW6J3BRZ after consent, with automatic enhanced measurement disabled. See [GROWTH-AND-ANALYTICS.md](GROWTH-AND-ANALYTICS.md) for metrics and activation. No screen recording or autocapture.
+Node 22+ required. Run `npm ci`, `npm run dev`, `npm test`, `npm run build`.
+The Vite preview intentionally reports AI unavailable; the real API runs in the deployed Worker.
+On this Windows host esbuild may need execution outside the sandbox due to parent-directory access restrictions.
 
-## Launch
+Build output: `dist/client` for browser assets, `dist/server/index.js` for Worker, and `dist/.openai` for Sites manifest and migrations.
 
-The Sites identity is in `.openai/hosting.json`. Source is built to `dist`. The current canonical origin is configured in `scripts/seo.mjs`. Public builds are indexable by default. Set `PUBLIC_LAUNCH=false` for a private test build. Site access is managed separately by Sites.
+## AI and privacy
 
-Before charging: finish owner Stripe onboarding, verify fees and currencies, implement server-side Checkout plus signed webhook and paid entitlement, set seller/contact/refund information, and remove the free-demo messaging only when real payments are tested. Client-side PDF generation in this test is intentionally not a secure paywall. A real paid download needs server-side enforcement or a different explicitly chosen business model.
+See [AI-REVIEW.md](AI-REVIEW.md) for integration and limits. Runtime environment has a secret `DEEPSEEK_API_KEY`, `AI_ENABLED=true` and `AI_MAX_REVIEWS=10`.
+The user authorized **10 analyses total including tests**, not per user/day. D1 atomically reserves a slot before each provider call; failures consume a slot. Never reset the counter during deployment or migration.
 
-Before acquisition: connect analytics, verify events in the real project, complete local language review, get actual keyword volumes, and validate paid demand. See [MARKET-RESEARCH.md](MARKET-RESEARCH.md). The market is a pilot choice, not a proven low-competition opportunity.
+Files are extracted locally. Only after explicit consent are displayed CV text and vacancy sent through the server to DeepSeek. Our database stores only the quota counter, not CVs or replies. DeepSeek processes submitted text under its own privacy policy. AI can still make mistakes; user review is essential.
 
-## Verification boundaries
+GA4 G-JYTW6J3BRZ uses consent-gated allowlisted events. Enhanced measurement, session replay and arbitrary CV properties are disabled. [GROWTH-AND-ANALYTICS.md](GROWTH-AND-ANALYTICS.md) describes measurement.
 
-Automated tests cover the form, reordering/deletion, draft restore/reset, escaping, PDF document definitions and analytics consent/allowlisting. Generated PDFs are rendered and checked separately. Desktop browser policy blocked local automated visual/mobile UI verification; do not treat DOM tests as a browser layout audit.
+## Deployment and continuity
+
+Read the Sites building/hosting skills before publishing. Reuse the project ID in `.openai/hosting.json`; preserve public access. Build and archive the exact pushed source, save a Sites version, deploy and check terminal status. Never create another Site to update this one. Secrets do not belong in browser bundles, source, logs or handoffs.
+
+[LAUNCH-STATUS.md](LAUNCH-STATUS.md) tracks launch integrations. [SEARCH-DEMAND-MK.md](SEARCH-DEMAND-MK.md) contains actual Keyword Planner ranges and caveats. [PILOT.md](PILOT.md) contains the acquisition plan and economics; older documents can retain the former Čekor name. Current brand is CV Hapi.
+
+## Remaining launch gates
+
+The domain cvhapi.mk has not been purchased or confirmed available. Ads have not launched; the user authorized a maximum NOK 300 total pilot. The existing Ads account uses AUD and GMT+10; Macedonian is not a supported targeting language. Do not confuse daily budget with the total spending limit.
+
+Before charging NOK 10, validate value with real users, review Macedonian wording, finish seller/payment onboarding and implement server-side payment enforcement. Free tools including Europass remain credible competitors; demand and willingness to pay are not proven by a functioning prototype.
+
+## Verification boundary
+
+17 automated tests pass: editing, restore/reset, escaping, analytics consent/allowlisting, review consent and explicit apply, API validation and durable quota. Browser PDF/DOCX import and an actual DeepSeek review were verified with fictional data. Revised PDF download was verified as a readable one-page document. More real-device/mobile and native Macedonian quality checks remain.
