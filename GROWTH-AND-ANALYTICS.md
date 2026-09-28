@@ -1,67 +1,46 @@
-# Måling og markedsføring
+# CV Hapi measurement — 2026-09-28
 
-## Nåværende status
+## Connected services
 
-CV-byggeren er et fungerende produktutkast med PDF-eksport. PostHog-integrasjonen er implementert, men **sender ingenting før en ekte prosjektkobling er konfigurert og brukeren samtykker**. Det finnes ingen fabrikkerte besøkstall, opptak eller salg. Stripe og Google Search Console er ikke tilkoblet.
+GA4 property 556316817, stream 15861416022, measurement G-JYTW6J3BRZ.
+Dashboard: https://analytics.google.com/analytics/web/#/a283629177p556316817/reports/intelligenthome
 
-## Analyseverktøy
+Microsoft Clarity project ypjcjxa0o9 (CV Hapi), created with owner-approved terms and Google sign-in.
+Dashboard: https://clarity.microsoft.com/projects/view/ypjcjxa0o9/dashboard
+Settings verified: Strict masking, Cookies OFF (require consent signal), bot detection ON.
+Dashboard/recordings remain pending until actual traffic has been processed. Do not fabricate usage.
 
-PostHog EU er valgt som et enkelt utgangspunkt for hendelser og traktanalyse. Opprett et prosjekt i brukerens konto, bruk den offentlige prosjekt­nøkkelen `phc_...` (ikke personlig API-nøkkel), og sett `VITE_POSTHOG_KEY` og `VITE_POSTHOG_HOST=https://eu.i.posthog.com` ved bygging. Start med gratisnivået dersom dagens grenser passer; sjekk gjeldende vilkår og databehandleroppsett i kontoen. Kontoopprettelse og aksept av vilkår må eieren gjøre.
+## Consent and content protection
 
-Koden bruker et lite, eksplisitt HTTP-oppsett. Automatisk skjemafangst, session replay, heatmaps og innsamling av unntakstekst er ikke aktivert. Brukernes CV-er er særlig uegnet for opptak av skjermen. Feil registreres som kategorier, uten innholdet i feilen.
+GA4 loads only after analytics consent. Clarity requires a separate unchecked recording opt-in including an 18+ confirmation. Existing GA4 consent does not authorize Clarity. Both respect GPC and DNT. No advertising storage/personalization is granted.
 
-Det sendes ingen CV-tekst, navn, e-post, telefon, stillingstitler, full URL, rå UTM-tekst eller rå referrer. Session-ID er tilfeldig, begrenset til fanens sesjon og opprettes først etter samtykke. Det er ikke et mål på unike personer på tvers av enheter. IP-geolokalisering er slått av i hendelsene; leverandøren mottar likevel nettverkstrafikk og må vurderes som databehandler. Global Privacy Control og Do Not Track respekteres. Samtykke kan trekkes tilbake i bunnteksten.
+Clarity receives consentv2 with analytics_Storage granted and ad_Storage denied only after opt-in. The HTML root is masked before loading the script, protecting dynamically rendered CV previews, application evidence and model output. The form, preview and review roots also carry explicit masking. No identify API, names, email addresses, file names, CV text or vacancy content is sent in custom events. Arbitrary URL query values and fragments are removed before loading Clarity; GA4 retains only allowlisted attribution captured earlier.
 
-## Hendelser
+Withdrawal sends denied consent and stops Clarity, deletes its first-party cookies and prevents further app events. To avoid restarting a stopped recorder around unsaved data, re-enabling recordings takes effect on the next visit; the UI explains this and does not reload or discard the CV. GA4 is disabled immediately on withdrawal. Preference storage is independent of optional CV storage.
 
-Alle navn har prefikset `cekor_`.
+Google analytics cookies last up to one day; Clarity cookies can last up to one year. Provider privacy statements and technical-data processing are disclosed in EN/MK privacy copy. Clarity tracking is not configured for a custom domain until that domain is owned and connected.
 
-| Hendelse | Hva den faktisk betyr |
-|---|---|
-| page_view | Samtykkende besøk åpnet siden / aktiverte samtykke |
-| builder_started | Første faktiske feltendring i denne sideøkten |
-| step_view | Et av de fem stegene åpnes |
-| step_continue | Brukeren går videre til neste steg; ikke bevis på at alle felter er fullført |
-| example_loaded | Eksempeldata er lastet; filtrer dette bort fra reell bruksanalyse |
-| design_changed | Brukeren velger mal eller farge |
-| export_clicked | Eksportknappen trykkes |
-| validation_error | Eksport stanses fordi navn mangler |
-| pdf_started | Brukeren bekrefter nedlasting |
-| pdf_generated | PDF ble generert og nettlesernedlasting startet; ikke bevis på at filen ble lagret |
-| pdf_error | PDF-genereringen feilet |
-| storage_error | Valgfri lokal lagring feilet |
-| app_error | En ubehandlet teknisk feil oppstod, uten rå feilmelding |
+## Events and interpretation
 
-Tillatte egenskaper: steg 0–4, mal (modern/classic/compact), mobil/desktop, en kort tillatt kanalliste og en kort kampanjeliste. Analysen omfatter bare samtykkende brukere og kan derfor være skjev. Ikke presenter den som alle besøkende.
+GA4 page_view uses its standard name; other events keep the existing cekor_ prefix for continuity. Clarity uses cvhapi_visit for a visit and the same cekor_ action names. src/telemetry-core.js is the full event allowlist.
 
-## Dashboard som skal opprettes etter kobling
+Builder funnel: page_view → cekor_builder_started → cekor_export_clicked → cekor_pdf_started → cekor_pdf_generated.
+Review funnel: cekor_review_imported → cekor_ai_review_started → cekor_ai_review_completed → cekor_review_suggestion_applied → cekor_review_pdf_started → cekor_review_pdf_generated.
+Application funnel: cekor_application_started → cekor_application_drafted → cekor_application_pdf_generated.
 
-1. **Bruk:** antall sesjoner med page_view, builder_started og pdf_generated siste 7/30 dager. Filtrer bort egne tester og example_loaded-sesjoner.
-2. **Trakt:** page_view → builder_started → export_clicked → pdf_started → pdf_generated, samme session-ID, 1 times konverteringsvindu. Vis frafall per steg og del etter device/channel.
-3. **Skjemaflyt:** step_view og step_continue per steg. Hopp over steg er tillatt, så dette er diagnostikk, ikke en obligatorisk sekvens.
-4. **Feil:** pdf_error / pdf_started, validation_error / export_clicked og app_error per dag. Undersøk hendelser først når utvalget er stort nok til å være meningsfullt.
-5. **Anskaffelse:** fullføringsgrad per kanal og kampanje, ikke bare besøkstall.
+These flows can branch: local review works without AI; users can omit suggestions; a builder can export without visiting all steps. Use open funnels for diagnosis. PDF generation means the browser download was initiated, not that a file was successfully saved or a purchase occurred. Interest answers are not purchases. Filter example_loaded sessions when assessing real use. Browser exits cannot be measured perfectly; use last observed event and funnel drop-off.
 
-Ved Stripe-lansering skal kjøpshendelser komme fra en signaturverifisert, idempotent webhook på serveren. Ikke regn besøket på en «takk»-side som bevis på betaling. Legg til checkout_started, payment_succeeded og payment_failed først når den reelle flyten finnes. Hold omsetning, refusjoner, avgift og netto bidrag adskilt.
+Source/medium/campaign values are allowlisted. Explicit allowed utm_medium overrides inference; Bing organic and social referrals are distinguished. Internal navigation is not counted as a new referral. ui_language is only en/mk. GA4 native device/session dimensions describe consented visits, not personally identified visitors. No claim of observing everyone.
 
-## SEO
+## Acquisition and launch gates
 
-Bygget forhåndsrenderer faktisk makedonsk innhold i HTML og inneholder beskrivende title/description, canonical, Open Graph-tekst, WebApplication-data, favicon, robots.txt og sitemap.xml. PDF-biblioteket lastes først ved eksport; skrifter ligger lokalt i pakken.
+Search Console property and sitemap were verified previously; indexing/ranking is not guaranteed.
+Ads account uses AUD. Existing maximum is NOK 300 TOTAL, not a daily allowance. No campaign has launched. A hard total budget, currency/tax margin, end date and payment setup must be verified before launch.
 
-Privat testversjon har noindex og blokkert robots.txt med tomt sitemap. Det gir **ingen organisk Google-trafikk ennå**. For offentlig lansering: avklar endelig domene, oppdater origin i scripts/seo.mjs, gjør siden offentlig, bygg med PUBLIC_LAUNCH=true, koble Search Console og send sitemap. Ikke skru på indeksering av en privat eller uferdig betalingstjeneste.
+The product is still a free pilot. No Stripe or paid entitlement exists. Clarity/GA4 integration, saved dashboard funnels, real synthetic recording QA and commercial-launch decisions must be verified separately; code tests alone do not prove provider ingestion.
 
-Search Console krever tilgang til den virkelige domeneeierens eiendom. Bruk den til å følge søkefraser, visninger, klikk, CTR og indekseringsfeil. Den viser ikke automatisk kjøp. Koble ikke tilfeldige konti eller oppdiktede verifikasjonstagger.
+## Domain check
 
-## Første markedstest
-
-- Primær intensjon: «CV на македонски», «CV за работа», «креирај CV». Tilby hjelp for førstegangsjobbsøkere. Vær ærlig om at malene ikke er Europass.
-- Første trafikk: relevante karrieresentre, studentmiljøer og jobbsøkerfellesskap, med tillatelse til å dele. Ingen meldinger eller innlegg er sendt.
-- Tilpass innhold etter faktiske Search Console-søk. Ikke masseproduser tynne by- eller yrkessider.
-- Bruk `utm_source` fra google/bing/facebook/instagram/linkedin/newsletter og kampanje fra mk-search-cv/mk-students/mk-jobs/mk-organic-guide. Andre fritekstverdier lagres ikke.
-- Ikke start betalte annonser før et utgiftsbudsjett er avtalt og lønnsomhetsgrensen er beregnet. Ingen annonser er bestilt.
-
-Eksempel på sporbart testlink: `/?utm_source=facebook&utm_campaign=mk-students`. Del først etter offentlig lansering.
-
-## Beslutningsregler
-
-Arbeid først med feil som hindrer nedlasting. Deretter det største dokumenterte frafallet. Endre én viktig ting om gangen. Med lite trafikk er direkte brukertesting ofte mer verdifullt enn A/B-testing. Betalt skalering krever observert positivt bidrag etter gebyrer, refusjoner og anskaffelse. Gratis PDF-fullføring dokumenterer produktbruk, ikke betalingsvilje.
+MKhost direct lookup on 2026-09-28 returned cvhapi.mk and cvhapi.com available.
+.mk quoted EUR 19.49 first year / EUR 14.62 renewal, with residency or legal-entity documentation requirements.
+.com search quoted EUR 19.79; its actual one-year cart quoted EUR 19.50, tax 0% before login. Final tax and renewal require confirmation. DNS management included, paid privacy and hosting not selected. No purchase made. User asked for .com price; do not treat that question as purchase approval.

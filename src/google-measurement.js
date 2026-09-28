@@ -2,6 +2,7 @@ import {EVENTS,safeProperties,attribution} from './telemetry-core.js';
 export const MEASUREMENT_ID='G-JYTW6J3BRZ';
 const productionHost='cv-hapi.quara0n.chatgpt.site';
 let initialized=false;
+const initialAttribution=attribution(location.href,document.referrer);
 export const googleEnabled=()=>location.hostname===productionHost;
 function gtag(){window.dataLayer=window.dataLayer||[];window.dataLayer.push(arguments)}
 export function googleConsent(allowed){
@@ -22,6 +23,6 @@ export function googleConsent(allowed){
 function cleanLocation(){return `https://${productionHost}${/^\/mk(?:\/|$)/.test(location.pathname)?'/mk/':'/en/'}`}
 export function googleTrack(event,properties={}){
  if(!googleEnabled()||!initialized||window[`ga-disable-${MEASUREMENT_ID}`]||!EVENTS.includes(event))return;
- const source=attribution(location.href,document.referrer);
- gtag('event',event==='page_view'?'page_view':`cekor_${event}`,{...safeProperties(properties),...source,page_location:cleanLocation(),page_referrer:'',page_title:'CV Hapi CV',send_to:MEASUREMENT_ID,campaign_source:source.channel,campaign_name:source.campaign,campaign_medium:source.campaign==='mk-search-cv'?'cpc':source.channel==='google-organic'?'organic':'none'});
+ const source=initialAttribution;
+ gtag('event',event==='page_view'?'page_view':`cekor_${event}`,{...safeProperties(properties),...source,page_location:cleanLocation(),page_referrer:'',page_title:'CV Hapi CV',send_to:MEASUREMENT_ID,campaign_source:source.channel,campaign_name:source.campaign,campaign_medium:source.medium,ui_language:['en','mk'].includes(document.documentElement.lang)?document.documentElement.lang:'en'});
 }

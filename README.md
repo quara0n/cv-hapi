@@ -26,7 +26,7 @@ The user authorized **10 analyses total including tests**, not per user/day. D1 
 
 Files are extracted locally. Only after explicit consent are displayed CV text and vacancy sent through the server to DeepSeek. Our database stores only the quota counter, not CVs or replies. DeepSeek processes submitted text under its own privacy policy. AI can still make mistakes; user review is essential.
 
-GA4 G-JYTW6J3BRZ uses consent-gated allowlisted events. Enhanced measurement, session replay and arbitrary CV properties are disabled. [GROWTH-AND-ANALYTICS.md](GROWTH-AND-ANALYTICS.md) describes measurement.
+GA4 G-JYTW6J3BRZ uses consent-gated allowlisted events. Enhanced measurement and arbitrary CV properties are disabled. Microsoft Clarity project ypjcjxa0o9 uses separate 18+ recording consent, strict masking and consentv2; recording ingestion still needs live verification. [GROWTH-AND-ANALYTICS.md](GROWTH-AND-ANALYTICS.md) describes measurement.
 
 ## Deployment and continuity
 
@@ -42,4 +42,4 @@ Before charging NOK 10, validate value with real users, review Macedonian wordin
 
 ## Verification boundary
 
-17 automated tests pass: editing, restore/reset, escaping, analytics consent/allowlisting, review consent and explicit apply, API validation and durable quota. Browser PDF/DOCX import and an actual DeepSeek review were verified with fictional data. Revised PDF download was verified as a readable one-page document. More real-device/mobile and native Macedonian quality checks remain.
+20 automated tests pass: editing, restore/reset, escaping, analytics consent/allowlisting, review consent and explicit apply, API validation and durable quota. Browser PDF/DOCX import and an actual DeepSeek review were verified with fictional data. Revised PDF download was verified as a readable one-page document. More real-device/mobile and native Macedonian quality checks remain.
