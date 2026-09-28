@@ -1,6 +1,6 @@
 # Чекор / Čekor CV builder
 
-Macedonian-first CV builder with English interface/headings, 3 styles, live preview, optional device-local draft storage and Unicode PDF export. The current release is a private, free test; planned price is NOK 10 once. No Stripe checkout or payment enforcement is enabled.
+Macedonian/English CV and application pilot with 3 CV styles, live preview, optional device-local CV storage and Unicode PDF export. Basic CV remains free. The application workspace combines selected real evidence with an editable, fixed-template cover letter and downloads both in one PDF. Vacancy text is a reference only, not automatically analysed. Application drafts remain in tab memory. AI writing/translation and Stripe are not connected. The planned AI-assisted package is NOK 10 once; it is not currently sold. See [PILOT.md](PILOT.md) for launch gates, prepared Google Ads copy and acquisition economics.
 
 ## Run
 
