@@ -9,3 +9,5 @@
 - Google Ads account discovered: `143-420-6814`, AUD currency, eastern Australian time. New-campaign setup was started but blocked by the message “Turn off ad blockers”. No campaign was published and no ad budget was activated. Do not treat the campaign name in the wizard as a saved campaign or a NOK budget.
 - Advertising setup must resume in a working Google Ads browser, with account currency and a hard total spending bound verified before enabling delivery. Do not enter 300 in an AUD budget field.
 - AI and payments remain unconnected. The publicly available product is honestly described as a free guided CV/cover-letter pilot; it does not test real purchases yet.
+
+Public launch succeeded. GA4 realtime confirmed one synthetic test visitor, page_view and cekor_application_started. This is a technical verification, not a real customer or sale. Search Console meta verification is included for the same owner.
