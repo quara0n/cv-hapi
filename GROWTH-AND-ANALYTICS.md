@@ -37,10 +37,15 @@ Source/medium/campaign values are allowlisted. Explicit allowed utm_medium overr
 Search Console property and sitemap were verified previously; indexing/ranking is not guaranteed.
 Ads account uses AUD. Existing maximum is NOK 300 TOTAL, not a daily allowance. No campaign has launched. A hard total budget, currency/tax margin, end date and payment setup must be verified before launch.
 
-The product is still a free pilot. No Stripe or paid entitlement exists. Clarity/GA4 integration, saved dashboard funnels, real synthetic recording QA and commercial-launch decisions must be verified separately; code tests alone do not prove provider ingestion.
+The product is still a free pilot. Stripe test-mode checkout and server-side entitlement are implemented but disabled; see PAYMENTS.md. Clarity/GA4 integration, saved dashboard funnels, real synthetic recording QA and commercial-launch decisions must be verified separately; code tests alone do not prove provider ingestion.
 
 ## Domain check
 
 MKhost direct lookup on 2026-09-28 returned cvhapi.mk and cvhapi.com available.
 .mk quoted EUR 19.49 first year / EUR 14.62 renewal, with residency or legal-entity documentation requirements.
 .com search quoted EUR 19.79; its actual one-year cart quoted EUR 19.50, tax 0% before login. Final tax and renewal require confirmation. DNS management included, paid privacy and hosting not selected. No purchase made. User asked for .com price; do not treat that question as purchase approval.
+
+
+## Live verification, September 28
+
+A synthetic live Clarity recording was received and visually checked: all text was masked, including CV preview. Evidence: test-output/clarity-masked-live.png. GA4 realtime received a synthetic visit; do not count it as a customer. Saved open funnel CV Hapi — CV to PDF has the five builder steps above and device breakdown. Its current last-28-days range excludes today; normal reporting latency applies. Exploration: https://analytics.google.com/analytics/web/#/analysis/a283629177p556316817/edit/Z0O2ccM_S_WiY0Femv9LDw .

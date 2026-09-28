@@ -9,7 +9,7 @@ English/Macedonian CV pilot for North Macedonia. Live: https://cv-hapi.quara0n.c
 - PDF, DOCX and TXT import, read in the browser (5 MB; PDFs up to 12 pages; CV text up to 20,000 characters). Scans need OCR elsewhere.
 - Optional DeepSeek feedback against a job advertisement, exact source quotes and individually accepted wording suggestions.
 - Revised text can be edited and downloaded as a clean text-layout PDF or TXT. Uploaded layout is not preserved.
-- No signup, Stripe, subscription, OCR or automatic translation. Everything remains free during this pilot.
+- No signup, subscription, OCR or automatic translation. Everything remains free during this pilot. Stripe test-mode code is implemented but disabled; see PAYMENTS.md for account and launch blockers.
 
 ## Run and verify
 
@@ -24,9 +24,9 @@ Build output: `dist/client` for browser assets, `dist/server/index.js` for Worke
 See [AI-REVIEW.md](AI-REVIEW.md) for integration and limits. Runtime environment has a secret `DEEPSEEK_API_KEY`, `AI_ENABLED=true` and `AI_MAX_REVIEWS=10`.
 The user authorized **10 analyses total including tests**, not per user/day. D1 atomically reserves a slot before each provider call; failures consume a slot. Never reset the counter during deployment or migration.
 
-Files are extracted locally. Only after explicit consent are displayed CV text and vacancy sent through the server to DeepSeek. Our database stores only the quota counter, not CVs or replies. DeepSeek processes submitted text under its own privacy policy. AI can still make mistakes; user review is essential.
+Files are extracted locally. Only after explicit consent are displayed CV text and vacancy sent through the server to DeepSeek. Our database stores the quota counter and, when payments are enabled, opaque payment IDs/state, not CVs or replies. DeepSeek processes submitted text under its own privacy policy. AI can still make mistakes; user review is essential.
 
-GA4 G-JYTW6J3BRZ uses consent-gated allowlisted events. Enhanced measurement and arbitrary CV properties are disabled. Microsoft Clarity project ypjcjxa0o9 uses separate 18+ recording consent, strict masking and consentv2; recording ingestion still needs live verification. [GROWTH-AND-ANALYTICS.md](GROWTH-AND-ANALYTICS.md) describes measurement.
+GA4 G-JYTW6J3BRZ uses consent-gated allowlisted events. Enhanced measurement and arbitrary CV properties are disabled. Microsoft Clarity project ypjcjxa0o9 uses separate 18+ recording consent, strict masking and consentv2; a masked synthetic recording was verified live. [GROWTH-AND-ANALYTICS.md](GROWTH-AND-ANALYTICS.md) describes measurement.
 
 ## Deployment and continuity
 
@@ -36,10 +36,10 @@ Read the Sites building/hosting skills before publishing. Reuse the project ID i
 
 ## Remaining launch gates
 
-The domain cvhapi.mk has not been purchased or confirmed available. Ads have not launched; the user authorized a maximum NOK 300 total pilot. The existing Ads account uses AUD and GMT+10; Macedonian is not a supported targeting language. Do not confuse daily budget with the total spending limit.
+cvhapi.mk and cvhapi.com were available at the September 28 check. The .com cart quoted EUR 19.50 for one year before final tax/login. No domain was purchased. Ads have not launched; the user authorized a maximum NOK 300 total pilot. The existing Ads account uses AUD and GMT+10; Macedonian is not a supported targeting language. Do not confuse daily budget with the total spending limit.
 
-Before charging NOK 10, validate value with real users, review Macedonian wording, finish seller/payment onboarding and implement server-side payment enforcement. Free tools including Europass remain credible competitors; demand and willingness to pay are not proven by a functioning prototype.
+Before charging NOK 10, validate value with real users, review Macedonian wording, finish seller/payment onboarding and all commercial launch gates in PAYMENTS.md. Free tools including Europass remain credible competitors; demand and willingness to pay are not proven by a functioning prototype.
 
 ## Verification boundary
 
-20 automated tests pass: editing, restore/reset, escaping, analytics consent/allowlisting, review consent and explicit apply, API validation and durable quota. Browser PDF/DOCX import and an actual DeepSeek review were verified with fictional data. Revised PDF download was verified as a readable one-page document. More real-device/mobile and native Macedonian quality checks remain.
+27 automated tests pass: editing, restore/reset, escaping, analytics consent/allowlisting, review consent and explicit apply, API validation and durable quota. Browser PDF/DOCX import and an actual DeepSeek review were verified with fictional data. Revised PDF download was verified as a readable one-page document. More real-device/mobile and native Macedonian quality checks remain.
