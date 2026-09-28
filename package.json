@@ -1,0 +1,1 @@
+{"name":"cekor-cv","version":"1.0.0","private":true,"type":"module","scripts":{"dev":"vite --host 127.0.0.1","build":"vite build && node scripts/seo.mjs","preview":"vite preview --host 127.0.0.1","test":"node --test tests/*.test.js"},"dependencies":{"pdfmake":"0.2.20"},"devDependencies":{"jsdom":"^29.1.1","vite":"7.1.12"}}
