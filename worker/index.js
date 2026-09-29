@@ -1,5 +1,6 @@
 import {validateReview,MAX_TEXT} from '../src/review-core.js';
 import {handlePayments,paymentsEnabled,claimPayment,finishPayment} from './payments.js';
+import {privacyApproved} from './ai-config.js';
 
 const json=(body,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export async function limitedJSON(message,limit){const reader=message.body?.getReader();if(!reader)throw new Error('body');let size=0,chunks=[];try{for(;;){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>limit){await reader.cancel();throw new Error('size')}chunks.push(value)}}finally{reader.releaseLock()}const bytes=new Uint8Array(size);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length}return JSON.parse(new TextDecoder().decode(bytes))}
@@ -8,16 +9,21 @@ const enabled=env=>env.AI_ENABLED==='true'&&!!env.DEEPSEEK_API_KEY&&!!env.DB&&Nu
 export async function handleAPI(request,env,upstream=fetch){
  const url=new URL(request.url);
  if(url.pathname.startsWith('/api/payments/'))return handlePayments(request,env,upstream);
- if(url.pathname==='/api/review/status'&&request.method==='GET')return json({available:enabled(env)});
+ if(url.pathname==='/api/review/status'&&request.method==='GET'){
+  if(!privacyApproved(env))return json({available:false,remaining:null,reason:'privacy_pending'});
+  if(!enabled(env))return json({available:false,remaining:null,reason:'unavailable'});
+  try{const budget=await env.DB.prepare("SELECT used FROM ai_budget WHERE id='pilot'").bind().first();const remaining=Math.max(0,Math.min(10,Number(env.AI_MAX_REVIEWS))-(budget?.used||0));return json({available:remaining>0,remaining})}catch{return json({available:false,remaining:0},503)}
+ }
  if(url.pathname!=='/api/review')return json({error:'not_found'},404);
  if(request.method!=='POST')return json({error:'method'},405);
  if(request.headers.get('Origin')!==url.origin||request.headers.get('Sec-Fetch-Site')==='cross-site')return json({error:'origin'},403);
+ if(!privacyApproved(env))return json({error:'privacy_pending'},503);
  if(!enabled(env))return json({error:'unavailable'},503);
  if(!request.headers.get('Content-Type')?.startsWith('application/json'))return json({error:'type'},415);
  let input;try{input=await limitedJSON(request,125000)}catch{return json({error:'invalid_body'},400)}
  if(input?.consent!==true||typeof input.text!=='string'||input.text.trim().length<80||input.text.length>MAX_TEXT||typeof input.job!=='string'||input.job.length>10000||!['en','mk'].includes(input.language))return json({error:'invalid_input'},400);
  let payment;
- if(env.PAYMENTS_ENABLED){
+ if(env.PAYMENTS_ENABLED && env.PAYMENTS_ENABLED!=='false'){
   if(!paymentsEnabled(env))return json({error:'payments_unavailable'},503);
   try{payment=await claimPayment(request,env)}catch{return json({error:'unavailable'},503)}
   if(!payment)return json({error:'payment_required'},402);

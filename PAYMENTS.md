@@ -1,6 +1,8 @@
 # Stripe integration: test-only, not a paid launch
 
-Implemented server-created Stripe Checkout, NOK 10 once for one AI review, a signed webhook, durable D1 payment state, and atomic one-use entitlement. The free builder and ordinary PDF remain free. This product choice is the assistant's implementation interpretation of the user's NOK 10 ambition, not validation of willingness to pay.
+Update 29 September: the owner set a EUR 2 one-time price (200 EUR minor units), replacing NOK 10. AI checkout requires `AI_PRIVACY_APPROVED=true`; see [API-PRIVACY.md](API-PRIVACY.md). This flag must remain unset until the documented processing basis is resolved. Live payments remain disabled. Existing NOK test sessions cannot satisfy the new EUR price validation; no completed test purchases were previously recorded.
+
+Implemented server-created Stripe Checkout, EUR 2 once for one AI review, a signed webhook, durable D1 payment state, and atomic one-use entitlement. The free builder and ordinary PDF remain free. This product choice is the assistant's implementation interpretation of the user's EUR 2 ambition, not validation of willingness to pay.
 
 **Production payments are disabled.** No Stripe credentials have been configured, no Stripe checkout has been completed, and no customer has been charged through this work. The dashboard requires login. A Stripe connection was suggested but was not confirmed. `paymentsEnabled` deliberately rejects live keys. Do not describe this as a completed commercial payment launch.
 

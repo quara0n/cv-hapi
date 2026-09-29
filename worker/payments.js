@@ -1,4 +1,5 @@
 // Test-mode only until seller onboarding, refund operations and a real test purchase are verified.
+import {privacyApproved} from './ai-config.js';
 const reply=(value,status=200,headers={})=>Response.json(value,{status,headers:{'Cache-Control':'no-store',...headers}});
 const enc=new TextEncoder();
 const hex=bytes=>Array.from(new Uint8Array(bytes),n=>n.toString(16).padStart(2,'0')).join('');
@@ -37,12 +38,12 @@ export async function finishPayment(env,payment,success,transport=fetch){
  }catch{return 'refund_pending'}
 }
 async function confirmSession(env,session){
- if(session.mode!=='payment'||session.payment_status!=='paid'||session.livemode!==false||session.amount_total!==1000||session.currency!=='nok'||typeof session.payment_intent!=='string')return;
+ if(session.mode!=='payment'||session.payment_status!=='paid'||session.livemode!==false||session.amount_total!==200||session.currency!=='eur'||typeof session.payment_intent!=='string')return;
  await first(env,"UPDATE payments SET state='paid',intent=? WHERE id=? AND session=? AND state='pending' RETURNING id",session.payment_intent,session.client_reference_id,session.id);
 }
 export async function handlePayments(request,env,transport=fetch){
  const url=new URL(request.url),path=url.pathname;
- if(path==='/api/payments/config')return reply({enabled:!!paymentsEnabled(env),test:true,amount:1000,currency:'nok'});
+ if(path==='/api/payments/config')return reply({enabled:!!paymentsEnabled(env)&&privacyApproved(env),test:true,amount:200,currency:'eur'});
  if(!paymentsEnabled(env))return reply({error:'payments_unavailable'},503);
  try{
   if(path==='/api/payments/webhook'){
@@ -64,6 +65,7 @@ export async function handlePayments(request,env,transport=fetch){
   if(path!=='/api/payments/checkout')return reply({error:'not_found'},404);
   if(request.method!=='POST')return reply({error:'method'},405);
   if(request.headers.get('Origin')!==url.origin||request.headers.get('Sec-Fetch-Site')==='cross-site')return reply({error:'origin'},403);
+  if(!privacyApproved(env))return reply({error:'privacy_pending'},503);
   if(env.AI_ENABLED!=='true'||!env.DEEPSEEK_API_KEY)return reply({error:'unavailable'},503);
   const cap=Math.min(10,Number(env.AI_MAX_REVIEWS)||0),budget=await first(env,"SELECT used FROM ai_budget WHERE id='pilot'");
   if(cap<1||(budget?.used||0)>=cap)return reply({error:'pilot_limit'},429);
@@ -72,7 +74,7 @@ export async function handlePayments(request,env,transport=fetch){
   if(old?.state==='pending'&&old.session){const session=await stripe(env,`checkout/sessions/${encodeURIComponent(old.session)}`,null,null,transport);await confirmSession(env,session);if(session.status==='open'&&session.url)return reply({url:session.url});if(session.payment_status==='paid')return reply({error:'existing_order'},409)}
   const token=hex(crypto.getRandomValues(new Uint8Array(32))),owner=await hash(token),id=crypto.randomUUID();
   await first(env,"INSERT INTO payments(id,owner,state) VALUES (?,?,'pending') RETURNING id",id,owner);
-  const session=await stripe(env,'checkout/sessions',{mode:'payment','payment_method_types[0]':'card','line_items[0][price_data][currency]':'nok','line_items[0][price_data][unit_amount]':'1000','line_items[0][price_data][product_data][name]':'CV Hapi — one AI review (TEST)','line_items[0][quantity]':'1',client_reference_id:id,success_url:`${url.origin}/payment-return.html`,cancel_url:`${url.origin}/payment-return.html`,expires_at:String(Math.floor(Date.now()/1000)+1800)},`checkout-${id}`,transport);
+  const session=await stripe(env,'checkout/sessions',{mode:'payment','payment_method_types[0]':'card','line_items[0][price_data][currency]':'eur','line_items[0][price_data][unit_amount]':'200','line_items[0][price_data][product_data][name]':'CV Hapi — one AI review (TEST)','line_items[0][quantity]':'1',client_reference_id:id,success_url:`${url.origin}/payment-return.html`,cancel_url:`${url.origin}/payment-return.html`,expires_at:String(Math.floor(Date.now()/1000)+1800)},`checkout-${id}`,transport);
   if(!session.url||new URL(session.url).origin!=='https://checkout.stripe.com')throw Error('checkout_url');
   await first(env,'UPDATE payments SET session=? WHERE id=? RETURNING id',session.id,id);
   return reply({url:session.url},200,{'Set-Cookie':`__Host-cvhapi-payment=${token}; Secure; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800`});

@@ -1,5 +1,7 @@
 # CV Hapi
 
+29 September update: review-loss fixes A/B, accurate remaining quota D and false payment flag E are implemented locally. Intended one-time price is EUR 2. An API privacy gate is implemented but the provider's contractual basis is **not resolved**; see [API-PRIVACY.md](API-PRIVACY.md). These changes await deployment.
+
 English/Macedonian CV pilot for North Macedonia. Live: https://cv-hapi.quara0n.chatgpt.site/en/ (also /mk/).
 
 ## Current product
@@ -38,8 +40,8 @@ Read the Sites building/hosting skills before publishing. Reuse the project ID i
 
 cvhapi.mk and cvhapi.com were available at the September 28 check. The .com cart quoted EUR 19.50 for one year before final tax/login. No domain was purchased. Ads have not launched; the user authorized a maximum NOK 300 total pilot. The existing Ads account uses AUD and GMT+10; Macedonian is not a supported targeting language. Do not confuse daily budget with the total spending limit.
 
-Before charging NOK 10, validate value with real users, review Macedonian wording, finish seller/payment onboarding and all commercial launch gates in PAYMENTS.md. Free tools including Europass remain credible competitors; demand and willingness to pay are not proven by a functioning prototype.
+Before charging EUR 2, validate value with real users, review Macedonian wording, finish seller/payment onboarding and all commercial launch gates in PAYMENTS.md. Free tools including Europass remain credible competitors; demand and willingness to pay are not proven by a functioning prototype.
 
 ## Verification boundary
 
-27 automated tests pass: editing, restore/reset, escaping, analytics consent/allowlisting, review consent and explicit apply, API validation and durable quota. Browser PDF/DOCX import and an actual DeepSeek review were verified with fictional data. Revised PDF download was verified as a readable one-page document. More real-device/mobile and native Macedonian quality checks remain.
+32 automated tests pass: editing, restore/reset, escaping, analytics consent/allowlisting, review consent and explicit apply, API validation and durable quota. Browser PDF/DOCX import and an actual DeepSeek review were verified with fictional data. Revised PDF download was verified as a readable one-page document. More real-device/mobile and native Macedonian quality checks remain.

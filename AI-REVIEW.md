@@ -1,5 +1,7 @@
 # CV Hapi review pilot
 
+Update 29 September: AI submission is blocked in the revised source pending a documented API privacy basis. See [API-PRIVACY.md](API-PRIVACY.md). Deployment is pending, so this is not a claim that the current live site has been paused. `AI_PRIVACY_APPROVED=true` is required in addition to the existing configuration; do not enable it before completing that review.
+
 The review adds a practical companion to existing CV builders: import an existing CV (including Europass), compare with a vacancy, get a DeepSeek critique, and accept individual wording changes. It is not a claim to outperform every free builder. Europass already supports multiple tailored CVs, 31 languages and cover letters (official page checked 28 September 2026).
 
 ## User flow and data
