@@ -46,6 +46,10 @@ The owner authorized ten lifetime AI attempts, including tests and failures. The
 
 The Google Ads pilot has a maximum of NOK 300 total, including currency/fee margin, with no automatic increase or recurring continuation. The existing Ads account uses AUD. A daily budget is not a hard total cap. No campaign launch is established by this repository.
 
+## Verification on 29 September 2026
+
+All 27 automated tests passed, and the production build succeeded on the source used for this snapshot. The first sandboxed run failed because esbuild could not read parent directories; rerunning outside that sandbox resolved it. The build still warns about a large PDF-library chunk. No real AI or Stripe calls were made for this verification.
+
 ## Evidence and uncertainty
 
 The prior session recorded a successful v9 public deployment, fictional-data import/PDF checks, one real AI review in an earlier session, masked synthetic Clarity ingestion and GA realtime ingestion. These live service claims have not been independently repeated on 29 September. They do not establish customers, sales, native-language quality or willingness to pay.
@@ -72,4 +76,5 @@ Please assess the source and plan and return:
 - A prioritized recommendation: what to fix before domain/paid launch/Ads, what can follow later, and whether to run the acquisition test at all.
 
 This repository is a review snapshot. It excludes private session handoffs, credentials, local browser evidence, generated output and original Git history. Public availability does not grant a separate software license; no license has been selected by the owner.
+
 
