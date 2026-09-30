@@ -14,3 +14,11 @@ test('Macedonian letter keeps user text rather than pretending to translate it',
  const letter=draftLetter({name:'Тест',role:'Продавач',company:'',why:'English user text',evidence:['Работа на каса'],language:'mk'});
  assert.match(letter,/Почитувани/);assert.match(letter,/English user text/);assert.match(letter,/Работа на каса/);assert.doesNotMatch(letter,/undefined/);
 });
+test('letter includes employer needs and bullets every evidence line',()=>{
+ for(const language of ['en','mk']){
+  const letter=draftLetter({name:'Candidate',role:'Assistant',company:'Shop',requirement:'Friendly service and accurate cash handling',why:'My reason.',evidence:['Served customers.\nTrained colleagues.\n\n• Handled cash.'],language});
+  assert.match(letter,/Friendly service and accurate cash handling/);
+  assert.match(letter,/• Served customers\.\n• Trained colleagues\.\n• Handled cash\./);
+  assert.doesNotMatch(letter,/• •|undefined/);
+ }
+});

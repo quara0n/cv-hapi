@@ -1,5 +1,9 @@
 # CV Hapi review pilot
 
+30 September private test: localhost can be connected to the existing owner-private v9 backend using `scripts/dev-ai-bridge.mjs`. The Sites access token is supplied over non-echoing stdin and kept only in the server process; the DeepSeek key remains in Sites. This bridge is loopback-only, rejects cross-origin POSTs, disables checkout, uses the existing production lifetime counter, and explicitly blocks nonempty cover letters because v9 reviews CVs only. Ordinary `npm run dev` still uses the unavailable API stub. This is an owner test connection, not approval of public personal-data processing or deployment of the newer backend.
+
+One real fictional-data review through localhost succeeded on 30 September. The counter moved from 3 to 4 used, leaving 6 of 10. The returned rewrites introduced unsupported cash/card payment and customer-questioning details despite the factual-preservation instruction. Connectivity is verified; paid-quality factual preservation is not. No quota reset or increase was made.
+
 Update 29 September: AI submission is blocked in the revised source pending a documented API privacy basis. See [API-PRIVACY.md](API-PRIVACY.md). Deployment is pending, so this is not a claim that the current live site has been paused. `AI_PRIVACY_APPROVED=true` is required in addition to the existing configuration; do not enable it before completing that review.
 
 The review adds a practical companion to existing CV builders: import an existing CV (including Europass), compare with a vacancy, get a DeepSeek critique, and accept individual wording changes. It is not a claim to outperform every free builder. Europass already supports multiple tailored CVs, 31 languages and cover letters (official page checked 28 September 2026).
@@ -11,6 +15,10 @@ PDF (text-based, at most 12 pages), DOCX or TXT up to 5 MB are read in the brows
 AI requires per-review consent. Editing source or vacancy clears consent and stale feedback. Only displayed CV text, optional vacancy and output language are sent through the server to DeepSeek. No raw file, analytics identifier, name from the builder, IP address or browsing metadata is added to the provider request. Users must remove unnecessary sensitive details themselves. DeepSeek's own processing/privacy terms apply. The application does not store or log document text, model prompts or responses on the server. Hosting/provider infrastructure may process technical access data.
 
 Rewrites reference exact source quotes; ungrounded quotes are dropped. Each rewrite is opt-in. The original document is never overwritten. The reviewed PDF is a simple new text layout, not a faithful recreation of an uploaded design. Users can also download editable TXT. AI can still make factual or linguistic errors; every accepted result requires human review.
+
+Local source update, 30 September 2026: after quote validation, a separate DeepSeek pass checks each proposed rewrite against its original quote alone. It rejects added or removed factual claims and treats uncertainty as unsupported. A deterministic check also rejects numeric values absent from the original. Missing, duplicate or malformed verification decisions, provider failure and timeout fail the review rather than release unchecked rewrites. The existing payment-failure path is used on verification failure; durable payment recovery remains a separate launch requirement. This is model-based risk reduction, not a guarantee; overview, strengths and questions are not covered by this rewrite check.
+
+A review with suggestions now uses two provider requests, sharing a 45-second deadline. Reviews with no suggestions use one. Each attempted review still consumes one lifetime pilot slot; the allowance remains 10 reviews and is not reset. No live provider request was made to test this change. The private local bridge still forwards to the older deployed backend, so this protection is not active there until the updated Worker is deployed.
 
 ## Production configuration
 
@@ -32,3 +40,9 @@ Tests cover exact-quote acceptance, untrusted HTML escaping, consent and origin 
 ## Limits
 
 No automatic translation, no reliable reproduction of uploaded layouts, no OCR, no payment collection, and no guarantee of interviews or ATS acceptance. Do not advertise these. Test the Macedonian output with native speakers before a paid launch. The NOK 300 ad campaign remains unlaunched.
+
+## Application review extension — local implementation, 29 September 2026
+
+The optional cover letter now travels with the CV and vacancy in one request. Suggestions identify their target document; exact quotes are validated against that document and acceptance updates only that editor. Both documents can be downloaded together as PDF or editable text. No additional provider call or automatic persistent storage was added. The output limit remains 2,200 tokens; real EN/MK quality still needs validation before selling.
+
+Implemented the minimal review offer and optional letter extension from OPUS-EUR2-ADVICE.md. Worksheet and bilingual data-model variants remain validation ideas, not promised features. Payment interruption recovery, capacity reservation, legal seller details and API privacy arrangements remain launch blockers. See STRIPE-ONBOARDING.md for owner onboarding.

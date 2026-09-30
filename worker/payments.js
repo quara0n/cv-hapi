@@ -1,9 +1,9 @@
-// Test-mode only until seller onboarding, refund operations and a real test purchase are verified.
+// Test and live credentials are intentionally not interchangeable.
 import {privacyApproved} from './ai-config.js';
 const reply=(value,status=200,headers={})=>Response.json(value,{status,headers:{'Cache-Control':'no-store',...headers}});
 const enc=new TextEncoder();
 const hex=bytes=>Array.from(new Uint8Array(bytes),n=>n.toString(16).padStart(2,'0')).join('');
-export const paymentsEnabled=env=>env.PAYMENTS_ENABLED==='test'&&env.STRIPE_SECRET_KEY?.startsWith('sk_test_')&&!!env.STRIPE_WEBHOOK_SECRET&&!!env.DB;
+export const paymentsEnabled=env=>['test','live'].includes(env.PAYMENTS_ENABLED)&&env.STRIPE_SECRET_KEY?.startsWith(env.PAYMENTS_ENABLED==='live'?'sk_live_':'sk_test_')&&!!env.STRIPE_WEBHOOK_SECRET&&!!env.DB;
 export const hash=async value=>hex(await crypto.subtle.digest('SHA-256',enc.encode(value)));
 export async function verifySignature(raw,header,secret,now=Date.now()){
  const parts=(header||'').split(',').map(v=>v.split('=')),stamp=parts.find(v=>v[0]==='t')?.[1];
@@ -38,12 +38,12 @@ export async function finishPayment(env,payment,success,transport=fetch){
  }catch{return 'refund_pending'}
 }
 async function confirmSession(env,session){
- if(session.mode!=='payment'||session.payment_status!=='paid'||session.livemode!==false||session.amount_total!==200||session.currency!=='eur'||typeof session.payment_intent!=='string')return;
+ if(session.mode!=='payment'||session.payment_status!=='paid'||session.livemode!==(env.PAYMENTS_ENABLED==='live')||session.amount_total!==200||session.currency!=='eur'||typeof session.payment_intent!=='string')return;
  await first(env,"UPDATE payments SET state='paid',intent=? WHERE id=? AND session=? AND state='pending' RETURNING id",session.payment_intent,session.client_reference_id,session.id);
 }
 export async function handlePayments(request,env,transport=fetch){
  const url=new URL(request.url),path=url.pathname;
- if(path==='/api/payments/config')return reply({enabled:!!paymentsEnabled(env)&&privacyApproved(env),test:true,amount:200,currency:'eur'});
+ if(path==='/api/payments/config')return reply({enabled:!!paymentsEnabled(env)&&privacyApproved(env),test:env.PAYMENTS_ENABLED!=='live',amount:200,currency:'eur'});
  if(!paymentsEnabled(env))return reply({error:'payments_unavailable'},503);
  try{
   if(path==='/api/payments/webhook'){
@@ -52,7 +52,16 @@ export async function handlePayments(request,env,transport=fetch){
    if(!await verifySignature(raw,request.headers.get('Stripe-Signature'),env.STRIPE_WEBHOOK_SECRET))return reply({error:'signature'},400);
    const event=JSON.parse(raw);
    if(['checkout.session.completed','checkout.session.async_payment_succeeded'].includes(event.type))await confirmSession(env,event.data.object);
-   if(event.type==='charge.refunded'&&event.data.object.refunded===true&&event.data.object.livemode===false)await first(env,"UPDATE payments SET state='refunded' WHERE intent=? RETURNING id",event.data.object.payment_intent);
+   if(event.type==='charge.refunded'&&event.data.object.amount_refunded>0&&event.data.object.livemode===(env.PAYMENTS_ENABLED==='live')){
+    // A refund may arrive before the Checkout completion event.
+    const charge=event.data.object;
+    const order=await first(env,'SELECT * FROM payments WHERE intent=?',charge.payment_intent);
+    if(order)await first(env,"UPDATE payments SET state='refunded' WHERE id=? RETURNING id",order.id);
+    else if(charge.payment_intent){
+     const sessions=await stripe(env,`checkout/sessions?payment_intent=${encodeURIComponent(charge.payment_intent)}&limit=10`,null,null,transport);
+     for(const session of sessions.data||[])if(session.livemode===(env.PAYMENTS_ENABLED==='live'))await first(env,"UPDATE payments SET state='refunded',intent=? WHERE id=? AND session=? RETURNING id",charge.payment_intent,session.client_reference_id,session.id);
+    }
+   }
    return reply({received:true});
   }
   if(path==='/api/payments/status'&&request.method==='GET'){
@@ -74,7 +83,7 @@ export async function handlePayments(request,env,transport=fetch){
   if(old?.state==='pending'&&old.session){const session=await stripe(env,`checkout/sessions/${encodeURIComponent(old.session)}`,null,null,transport);await confirmSession(env,session);if(session.status==='open'&&session.url)return reply({url:session.url});if(session.payment_status==='paid')return reply({error:'existing_order'},409)}
   const token=hex(crypto.getRandomValues(new Uint8Array(32))),owner=await hash(token),id=crypto.randomUUID();
   await first(env,"INSERT INTO payments(id,owner,state) VALUES (?,?,'pending') RETURNING id",id,owner);
-  const session=await stripe(env,'checkout/sessions',{mode:'payment','payment_method_types[0]':'card','line_items[0][price_data][currency]':'eur','line_items[0][price_data][unit_amount]':'200','line_items[0][price_data][product_data][name]':'CV Hapi — one AI review (TEST)','line_items[0][quantity]':'1',client_reference_id:id,success_url:`${url.origin}/payment-return.html`,cancel_url:`${url.origin}/payment-return.html`,expires_at:String(Math.floor(Date.now()/1000)+1800)},`checkout-${id}`,transport);
+  const session=await stripe(env,'checkout/sessions',{mode:'payment','payment_method_types[0]':'card','line_items[0][price_data][currency]':'eur','line_items[0][price_data][unit_amount]':'200','line_items[0][price_data][product_data][name]':`CV Hapi — one AI review${env.PAYMENTS_ENABLED==='test'?' (TEST)':''}`,'line_items[0][quantity]':'1',client_reference_id:id,success_url:`${url.origin}/payment-return.html`,cancel_url:`${url.origin}/payment-return.html`,expires_at:String(Math.floor(Date.now()/1000)+1800)},`checkout-${id}`,transport);
   if(!session.url||new URL(session.url).origin!=='https://checkout.stripe.com')throw Error('checkout_url');
   await first(env,'UPDATE payments SET session=? WHERE id=? RETURNING id',session.id,id);
   return reply({url:session.url},200,{'Set-Cookie':`__Host-cvhapi-payment=${token}; Secure; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800`});

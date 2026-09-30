@@ -2,7 +2,7 @@
 
 ## Beslutning
 
-Gratis CV/PDF beholdes. Betalingshypotesen er 10 NOK én gang for hjelp til en konkret jobbsøknad: faktabasert AI-skriving, tilpasning til annonse og makedonsk/engelsk tekst. Dette er ikke validert betalingsvilje. Gratis konkurrenter tilbyr allerede AI; vår flyt må gi et resultat målgruppen foretrekker.
+Gratis CV/PDF beholdes. Betalingshypotesen er EUR 2 én gang for hjelp til en konkret jobbsøknad: faktabasert AI-skriving, tilpasning til annonse og makedonsk/engelsk tekst. Dette er ikke validert betalingsvilje. Gratis konkurrenter tilbyr allerede AI; vår flyt må gi et resultat målgruppen foretrekker.
 
 ## Implementert nå
 
@@ -16,7 +16,7 @@ Gratis CV/PDF beholdes. Betalingshypotesen er 10 NOK én gang for hjelp til en k
 
 1. Koble til AI via server med hemmelig nøkkel, tydelig samtykke til behandling, bruksgrenser og kostnadstak. Ikke legg nøkkelen i nettleseren. OpenAI Developers-pluginen er etterspurt for nøkkeloppsett. Ingen AI-kall finnes i denne prototypen.
 2. Test kvalitet mot NoBsResume med samme oppdiktede opplysninger. Få en person som behersker makedonsk til å vurdere språk og tre lokale brukere til å prøve hele flyten. Bevar opplysninger; ikke legg til grader, tall, arbeidsgivere eller ferdigheter kandidaten ikke har oppgitt.
-3. Koble til Stripe-konto og en reell engangsbetaling på 10 NOK. Verifiser betaling på server med signert webhook; ikke stol på retur-URL. Avklar lokal prisvisning, virksomhetsinformasjon, vilkår, refusjon, avgifter og kontaktadresse. Brukeren fullfører kontoopprettelse og finansiell aktivering.
+3. Koble til Stripe-konto og en reell engangsbetaling på EUR 2. Verifiser betaling på server med signert webhook; ikke stol på retur-URL. Avklar lokal prisvisning, virksomhetsinformasjon, vilkår, refusjon, avgifter og kontaktadresse. Brukeren fullfører kontoopprettelse og finansiell aktivering.
 4. Koble til PostHog og serverbekreftede kjøpshendelser. Ikke tell PDF eller knappen «ville vurdert å betale» som salg. Samtykkebasert analyse måler bare et utvalg av besøkende; Stripe er kilden for faktiske betalinger.
 5. Gjør siden offentlig, aktiver `PUBLIC_LAUNCH=true`, publiser og kontroller at en utlogget besøkende kan fullføre. Privat eieradgang kan ikke brukes som annonsemål. Search Console-verifisering og sitemap-innsending gjenstår.
 6. Sett opp Google Ads i brukerens konto med godkjent totalramme. Ingen kampanje er opprettet eller startet.
@@ -37,7 +37,7 @@ Godkjent læringsbudsjett: maksimalt 300 NOK totalt (brukerens instruks 28. sept
 
 Følg: annonseklikk → besøk → CV-start → søknadsstart → utkast → betalingsstart → serverbekreftet kjøp → levert PDF. Registrer feil separat. Annonseklikk, privat forhåndsvisning, eksempeldata og interesseklikk er ikke kunder.
 
-Ved 10 NOK brutto og illustrativt 7 NOK igjen etter variable kostnader blir maksimal lønnsom klikkpris:
+Det følgende er et historisk regneeksempel fra den tidligere NOK 10-prisen, ikke økonomien for dagens EUR 2-pris. Ved 10 NOK brutto og illustrativt 7 NOK igjen etter variable kostnader blir maksimal lønnsom klikkpris:
 
 | Kjøp per klikk | Maksimal CPC |
 | --- | --- |
