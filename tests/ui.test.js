@@ -15,15 +15,15 @@ test('AI checkout appears only after document preparation and consent, then veri
  d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));assert.equal(configCalls,0);assert.equal(d.querySelector('.payment-choice'),null);
  assert.match(d.querySelector('.ai-disclosure').textContent,/DeepSeek/);assert.equal(d.querySelector('.ai-disclosure').open,false);assert.doesNotMatch(d.querySelector('.ai-choice h3').textContent,/DeepSeek/);
  d.querySelector('[data-action="example"]').click();d.querySelector('#review-from').click();assert.equal(configCalls,0);d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));assert.equal(configCalls,1);assert.match(d.querySelector('[data-buy]').textContent,/€2/);assert.equal(d.querySelector('#review-ai').disabled,true);
- paid=true;d.querySelector('[data-check]').click();await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('#review-ai').disabled,false);d.querySelector('#review-ai').click();await new Promise(r=>setTimeout(r,0));assert.equal(posted,1);assert.ok(d.querySelector('.ai-results'));dom.window.close();
+ paid=true;d.querySelector('[data-check]').click();await new Promise(r=>setTimeout(r,0));assert.equal(posted,1);assert.equal(d.querySelector('#review-ai').disabled,true);assert.ok(d.querySelector('.ai-results'));dom.window.close();
 });
-test('returning from checkout leads to the review action and completed feedback gets focus',async()=>{
+test('returning from paid checkout starts AI automatically and focuses completed feedback',async()=>{
  const dom=boot(),w=dom.window,d=w.document;let paid=false;w.AbortSignal=AbortSignal;
  w.fetch=async url=>({ok:true,json:async()=>url==='/api/review/status'?{available:true}:url==='/api/payments/config'?{enabled:true,test:false}:url==='/api/payments/status'?{state:paid?'paid':'none'}:{overview:'Clearer wording.',suggestions:[{document:'cv',original:'Skilled at cooking',revised:'Cooking skills',reason:'More concise.'}]}});
  d.querySelector('[data-action="example"]').click();d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-from').click();const source=d.querySelector('#review-source');source.value='Skilled at cooking. Communicating clearly with colleagues. Experience preparing meals in a busy kitchen.';source.dispatchEvent(new w.Event('input'));d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));
  paid=true;w.dispatchEvent(new w.Event('focus'));await new Promise(r=>setTimeout(r,0));
- assert.equal(d.querySelector('#review-ai').disabled,false);assert.equal(d.activeElement.id,'review-ai');assert.equal(w.lastScroll.id,'review-ai');
- d.querySelector('#review-ai').click();await new Promise(r=>setTimeout(r,0));
+ assert.equal(d.querySelector('#review-ai').disabled,true);
+ w.dispatchEvent(new w.Event('focus'));await new Promise(r=>setTimeout(r,0));
  assert.equal(d.activeElement.id,'review-results-title');assert.equal(w.lastScroll.id,'review-results-title');assert.equal(d.querySelector('.payment-choice'),null);assert.equal(d.querySelector('#review-ai').disabled,true);
  assert.match(d.querySelector('.ai-results').textContent,/suggested change/i);assert.match(d.querySelector('.ai-results').textContent,/original.*unchanged/i);
  d.querySelector('[data-accept]').click();assert.match(d.querySelector('.rewrite-card').className,/applied/);assert.equal(d.activeElement.dataset.accept,'0');
@@ -79,3 +79,5 @@ test('sample is marked on the paper and requirement changes invalidate a reviewe
  d.querySelector('[data-action="example"]').click();assert.equal(d.querySelector('.sample-badge'),null);d.querySelector('#pack-open').click();fill('pack-role','Assistant');fill('pack-requirement','Friendly service');fill('pack-why','I enjoy helping people.');fill('pack-own','Served customers.\nTrained colleagues.');d.querySelector('#pack-create').click();assert.match(d.getElementById('pack-letter').value,/Friendly service/);assert.match(d.getElementById('pack-letter').value,/• Trained colleagues/);
  assert.ok(d.querySelector('#pack-reviewed').labels.length);assert.ok(d.querySelector('[data-evidence]').labels.length);d.querySelector('#pack-reviewed').click();assert.equal(d.getElementById('pack-download').disabled,false);fill('pack-requirement','Cash handling');d.querySelector('#pack-reviewed').click();assert.equal(d.getElementById('pack-download').disabled,true);dom.window.close();
 });
+
+test('footer keeps support and removes seller details and stale pilot payment claims',()=>{const dom=boot(),d=dom.window.document;assert.match(d.querySelector('footer').textContent,/support@cvhapi.com/);assert.doesNotMatch(d.querySelector('footer').textContent,/RUNE FINNE|915553346|Test version|Free pilot|Payments are not active/);d.querySelector('[data-step="4"]').click();assert.doesNotMatch(d.querySelector('.export-card').textContent,/Test version|Free pilot|Payments are not active/);dom.window.close()});
