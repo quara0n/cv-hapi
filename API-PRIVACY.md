@@ -1,6 +1,6 @@
 # API privacy decision — 29 September 2026
 
-Status: unresolved contractual basis; AI submission and new AI checkout fail closed in the revised source unless `AI_PRIVACY_APPROVED=true`. This change is local and has not been deployed. The current live publication is unchanged. Do not set this flag merely because users tick a consent box.
+Status: API contractual evidence remains unresolved. On 1 October 2026 the operator explicitly selected DeepSeek and directed continuation with a retention disclosure and affirmative user consent. The flag `AI_PRIVACY_APPROVED` records that operational decision; it does not certify that processing terms, a DPA or transfer safeguards have been verified. The disclosure must not claim that DeepSeek has no policy, promise deletion, or shift all responsibility to customers.
 
 ## What was verified
 
@@ -17,7 +17,7 @@ Status: unresolved contractual basis; AI submission and new AI checkout fail clo
 3. Establish processing locations and the applicable international-transfer mechanism, with an assessment of safeguards where required. General consent wording does not replace this work.
 4. Document the operator's lawful basis, relevant rights/complaint route and hosting arrangements; review the complete EN/MK notice against the actual contracts and data flow. Obtain qualified legal review where needed.
 5. If DeepSeek cannot support those requirements, select a provider and API plan with documented processing terms and suitable regional controls. EU processing is a useful criterion, not a blanket compliance guarantee. Do not switch provider, accept contracts or spend additional API budget without the owner's decision.
-6. Only after the evidence and notices are complete should the operator authorize setting `AI_PRIVACY_APPROVED=true`. The existing ten-attempt lifetime limit remains in force independently.
+6. Complete these outstanding evidence checks and update the notice when verified information is obtained. The operator has directed continuation despite the gaps; that decision does not resolve them. The existing ten-attempt lifetime limit remains in force independently.
 
 Local imports, local document checks, the builder and PDF/TXT exports do not require the AI privacy flag. Existing payment webhooks/status/refunds continue to work if payment integration was configured; only new checkout and AI requests are blocked by the privacy flag.
 
