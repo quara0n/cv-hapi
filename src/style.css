@@ -34,3 +34,5 @@
  body:has(main.builder-started) #toast{bottom:76px}
  main{padding-bottom:90px}
 }
+
+#review-ai,#review-results-title{scroll-margin-top:100px}.review-next{background:#edf2ff;padding:16px;border-radius:8px}.change-status{font-size:14px;font-weight:700;color:#52658c}.rewrite-card.applied{border:2px solid #22865e}.rewrite-card.applied .change-status{color:#176747}.rewrite-card button[aria-disabled=true]{opacity:.7;cursor:default}

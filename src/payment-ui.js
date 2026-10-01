@@ -7,8 +7,16 @@ export async function mountPayment(root,ui,onState,{isReady=()=>true}={}){
   onState(false);
   container.innerHTML=`<p>${t.note}</p><button type="button" class="secondary" data-buy>${t.buy}</button> <button type="button" class="secondary" data-check>${t.check}</button><p role="status"></p>`;
   const message=container.querySelector('[role=status]'),buy=container.querySelector('[data-buy]'),check=container.querySelector('[data-check]');
-  const refresh=async()=>{try{const response=await fetch('/api/payments/status',{cache:'no-store'});if(!response.ok)throw Error();const result=await response.json();if(!container.isConnected)return;onState(result.state==='paid');message.textContent=t[result.state]||t.pending;buy.disabled=['paid','processing','refund_pending'].includes(result.state)}catch{message.textContent=t.error}};
-  check.onclick=refresh;
+  let checking=false;
+  const refresh=async(returned=false)=>{if(checking||!container.isConnected)return;checking=true;try{const response=await fetch('/api/payments/status',{cache:'no-store'});if(!response.ok)throw Error();const result=await response.json();if(!container.isConnected)return;onState(result.state==='paid',{returned,state:result.state});message.textContent=t[result.state]||t.pending;buy.disabled=['paid','processing','refund_pending'].includes(result.state);buy.hidden=result.state==='paid';check.hidden=result.state==='paid'}catch{if(container.isConnected)message.textContent=t.error}finally{checking=false}};
+  check.onclick=()=>refresh(true);
+  const events=new window.AbortController();
+  window.addEventListener('focus',()=>refresh(true),{signal:events.signal});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh(true)},{signal:events.signal});
+  const channel=typeof window.BroadcastChannel==='function'?new window.BroadcastChannel('cvhapi-payment-return'):null;
+  if(channel)channel.onmessage=event=>{if(event.data?.type==='payment-return')refresh(true)};
+  const observer=new MutationObserver(()=>{if(!container.isConnected){events.abort();channel?.close();observer.disconnect()}});
+  observer.observe(document.body,{childList:true,subtree:true});
   buy.onclick=async()=>{if(!isReady())return;buy.disabled=true;try{const response=await fetch('/api/payments/checkout',{method:'POST'}),result=await response.json();if(!response.ok)throw Error();const url=new URL(result.url);if(url.origin!=='https://checkout.stripe.com')throw Error();const link=document.createElement('a');link.href=url.href;link.target='_blank';link.rel='noopener noreferrer';link.textContent=t.buy;container.append(link);link.click();message.textContent=t.pending}catch{message.textContent=t.error}finally{buy.disabled=false}};
   await refresh();
  }catch{/* Payments unavailable: no checkout is advertised. The API fails closed when enabled. */}

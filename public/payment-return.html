@@ -1,1 +1,20 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="referrer" content="no-referrer"><title>CV Hapi — payment</title><body style="font:18px system-ui;max-width:40rem;margin:10vh auto;padding:24px"><h1>Return to your CV Hapi tab</h1><p>Choose “Check payment” in the original tab. Your CV stays there. This page does not confirm that payment succeeded.</p><p>Врати се во првото јазиче со CV Hapi и избери „Провери плаќање“. Твоето CV останува таму. Оваа страница не потврдува успешно плаќање.</p><p><a href="/en/">Open CV Hapi</a> · <a href="/mk/">Отвори CV Hapi</a></p></body></html>
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="referrer" content="no-referrer">
+<title>CV Hapi — return to your review</title>
+<body style="font:18px system-ui;max-width:40rem;margin:10vh auto;padding:24px;color:#172748">
+<h1>Continue your CV review</h1>
+<p id="payment-status" role="status">Checking payment… / Се проверува плаќањето…</p>
+<p>Your CV and feedback are in the original CV Hapi tab. Return there to continue from where you left off. Payment unlocks the review; it does not change your CV automatically.</p>
+<p lang="mk">CV-то и мислењето се во првото јазиче со CV Hapi. Врати се таму за да продолжиш. Плаќањето ја отклучува проверката; не го менува CV-то автоматски.</p>
+<button id="return" type="button" style="padding:14px 20px;background:#234bff;color:white;border:0;border-radius:8px;font:inherit">Back to my CV review / Назад кон проверката</button>
+<p id="return-hint">If this tab stays open, switch to your original CV Hapi tab. Keep that tab open until you download your reviewed documents.</p>
+<script>
+const channel=typeof BroadcastChannel==='function'?new BroadcastChannel('cvhapi-payment-return'):null;
+const notify=()=>channel?.postMessage({type:'payment-return'});
+notify();
+document.querySelector('#return').onclick=()=>{notify();document.querySelector('#return-hint').textContent='Switch to your original CV Hapi tab to continue. / Врати се во првото јазиче со CV Hapi за да продолжиш.';window.close()};
+fetch('/api/payments/status',{cache:'no-store'}).then(async response=>{if(!response.ok)throw Error();return response.json()}).then(result=>{document.querySelector('#payment-status').textContent=['paid','processing','used'].includes(result.state)?'Payment verified. Continue in your original CV tab. / Плаќањето е потврдено. Продолжи во првото јазиче.':result.state==='refunded'?'Your payment was refunded. / Уплатата е вратена.':result.state==='refund_pending'?'A refund has been requested. Contact support@cvhapi.com for help. / Побарано е враќање на уплатата.':'Payment has not been confirmed. Return to your original tab and choose Check payment. / Плаќањето не е потврдено. Врати се и избери Провери плаќање.';notify()}).catch(()=>{document.querySelector('#payment-status').textContent='Payment could not be checked. Return to your original tab and choose Check payment. / Плаќањето не може да се провери. Врати се и избери Провери плаќање.'});
+window.addEventListener('pagehide',()=>channel?.close());
+</script>
+</body></html>

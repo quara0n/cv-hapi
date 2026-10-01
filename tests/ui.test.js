@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {JSDOM} from 'jsdom';import {build} from 'esbuild';
+import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {JSDOM} from 'jsdom';import {build} from 'esbuild';
 const bundle=await build({entryPoints:['src/main.js'],bundle:true,write:false,format:'iife',loader:{'.css':'empty'},define:{'import.meta.env.VITE_POSTHOG_KEY':'""','import.meta.env.VITE_POSTHOG_HOST':'"https://eu.i.posthog.com"'},logLevel:'silent'});
 test('private CV-only backend explains its scope and prevents unsupported letter submissions',async()=>{
  const dom=boot(),w=dom.window,d=w.document;w.fetch=async()=>({ok:true,json:async()=>({available:true,testMode:'private_cv_only'})});
@@ -16,6 +16,29 @@ test('AI checkout appears only after document preparation and consent, then veri
  assert.match(d.querySelector('.ai-disclosure').textContent,/DeepSeek/);assert.equal(d.querySelector('.ai-disclosure').open,false);assert.doesNotMatch(d.querySelector('.ai-choice h3').textContent,/DeepSeek/);
  d.querySelector('[data-action="example"]').click();d.querySelector('#review-from').click();assert.equal(configCalls,0);d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));assert.equal(configCalls,1);assert.match(d.querySelector('[data-buy]').textContent,/€2/);assert.equal(d.querySelector('#review-ai').disabled,true);
  paid=true;d.querySelector('[data-check]').click();await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('#review-ai').disabled,false);d.querySelector('#review-ai').click();await new Promise(r=>setTimeout(r,0));assert.equal(posted,1);assert.ok(d.querySelector('.ai-results'));dom.window.close();
+});
+test('returning from checkout leads to the review action and completed feedback gets focus',async()=>{
+ const dom=boot(),w=dom.window,d=w.document;let paid=false;w.AbortSignal=AbortSignal;
+ w.fetch=async url=>({ok:true,json:async()=>url==='/api/review/status'?{available:true}:url==='/api/payments/config'?{enabled:true,test:false}:url==='/api/payments/status'?{state:paid?'paid':'none'}:{overview:'Clearer wording.',suggestions:[{document:'cv',original:'Skilled at cooking',revised:'Cooking skills',reason:'More concise.'}]}});
+ d.querySelector('[data-action="example"]').click();d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-from').click();const source=d.querySelector('#review-source');source.value='Skilled at cooking. Communicating clearly with colleagues. Experience preparing meals in a busy kitchen.';source.dispatchEvent(new w.Event('input'));d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));
+ paid=true;w.dispatchEvent(new w.Event('focus'));await new Promise(r=>setTimeout(r,0));
+ assert.equal(d.querySelector('#review-ai').disabled,false);assert.equal(d.activeElement.id,'review-ai');assert.equal(w.lastScroll.id,'review-ai');
+ d.querySelector('#review-ai').click();await new Promise(r=>setTimeout(r,0));
+ assert.equal(d.activeElement.id,'review-results-title');assert.equal(w.lastScroll.id,'review-results-title');assert.equal(d.querySelector('.payment-choice'),null);assert.equal(d.querySelector('#review-ai').disabled,true);
+ assert.match(d.querySelector('.ai-results').textContent,/suggested change/i);assert.match(d.querySelector('.ai-results').textContent,/original.*unchanged/i);
+ d.querySelector('[data-accept]').click();assert.match(d.querySelector('.rewrite-card').className,/applied/);assert.equal(d.activeElement.dataset.accept,'0');
+ d.querySelector('[data-accept]').click();assert.match(d.querySelector('#review-show-edited').textContent,/1 suggestions applied/);
+ d.querySelector('#review-show-edited').click();assert.equal(d.activeElement.id,'review-edited');assert.match(d.querySelector('#review-edited').value,/Cooking skills/);assert.match(d.querySelector('#review-source').value,/Skilled at cooking/);
+ dom.window.close();
+});
+test('payment return verifies status and resumes the original tab without linking to a fresh homepage',async()=>{
+ for(const state of ['paid','pending']){
+  let notifications=0,closed=0;
+  const dom=new JSDOM(readFileSync('public/payment-return.html','utf8'),{url:'https://cv.test/payment-return.html',runScripts:'dangerously',beforeParse(w){w.fetch=async()=>({ok:true,json:async()=>({state})});w.BroadcastChannel=class{postMessage(value){assert.deepEqual(JSON.parse(JSON.stringify(value)),{type:'payment-return'});notifications++}close(){}};w.close=()=>closed++}});
+  await new Promise(r=>setTimeout(r,0));const d=dom.window.document;
+  assert.equal(d.querySelector('a'),null);assert.match(d.querySelector('#payment-status').textContent,state==='paid'?/Payment verified/:/not been confirmed/);
+  d.querySelector('#return').click();assert.equal(closed,1);assert.ok(notifications>=2);dom.window.close();
+ }
 });
 test('CV flow edits, reorders, deletes, changes template and restores saved draft',()=>{const dom=boot(),w=dom.window,d=w.document;const click=s=>d.querySelector(s).click(),fill=(s,v)=>{const x=d.querySelector(s);x.value=v;x.dispatchEvent(new w.Event('input',{bubbles:true}))};fill('#name','Ѓорѓи Тест');fill('#summary','<img src=x onerror=alert(1)>');assert.equal(d.querySelector('.paper h2').textContent,'Ѓорѓи Тест');assert.equal(d.querySelector('.paper img'),null);click('[data-step="1"]');click('[data-add="experience"]');fill('#experience-0-title','First');click('[data-add="experience"]');fill('#experience-1-title','Second');click('[data-move="experience:1:-1"]');assert.equal(d.querySelector('#experience-0-title').value,'Second');click('[data-remove="experience:0"]');click('#modal-action');assert.equal(d.querySelector('#experience-0-title').value,'First');click('[data-step="4"]');click('input[value="compact"]');assert.ok(d.querySelector('.paper.compact'));const r=d.querySelector('#remember');r.checked=true;r.dispatchEvent(new w.Event('change'));const saved=w.localStorage.getItem('cekor.cv.v1');const restored=boot(saved);assert.equal(restored.window.document.querySelector('#name').value,'Ѓорѓи Тест');restored.window.close();dom.window.close()});
 test('export validates name without downloading fictional example; reset removes saved data',()=>{const dom=boot(),d=dom.window.document;d.querySelector('[data-action="export"]').click();assert.equal(d.querySelector('#name').getAttribute('aria-invalid'),'true');assert.ok(!d.querySelector('#modal').open);d.querySelector('[data-action="example"]').click();assert.equal(d.querySelector('#name').value,'Ana Stojanovska');d.querySelector('[data-action="reset"]').click();d.querySelector('#modal-action').click();assert.equal(d.querySelector('#name').value,'');assert.equal(dom.window.localStorage.getItem('cekor.cv.v1'),null);dom.window.close()});
