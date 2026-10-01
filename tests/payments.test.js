@@ -10,6 +10,23 @@ test('privacy pause prevents new checkout without blocking existing payment stat
 async function sign(raw,time=Math.floor(Date.now()/1000)){const key=await crypto.subtle.importKey('raw',new TextEncoder().encode('whsec_fake'),{name:'HMAC',hash:'SHA-256'},false,['sign']);return `t=${time},v1=${Buffer.from(await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(`${time}.${raw}`))).toString('hex')}`}
 test('webhook rejects tampering and stale signatures',async()=>{const raw='{"test":true}',signature=await sign(raw);assert.equal(await verifySignature(raw,signature,'whsec_fake'),true);assert.equal(await verifySignature(raw+' ',signature,'whsec_fake'),false);assert.equal(await verifySignature(raw,await sign(raw,1),'whsec_fake'),false)});
 test('payments are disabled by default and cannot accept live keys',async()=>{assert.equal((await handlePayments(req('checkout','POST'),{})).status,503);assert.equal((await handlePayments(req('checkout','POST'),{PAYMENTS_ENABLED:'test',STRIPE_SECRET_KEY:'sk_live_example',STRIPE_WEBHOOK_SECRET:'test',DB:{}})).status,503)});
+test('restricted keys enable only their matching payment mode',async()=>{
+ const {db,env}=setup();
+ for(const mode of ['test','live']){
+  env.PAYMENTS_ENABLED=mode;
+  for(const type of ['sk','rk']){
+   env.STRIPE_SECRET_KEY=`${type}_${mode}_fake`;assert.equal(paymentsEnabled(env),true);
+   env.STRIPE_SECRET_KEY=`${type}_${mode==='test'?'live':'test'}_fake`;assert.equal(paymentsEnabled(env),false);
+  }
+ }
+ for(const key of ['pk_live_fake','rk_unknown_fake','prefix_rk_live_fake','']){env.STRIPE_SECRET_KEY=key;assert.equal(paymentsEnabled(env),false)}
+ env.STRIPE_SECRET_KEY='rk_live_fake';
+ const response=await handlePayments(req('checkout','POST'),env,async(url,options)=>{
+  assert.equal(options.headers.Authorization,'Bearer rk_live_fake');
+  return Response.json({id:'cs_live_restricted',url:'https://checkout.stripe.com/c/pay/live_restricted'});
+ });
+ assert.equal(response.status,200);db.close();
+});
 test('live checkout requires matching live credentials and preserves the EUR2 total',async()=>{
  const {db,env}=setup();env.PAYMENTS_ENABLED='live';
  assert.equal(paymentsEnabled(env),false);env.STRIPE_SECRET_KEY='sk_live_fake';assert.equal(paymentsEnabled(env),true);

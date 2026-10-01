@@ -3,7 +3,7 @@ import {privacyApproved} from './ai-config.js';
 const reply=(value,status=200,headers={})=>Response.json(value,{status,headers:{'Cache-Control':'no-store',...headers}});
 const enc=new TextEncoder();
 const hex=bytes=>Array.from(new Uint8Array(bytes),n=>n.toString(16).padStart(2,'0')).join('');
-export const paymentsEnabled=env=>['test','live'].includes(env.PAYMENTS_ENABLED)&&env.STRIPE_SECRET_KEY?.startsWith(env.PAYMENTS_ENABLED==='live'?'sk_live_':'sk_test_')&&!!env.STRIPE_WEBHOOK_SECRET&&!!env.DB;
+export const paymentsEnabled=env=>['test','live'].includes(env.PAYMENTS_ENABLED)&&new RegExp(`^(?:sk|rk)_${env.PAYMENTS_ENABLED}_`).test(env.STRIPE_SECRET_KEY||'')&&!!env.STRIPE_WEBHOOK_SECRET&&!!env.DB;
 export const hash=async value=>hex(await crypto.subtle.digest('SHA-256',enc.encode(value)));
 export async function verifySignature(raw,header,secret,now=Date.now()){
  const parts=(header||'').split(',').map(v=>v.split('=')),stamp=parts.find(v=>v[0]==='t')?.[1];
