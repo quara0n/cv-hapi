@@ -69,7 +69,7 @@ if not args.audio:out=out.with_stem(out.stem+'-silent-preview')
 cmd=['ffmpeg','-y','-loglevel','warning','-f','rawvideo','-vcodec','rawvideo','-pix_fmt','rgb24','-s',f'{W}x{H}','-r','24','-i','pipe:0']
 if args.audio:cmd+=['-i',args.audio]
 cmd+=['-c:v','libx264','-preset','fast','-crf','20','-pix_fmt','yuv420p']
-if args.audio:cmd+=['-af','loudnorm=I=-16:TP=-1.5:LRA=11,apad','-c:a','aac','-b:a','192k']
+if args.audio:cmd+=['-af','loudnorm=I=-16:TP=-1.5:LRA=11,apad','-c:a','aac','-b:a','192k','-ar','48000']
 cmd+=['-t',str(duration),'-movflags','+faststart',str(out)]
 proc=subprocess.Popen(cmd,stdin=subprocess.PIPE)
 for index,scene in enumerate(scenes):
