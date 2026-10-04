@@ -1,5 +1,5 @@
 import {validateReview,MAX_TEXT} from '../src/review-core.js';
-import {handlePayments,paymentsEnabled,claimPayment,finishPayment,prepareDelivery,reconcilePayments} from './payments.js';
+import {handlePayments,paymentsEnabled,claimPayment,finishPayment,prepareDelivery,reconcilePayments,CURRENT_OFFER} from './payments.js';
 import {privacyApproved,reviewLimit,reviewModel,localOwnerCredit} from './ai-config.js';
 import {REVIEW_TIMEOUT_MS} from '../src/review-timing.js';
 import {verifySuggestions} from './factual-review.js';
@@ -11,7 +11,7 @@ import {paymentOwner} from './payments.js';
 const json=(body,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export async function limitedJSON(message,limit){const reader=message.body?.getReader();if(!reader)throw new Error('body');let size=0,chunks=[];try{for(;;){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>limit){await reader.cancel();throw new Error('size')}chunks.push(value)}}finally{reader.releaseLock()}const bytes=new Uint8Array(size);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length}return JSON.parse(new TextDecoder().decode(bytes))}
 export const budgetSQL=`INSERT INTO ai_budget (id, used) VALUES ('pilot', 1) ON CONFLICT(id) DO UPDATE SET used = used + 1 WHERE used < ? RETURNING used`;
-const reservedBudgetSQL=`UPDATE ai_budget SET used=used+1 WHERE id='pilot' AND used+(SELECT COUNT(*) FROM payments WHERE reserved=1 AND id!=?)<? RETURNING used`;
+const reservedBudgetSQL=`UPDATE ai_budget SET used=used+1 WHERE id='pilot' AND used+(SELECT COALESCE(SUM(reserved),0) FROM payments)-CASE WHEN EXISTS(SELECT 1 FROM payments WHERE id=? AND reserved>0) THEN 1 ELSE 0 END<? RETURNING used`;
 const unlimitedBudgetSQL=`INSERT INTO ai_budget (id, used) VALUES ('pilot', 1) ON CONFLICT(id) DO UPDATE SET used = used + 1 RETURNING used`;
 const enabled=env=>env.AI_ENABLED==='true'&&!!env.DEEPSEEK_API_KEY&&!!env.DB&&Number.isInteger(Number(env.AI_MAX_REVIEWS))&&Number(env.AI_MAX_REVIEWS)>0;
 export async function handleAPI(request,env,upstream=fetch){
@@ -23,10 +23,13 @@ export async function handleAPI(request,env,upstream=fetch){
   if(env.PAYMENTS_ENABLED&&env.PAYMENTS_ENABLED!=='false'&&!localOwnerCredit(env,request)&&!paymentsEnabled(env))return json({available:false,remaining:null,reason:'payments_unavailable'});
   try{
    const budget=await env.DB.prepare("SELECT used FROM ai_budget WHERE id='pilot'").bind().first(),cap=reviewLimit(env,request);
-   let reserved=0;
-   if(paymentsEnabled(env)&&cap!==Infinity){const owner=await paymentOwner(request);const row=await env.DB.prepare('SELECT COUNT(*) n FROM payments WHERE reserved=1 AND (owner!=? OR ? IS NULL)').bind(owner,owner).first();reserved=row?.n||0;}
+   let reserved=0,ownedReviews=0;
+   if(paymentsEnabled(env)&&cap!==Infinity){const owner=await paymentOwner(request);const row=await env.DB.prepare('SELECT COALESCE(SUM(reserved),0) n FROM payments WHERE (owner!=? OR ? IS NULL)').bind(owner,owner).first();reserved=row?.n||0;
+    if(owner){const owned=await env.DB.prepare("SELECT COALESCE(SUM(review_count-reviews_delivered),0) n FROM payments WHERE owner=? AND state IN ('paid','processing','delivery_pending')").bind(owner).first();ownedReviews=owned?.n||0;}
+   }
    const remaining=Math.max(0,cap-(budget?.used||0)-reserved);
-   return json({available:remaining>0,remaining:cap===Infinity?null:remaining,...(cap===Infinity?{unlimited:true}:{}),...(env.CHECKOUT_ENABLED==='false'&&!localOwnerCredit(env,request)?{checkoutPaused:true}:{})});
+   const minimum=paymentsEnabled(env)&&!localOwnerCredit(env,request)&&!ownedReviews?CURRENT_OFFER.reviewCount:1;
+   return json({available:remaining>=minimum,remaining:cap===Infinity?null:remaining,...(cap===Infinity?{unlimited:true}:{}),...(env.CHECKOUT_ENABLED==='false'&&!localOwnerCredit(env,request)?{checkoutPaused:true}:{})});
   }catch{return json({available:false,remaining:0},503)}
  }
  if(url.pathname==='/api/review/language'){
@@ -36,8 +39,8 @@ export async function handleAPI(request,env,upstream=fetch){
   if(!request.headers.get('Content-Type')?.startsWith('application/json'))return json({error:'type'},415);
   try{
    if(!localOwnerCredit(env,request)){
-    const owner=await paymentOwner(request),order=owner?await env.DB.prepare("SELECT * FROM payments WHERE owner=? AND state='used' ORDER BY rowid DESC LIMIT 1").bind(owner).first():null;
-    if(!order||order.state!=='used')return json({error:'payment_required'},402);
+    const owner=await paymentOwner(request),order=owner?await env.DB.prepare("SELECT * FROM payments WHERE owner=? AND reviews_delivered>0 AND state IN ('paid','processing','delivery_pending','used') ORDER BY rowid DESC LIMIT 1").bind(owner).first():null;
+    if(!order)return json({error:'payment_required'},402);
    }
    const input=await limitedJSON(request,90000);
    if(input.consent!==true||!['en','mk'].includes(input.language)||!Array.isArray(input.strings)||input.strings.length<1||input.strings.length>140||input.strings.some(text=>typeof text!=='string'||text.length>7000))return json({error:'invalid_input'},400);
@@ -71,7 +74,7 @@ export async function handleAPI(request,env,upstream=fetch){
    await env.DB.prepare("INSERT INTO ai_budget(id,used) VALUES ('pilot',0) ON CONFLICT(id) DO NOTHING RETURNING id").bind().first();
    const result=await env.DB.batch([
     env.DB.prepare(reservedBudgetSQL.replace(' RETURNING used'," AND EXISTS (SELECT 1 FROM payments WHERE id=? AND state='processing' AND attempt=? AND lease_until>?) RETURNING used")).bind(payment.id,cap,payment.id,payment.attempt,Date.now()),
-    env.DB.prepare("UPDATE payments SET reserved=0 WHERE id=? AND state='processing' AND attempt=? RETURNING id").bind(payment.id,payment.attempt)
+    env.DB.prepare("UPDATE payments SET reserved=MAX(0,reserved-1) WHERE id=? AND state='processing' AND attempt=? RETURNING id").bind(payment.id,payment.attempt)
    ]);
    ticket=result[0].results?.[0];
   }else ticket=await (cap===Infinity?env.DB.prepare(unlimitedBudgetSQL).bind():env.DB.prepare(budgetSQL).bind(cap)).first();

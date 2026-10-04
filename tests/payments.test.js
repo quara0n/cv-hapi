@@ -4,9 +4,10 @@ import {DatabaseSync} from 'node:sqlite';
 import {readFileSync,readdirSync} from 'node:fs';
 import {verifySignature,handlePayments,hash,claimPayment,finishPayment,paymentsEnabled} from '../worker/payments.js';
 import {handleAPI} from '../worker/index.js';
+import {SALES_TERMS_VERSION} from '../src/sales-terms.js';
 import {sqliteBinding} from '../scripts/local-test-runtime.mjs';
 function setup(){const db=new DatabaseSync(':memory:');for(const file of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())db.exec(readFileSync(`drizzle/${file}`,'utf8'));return{db,env:{PAYMENTS_ENABLED:'test',STRIPE_SECRET_KEY:'sk_test_fake',STRIPE_WEBHOOK_SECRET:'whsec_fake',AI_PRIVACY_APPROVED:'true',AI_ENABLED:'true',DEEPSEEK_API_KEY:'fake',AI_MAX_REVIEWS:'10',DB:sqliteBinding(db)}}}
-const req=(path,method='GET',cookie='__Host-cvhapi-payment='+ '9'.repeat(64))=>new Request(`https://cv.example/api/payments/${path}`,{method,headers:{Origin:'https://cv.example',...(cookie?{Cookie:cookie}:{})},...(path==='checkout'&&method==='POST'?{body:JSON.stringify({termsAccepted:true,immediatePerformance:true,termsVersion:'2026-10-04-GBP'})}:{})});
+const req=(path,method='GET',cookie='__Host-cvhapi-payment='+ '9'.repeat(64))=>new Request(`https://cv.example/api/payments/${path}`,{method,headers:{Origin:'https://cv.example',...(cookie?{Cookie:cookie}:{})},...(path==='checkout'&&method==='POST'?{body:JSON.stringify({termsAccepted:true,immediatePerformance:true,termsVersion:SALES_TERMS_VERSION})}:{})});
 
 test('new checkout identities cannot bypass the hourly per-address reservation limit',async()=>{
  const {db,env}=setup();env.AI_MAX_REVIEWS='100';let sessions=0;
@@ -27,14 +28,14 @@ test('legacy unpaid checkout with no expiry is reconciled against Stripe',async(
  assert.deepEqual({...db.prepare('SELECT state,reserved FROM payments').get()},{state:'expired',reserved:0});db.close();
 });
 
-test('new GBP purchases reject a mismatched EUR webhook and accept their GBP payment',async()=>{
+test('new MKD bundles reject mismatched currency and amount webhooks',async()=>{
  const {db,env}=setup();
- const checkout=await handlePayments(req('checkout','POST'),env,async(url,options)=>{assert.equal(options.body.get('line_items[0][price_data][currency]'),'gbp');return Response.json({id:'cs_pounds',url:'https://checkout.stripe.com/c/pay/pounds'})});
- assert.equal(checkout.status,200);const order=db.prepare('SELECT * FROM payments').get();assert.equal(order.currency,'gbp');
- for(const currency of ['eur','gbp']){
-  const raw=JSON.stringify({type:'checkout.session.completed',data:{object:{id:'cs_pounds',client_reference_id:order.id,mode:'payment',payment_status:'paid',livemode:false,amount_total:200,currency,payment_intent:'pi_pounds'}}});
+ const checkout=await handlePayments(req('checkout','POST'),env,async(url,options)=>{assert.equal(options.body.get('line_items[0][price_data][currency]'),'mkd');return Response.json({id:'cs_pounds',url:'https://checkout.stripe.com/c/pay/pounds'})});
+ assert.equal(checkout.status,200);const order=db.prepare('SELECT * FROM payments').get();assert.equal(order.currency,'mkd');
+ for(const [currency,amount] of [['eur',15000],['mkd',200],['mkd',15000]]){
+  const raw=JSON.stringify({type:'checkout.session.completed',data:{object:{id:'cs_pounds',client_reference_id:order.id,mode:'payment',payment_status:'paid',livemode:false,amount_total:amount,currency,payment_intent:'pi_pounds'}}});
   await handlePayments(new Request('https://cv.example/api/payments/webhook',{method:'POST',headers:{'Stripe-Signature':await sign(raw)},body:raw}),env);
-  assert.equal(db.prepare('SELECT state FROM payments').get().state,currency==='eur'?'pending':'paid');
+  assert.equal(db.prepare('SELECT state FROM payments').get().state,currency==='mkd'&&amount===15000?'paid':'pending');
  }
  db.close();
 });
@@ -47,16 +48,16 @@ test('an expired processing lease is refunded without browser polling',async()=>
  assert.equal(db.prepare("SELECT state FROM payments WHERE id='interrupted'").get().state,'refunded');assert.equal(refunds,1);db.close();
 });
 
-test('checkout reserves the last slot before two customers can pay and retry reuses its session',async()=>{
- const {db,env}=setup();db.prepare("INSERT INTO ai_budget VALUES ('pilot',9)").run();const keys=[];
+test('checkout reserves the final three slots before two customers can pay and retry reuses its session',async()=>{
+ const {db,env}=setup();db.prepare("INSERT INTO ai_budget VALUES ('pilot',7)").run();const keys=[];
  const transport=async(url,options)=>{keys.push(options.headers['Idempotency-Key']);return Response.json({id:'cs_last',status:'open',payment_status:'unpaid',url:'https://checkout.stripe.com/c/pay/last'})};
  const [firstBuyer,secondBuyer]=await Promise.all([handlePayments(req('checkout','POST',`__Host-cvhapi-payment=${'1'.repeat(64)}`),env,transport),handlePayments(req('checkout','POST',`__Host-cvhapi-payment=${'2'.repeat(64)}`),env,transport)]);
  assert.equal([firstBuyer.status,secondBuyer.status].filter(status=>status===200).length,1);
  assert.equal([firstBuyer.status,secondBuyer.status].filter(status=>status===429).length,1);
- assert.equal(db.prepare('SELECT COUNT(*) n FROM payments WHERE reserved=1').get().n,1);assert.equal(keys.length,1);
+ assert.equal(db.prepare('SELECT COUNT(*) n FROM payments WHERE reserved=3').get().n,1);assert.equal(keys.length,1);
  const buyer=firstBuyer.status===200?'1':'2';
  const retry=await handlePayments(req('checkout','POST',`__Host-cvhapi-payment=${buyer.repeat(64)}`),env,async()=>Response.json({status:'open',payment_status:'unpaid',url:'https://checkout.stripe.com/c/pay/last'}));
- assert.equal(retry.status,200);assert.equal(db.prepare('SELECT COUNT(*) n FROM payments').get().n,1);assert.equal(db.prepare('SELECT used FROM ai_budget').get().used,9);db.close();
+ assert.equal(retry.status,200);assert.equal(db.prepare('SELECT COUNT(*) n FROM payments').get().n,1);assert.equal(db.prepare('SELECT used FROM ai_budget').get().used,7);db.close();
 });
 
 test('checkout rejects missing sales acceptance and cannot create an anonymous orphaned order',async()=>{
@@ -70,7 +71,7 @@ test('a recovered orphaned checkout uses its original order key and preserves th
  const {db,env}=setup(),cookie=`__Host-cvhapi-payment=${'4'.repeat(64)}`;let firstKey;
  const lost=await handlePayments(req('checkout','POST',cookie),env,async(url,options)=>{firstKey=options.headers['Idempotency-Key'];throw Error('response lost after Stripe accepted')});assert.equal(lost.status,503);
  const recovered=await handlePayments(req('checkout','POST',cookie),env,async(url,options)=>{assert.equal(options.headers['Idempotency-Key'],firstKey);return Response.json({id:'cs_recovered',url:'https://checkout.stripe.com/c/pay/recovered'})});
- assert.equal(recovered.status,200);assert.equal(db.prepare('SELECT COUNT(*) n FROM payments').get().n,1);assert.equal(db.prepare('SELECT reserved FROM payments').get().reserved,1);db.close();
+ assert.equal(recovered.status,200);assert.equal(db.prepare('SELECT COUNT(*) n FROM payments').get().n,1);assert.equal(db.prepare('SELECT reserved FROM payments').get().reserved,3);db.close();
 });
 
 test('a paid result requires the right owner and delivery token before consuming payment',async()=>{
@@ -124,10 +125,10 @@ test('checkout pause blocks new charges while preserving an already-paid entitle
  const response=await handlePayments(req('checkout','POST'),env,upstream);assert.equal(response.status,503);assert.equal((await response.json()).error,'checkout_paused');assert.equal(calls,0);
  const config=await (await handlePayments(req('config'),env)).json();assert.equal(config.enabled,true);assert.equal(config.checkoutEnabled,false);
  const token='c'.repeat(64);db.prepare("INSERT INTO payments(id,owner,session,intent,state,lease_until) VALUES ('paused-order',?,'cs','pi','paid',?)").run(await hash(token),Date.now()+86400000);
- assert.deepEqual(await (await handlePayments(req('status','GET',`__Host-cvhapi-payment=${token}`),env,upstream)).json(),{state:'paid'});
+ assert.deepEqual(await (await handlePayments(req('status','GET',`__Host-cvhapi-payment=${token}`),env,upstream)).json(),{state:'paid',totalReviews:1,remainingReviews:1});
  assert.ok(await claimPayment(req('status','GET',`__Host-cvhapi-payment=${token}`),env));assert.equal(calls,0);db.close();
 });
-test('privacy pause prevents new checkout without blocking existing payment status',async()=>{const {db,env}=setup();delete env.AI_PRIVACY_APPROVED;let calls=0;const transport=async()=>{calls++;throw Error()};const config=await (await handlePayments(req('config'),env)).json();assert.equal(config.enabled,false);assert.equal(config.amount,200);assert.equal(config.currency,'gbp');assert.equal((await handlePayments(req('checkout','POST'),env,transport)).status,503);assert.deepEqual(await (await handlePayments(req('status'),env,transport)).json(),{state:'none'});assert.equal(calls,0);assert.equal(db.prepare('SELECT COUNT(*) n FROM payments').get().n,0);db.close()});
+test('privacy pause prevents new checkout without blocking existing payment status',async()=>{const {db,env}=setup();delete env.AI_PRIVACY_APPROVED;let calls=0;const transport=async()=>{calls++;throw Error()};const config=await (await handlePayments(req('config'),env)).json();assert.equal(config.enabled,false);assert.equal(config.amount,15000);assert.equal(config.currency,'mkd');assert.equal((await handlePayments(req('checkout','POST'),env,transport)).status,503);assert.deepEqual(await (await handlePayments(req('status'),env,transport)).json(),{state:'none'});assert.equal(calls,0);assert.equal(db.prepare('SELECT COUNT(*) n FROM payments').get().n,0);db.close()});
 async function sign(raw,time=Math.floor(Date.now()/1000)){const key=await crypto.subtle.importKey('raw',new TextEncoder().encode('whsec_fake'),{name:'HMAC',hash:'SHA-256'},false,['sign']);return `t=${time},v1=${Buffer.from(await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(`${time}.${raw}`))).toString('hex')}`}
 test('webhook rejects tampering and stale signatures',async()=>{const raw='{"test":true}',signature=await sign(raw);assert.equal(await verifySignature(raw,signature,'whsec_fake'),true);assert.equal(await verifySignature(raw+' ',signature,'whsec_fake'),false);assert.equal(await verifySignature(raw,await sign(raw,1),'whsec_fake'),false)});
 test('payments are disabled by default and cannot accept live keys',async()=>{assert.equal((await handlePayments(req('checkout','POST'),{})).status,503);assert.equal((await handlePayments(req('checkout','POST'),{PAYMENTS_ENABLED:'test',STRIPE_SECRET_KEY:'sk_live_example',STRIPE_WEBHOOK_SECRET:'test',DB:{}})).status,503)});
@@ -148,13 +149,13 @@ test('restricted keys enable only their matching payment mode',async()=>{
  });
  assert.equal(response.status,200);db.close();
 });
-test('live checkout requires matching live credentials and preserves the EUR2 total',async()=>{
+test('live checkout requires matching live credentials and charges the 150 MKD bundle total',async()=>{
  const {db,env}=setup();env.PAYMENTS_ENABLED='live';
  assert.equal(paymentsEnabled(env),false);env.STRIPE_SECRET_KEY='sk_live_fake';assert.equal(paymentsEnabled(env),true);
- assert.deepEqual(await (await handlePayments(req('config'),env)).json(),{enabled:true,test:false,amount:200,currency:'gbp'});
+ assert.deepEqual(await (await handlePayments(req('config'),env)).json(),{enabled:true,test:false,amount:15000,currency:'mkd',reviewCount:3});
  const response=await handlePayments(req('checkout','POST'),env,async(url,options)=>{
-  assert.equal(options.body.get('line_items[0][price_data][unit_amount]'),'200');
-  assert.equal(options.body.get('line_items[0][price_data][product_data][name]'),'CV Hapi — one AI review');
+  assert.equal(options.body.get('line_items[0][price_data][unit_amount]'),'15000');
+  assert.equal(options.body.get('line_items[0][price_data][product_data][name]'),'CV Hapi — three AI reviews');
   return Response.json({id:'cs_live',url:'https://checkout.stripe.com/c/pay/live'});
  });
  assert.equal(response.status,200);db.close();
@@ -176,13 +177,79 @@ test('live entitlement rejects sandbox completion and refund-before-completion c
  db.prepare("UPDATE payments SET state='pending',intent=NULL").run();
  await webhook('checkout.session.completed',session);assert.equal(db.prepare('SELECT state FROM payments').get().state,'paid');db.close();
 });
-test('checkout fixes price, uses secure cookie and never sends CV content',async()=>{const {db,env}=setup();let call;const response=await handlePayments(req('checkout','POST'),env,async(url,options)=>{call={url,options};return Response.json({id:'cs_test_a',url:'https://checkout.stripe.com/c/pay/test_a'})});assert.equal(response.status,200);assert.match((await handlePayments(req('config','GET',''),env)).headers.get('Set-Cookie'),/Secure; HttpOnly; SameSite=Lax/);assert.equal(call.options.body.get('line_items[0][price_data][unit_amount]'),'200');assert.equal(call.options.body.get('line_items[0][price_data][currency]'),'gbp');assert.equal(call.options.body.get('mode'),'payment');assert.equal(db.prepare('SELECT count(*) n FROM payments').get().n,1);assert.equal(db.prepare('SELECT used FROM ai_budget').get().used,0);db.close()});
+test('checkout fixes price, uses secure cookie and never sends CV content',async()=>{const {db,env}=setup();let call;const response=await handlePayments(req('checkout','POST'),env,async(url,options)=>{call={url,options};return Response.json({id:'cs_test_a',url:'https://checkout.stripe.com/c/pay/test_a'})});assert.equal(response.status,200);assert.match((await handlePayments(req('config','GET',''),env)).headers.get('Set-Cookie'),/Secure; HttpOnly; SameSite=Lax/);assert.equal(call.options.body.get('line_items[0][price_data][unit_amount]'),'15000');assert.equal(call.options.body.get('line_items[0][price_data][currency]'),'mkd');assert.equal(call.options.body.get('mode'),'payment');assert.equal(db.prepare('SELECT count(*) n FROM payments').get().n,1);assert.equal(db.prepare('SELECT used FROM ai_budget').get().used,0);db.close()});
 test('signed paid webhook unlocks one use, replay cannot restore used purchase',async()=>{const {db,env}=setup(),token='a'.repeat(64),owner=await hash(token);db.prepare("INSERT INTO payments(id,owner,session,intent,state) VALUES (?,?,?,NULL,'pending')").run('order',owner,'cs_test_a');const session={id:'cs_test_a',client_reference_id:'order',mode:'payment',payment_status:'paid',livemode:false,amount_total:200,currency:'eur',payment_intent:'pi_test_a'};const webhook=async object=>{const raw=JSON.stringify({type:'checkout.session.completed',data:{object}});return handlePayments(new Request('https://cv.example/api/payments/webhook',{method:'POST',headers:{'Stripe-Signature':await sign(raw)},body:raw}),env)};await webhook({...session,amount_total:1});assert.equal(db.prepare('SELECT state FROM payments').get().state,'pending');await webhook(session);const request=req('status','GET',`__Host-cvhapi-payment=${token}`);const claims=await Promise.all([claimPayment(request,env),claimPayment(request,env)]);assert.equal(claims.filter(Boolean).length,1);const delivery=await finishPayment(env,claims.find(Boolean),true);await handlePayments(new Request('https://cv.example/api/payments/delivered',{method:'POST',headers:{Origin:'https://cv.example',Cookie:'__Host-cvhapi-payment='+token},body:JSON.stringify({token:delivery})}),env);await webhook(session);assert.equal(db.prepare('SELECT state FROM payments').get().state,'used');db.close()});
 test('refund retries use same idempotency key and distinguish pending from succeeded',async()=>{const {db,env}=setup();db.prepare("INSERT INTO payments(id,owner,session,intent,state) VALUES ('o','owner','cs','pi','processing')").run();const order=db.prepare('SELECT * FROM payments').get();let keys=[];const transport=async(url,options)=>{keys.push(options.headers['Idempotency-Key']);return Response.json({status:keys.length===1?'pending':'succeeded'})};assert.equal(await finishPayment(env,order,false,transport),'refund_pending');db.prepare('UPDATE payments SET refund_retry_at=0').run();assert.equal(await finishPayment(env,order,false,transport),'refunded');assert.deepEqual(keys,['refund-o','refund-o']);db.close()});
 test('paid-mode AI rejects missing entitlement before quota or provider use',async()=>{const {db,env}=setup();let calls=0;const response=await handleAPI(new Request('https://cv.example/api/review',{method:'POST',headers:{Origin:'https://cv.example','Content-Type':'application/json'},body:JSON.stringify({text:'Customer service assistant. '.repeat(10),job:'',language:'en',consent:true})}),env,async()=>{calls++;throw Error()});assert.equal(response.status,402);assert.equal(calls,0);assert.equal(db.prepare('SELECT count(*) n FROM ai_budget').get().n,0);db.close()});
 test('quota exhaustion refunds a verified payment without calling AI or resetting quota',async()=>{const {db,env}=setup(),token='b'.repeat(64);db.prepare("INSERT INTO ai_budget VALUES ('pilot',10)").run();db.prepare("INSERT INTO payments(id,owner,session,intent,state) VALUES ('o',?,'cs','pi','paid')").run(await hash(token));let calls=[];const response=await handleAPI(new Request('https://cv.example/api/review',{method:'POST',headers:{Origin:'https://cv.example','Content-Type':'application/json',Cookie:`__Host-cvhapi-payment=${token}`},body:JSON.stringify({text:'Customer service assistant. '.repeat(10),job:'',language:'en',consent:true})}),env,async url=>{calls.push(url);return Response.json({status:'succeeded'})});assert.equal(response.status,429);assert.equal((await response.json()).payment,'refunded');assert.deepEqual(calls,['https://api.stripe.com/v1/refunds']);assert.equal(db.prepare('SELECT used FROM ai_budget').get().used,10);db.close()});
 
 const paidReviewRequest=token=>new Request('https://cv.example/api/review',{method:'POST',headers:{Origin:'https://cv.example','Content-Type':'application/json',Cookie:`__Host-cvhapi-payment=${token}`},body:JSON.stringify({text:'Care assistant. Helped residents with meals and daily activities. Worked with colleagues at Example Home.',job:'',language:'en',consent:true})});
+
+const acknowledgeBundle=(env,token,delivery)=>handlePayments(new Request('https://cv.example/api/payments/delivered',{method:'POST',headers:{Origin:'https://cv.example',Cookie:`__Host-cvhapi-payment=${token}`},body:JSON.stringify({token:delivery})}),env);
+const bundleProvider=async(url,options)=>{
+ assert.equal(new URL(url).hostname,'api.deepseek.com');
+ const feedback={overview:'Your care duties are stated.',sections:[{document:'cv',name:'Experience',assessment:'Duties are brief.',actions:['Add actual details.']}],priorities:[{title:'Add details',why:'Duties are brief.',action:'Describe an actual responsibility.'}],strengths:[],questions:[],jobMatches:[]};
+ const system=JSON.parse(options.body).messages[0].content;
+ return Response.json({choices:[{finish_reason:'stop',message:{content:JSON.stringify(system.startsWith('Audit and correct')?{feedback}:{...feedback,suggestions:[]})}}]});
+};
+
+test('one MKD purchase delivers exactly three reviews, survives ACK replay, and records one purchase identity',async()=>{
+ const {db,env}=setup(),token='7'.repeat(64),owner=await hash(token);
+ try{
+  db.prepare("INSERT INTO ai_budget VALUES ('pilot',7)").run();
+  db.prepare("INSERT INTO payments(id,owner,state,currency,amount,review_count,reserved) VALUES ('bundle',?,'paid','mkd',15000,3,3)").run(owner);
+  let firstDelivery,receipt;
+  for(let index=0;index<3;index++){
+   const response=await handleAPI(paidReviewRequest(token),env,bundleProvider);assert.equal(response.status,200);
+   const delivery=response.headers.get('X-Review-Delivery-Token');
+   if(index===0)firstDelivery=delivery;
+   if(index>0){const replay=await (await acknowledgeBundle(env,token,firstDelivery)).json();assert.equal(replay.remainingReviews,3-index);assert.equal(db.prepare('SELECT state FROM payments').get().state,'delivery_pending')}
+   const acks=await Promise.all([acknowledgeBundle(env,token,delivery),acknowledgeBundle(env,token,delivery)]);
+   for(const ack of acks){const body=await ack.json();assert.equal(body.state,'used');assert.equal(body.remainingReviews,2-index);assert.equal(body.totalReviews,3);assert.equal(body.measurement.amount,15000);assert.equal(body.measurement.currency,'mkd');if(receipt)assert.deepEqual(body.measurement,receipt);else receipt=body.measurement}
+   assert.equal(db.prepare('SELECT reviews_delivered FROM payments').get().reviews_delivered,index+1);
+  }
+  assert.equal(db.prepare('SELECT state FROM payments').get().state,'used');assert.equal(db.prepare('SELECT used FROM ai_budget').get().used,10);
+  assert.equal((await handleAPI(paidReviewRequest(token),env,bundleProvider)).status,402);
+  assert.equal(db.prepare('SELECT COUNT(*) n FROM payment_deliveries').get().n,3);
+ }finally{db.close()}
+});
+
+test('bundle claim is exclusive and idle paid credits do not expire after a day',async()=>{
+ const {db,env}=setup(),token='a'.repeat(64);
+ try{
+  db.prepare("INSERT INTO payments(id,owner,state,currency,amount,review_count,reserved) VALUES ('idle-bundle',?,'paid','mkd',15000,3,3)").run(await hash(token));
+  const {reconcilePayments}=await import('../worker/payments.js');let calls=0;
+  await reconcilePayments(env,async()=>{calls++;throw Error('idle entitlement must not be refunded')});assert.equal(calls,0);
+  const claims=await Promise.all([claimPayment(req('status','GET',`__Host-cvhapi-payment=${token}`),env),claimPayment(req('status','GET',`__Host-cvhapi-payment=${token}`),env)]);
+  assert.equal(claims.filter(Boolean).length,1);
+ }finally{db.close()}
+});
+
+test('only owned credits remain available when fewer than three global slots are left',async()=>{
+ const {db,env}=setup(),token='c'.repeat(64);
+ try{
+  db.prepare("INSERT INTO ai_budget VALUES ('pilot',9)").run();
+  const statusRequest=cookie=>new Request('https://cv.example/api/review/status',{headers:cookie?{Cookie:cookie}:{}});
+  assert.equal((await (await handleAPI(statusRequest(),env)).json()).available,false);
+  db.prepare("INSERT INTO payments(id,owner,state,currency,amount,review_count,reviews_delivered,reserved) VALUES ('last-owned',?,'paid','mkd',15000,3,2,1)").run(await hash(token));
+  const owned=await (await handleAPI(statusRequest(`__Host-cvhapi-payment=${token}`),env)).json();assert.equal(owned.available,true);assert.equal(owned.remaining,1);
+  assert.equal((await (await handleAPI(statusRequest(),env)).json()).available,false);
+ }finally{db.close()}
+});
+
+test('failure after one delivered review refunds only the two undelivered credits and never refunds twice',async()=>{
+ const {db,env}=setup(),token='b'.repeat(64);
+ try{
+  db.prepare("INSERT INTO ai_budget VALUES ('pilot',1)").run();
+  db.prepare("INSERT INTO payments(id,owner,intent,state,currency,amount,review_count,reviews_delivered,reserved) VALUES ('partial-bundle',?,'pi_bundle','paid','mkd',15000,3,1,2)").run(await hash(token));
+  let refunds=0;
+  const transport=async(url,options)=>{if(new URL(url).hostname==='api.deepseek.com')return new Response('',{status:503});refunds++;assert.equal(options.body.get('amount'),'10000');return Response.json({id:'re_partial',status:'succeeded'})};
+  const response=await handleAPI(paidReviewRequest(token),env,transport);assert.equal(response.status,502);assert.equal((await response.json()).payment,'refunded');assert.equal(refunds,1);
+  const status=await (await handlePayments(req('status','GET',`__Host-cvhapi-payment=${token}`),env,transport)).json();assert.equal(status.remainingReviews,0);assert.equal(status.measurement.amount,15000);assert.equal(status.measurement.refund_amount,10000);
+  assert.equal(db.prepare('SELECT used FROM ai_budget').get().used,2);assert.equal(db.prepare('SELECT reserved FROM payments').get().reserved,0);
+  assert.equal((await handleAPI(paidReviewRequest(token),env,transport)).status,402);assert.equal(refunds,1);
+ }finally{db.close()}
+});
 
 test('two paid customers can concurrently spend the final two reserved review slots',async()=>{
  const {db,env}=setup();
@@ -235,7 +302,7 @@ test('refund webhooks release capacity before or after checkout completion',asyn
  for(const beforeCompletion of [false,true]){
   const {db,env}=setup();
   try{
-   env.AI_MAX_REVIEWS='1';
+   env.AI_MAX_REVIEWS='3';
    db.prepare("INSERT INTO payments(id,owner,session,intent,state,reserved) VALUES ('dashboard-refund','owner','cs_dashboard',?,?,1)").run(beforeCompletion?null:'pi_dashboard',beforeCompletion?'pending':'paid');
    const raw=JSON.stringify({type:'charge.refunded',data:{object:{payment_intent:'pi_dashboard',amount_refunded:200,livemode:false}}});
    const response=await handlePayments(new Request('https://cv.example/api/payments/webhook',{method:'POST',headers:{'Stripe-Signature':await sign(raw)},body:raw}),env,async()=>Response.json({data:[{id:'cs_dashboard',client_reference_id:'dashboard-refund',livemode:false}]}));

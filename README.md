@@ -1,6 +1,6 @@
 ## Purchase modal — 4 October update
 
-New purchases now use a compact purchase modal and cost £2 GBP, as explicitly requested by the owner. Existing EUR purchases retain their recorded currency and entitlement. Migration 0006 records currency; payment validation matches the order currency. The main review button opens the modal, and successful payment still starts the review automatically. All 126 tests passed, including modal open/close without an unpaid AI call and GBP/EUR payment validation. Earlier EUR pricing below is historical.
+New purchases cost 150 MKD once for three AI reviews. Editing and PDF downloads remain unlimited and free. Existing EUR/GBP purchases retain their recorded single-review entitlement. Migration 0007 records the amount, review allowance, confirmed deliveries and refund amount; checkout and recovery validate the recorded order. Customers explicitly choose when to use existing credits. A checkout initiated in the current review flow starts its first review after verified return. The homepage and six-step editor offer eight templates with previews rendered from the actual PDF layouts. The video, narration, subtitles and sales terms use the same three-review offer. Earlier pricing and launch notes below are historical.
 
 ## 4 October paid-service repair
 

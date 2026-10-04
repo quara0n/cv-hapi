@@ -1,1 +1,1 @@
-export const SALES_TERMS_VERSION='2026-10-04-GBP';
+export const SALES_TERMS_VERSION='2026-10-04-MKD-3';

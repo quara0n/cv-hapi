@@ -31,6 +31,7 @@ export function createLocalDatabase(path){
   db.exec(readFileSync('drizzle/0005_refund_recovery.sql','utf8'));
  }
  if(!columns.has('currency'))db.exec(readFileSync('drizzle/0006_payment_currency.sql','utf8'));
+ if(!columns.has('review_count'))db.exec(readFileSync('drizzle/0007_three_review_bundle.sql','utf8'));
  return db;
 }
 export function localTestEnvironment(values,db){

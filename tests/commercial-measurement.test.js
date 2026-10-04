@@ -1,4 +1,13 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {JSDOM} from 'jsdom';import {build} from 'esbuild';
+test('three-review purchases are counted once and partial refunds use their actual MKD value',async()=>{
+ const code=await build({entryPoints:['src/commercial-measurement.js'],bundle:true,write:false,format:'iife',globalName:'commercial',define:{'import.meta.env.VITE_POSTHOG_KEY':'""','import.meta.env.VITE_POSTHOG_HOST':'"https://eu.i.posthog.com"'},logLevel:'silent'});
+ const dom=new JSDOM('',{url:'https://www.cvhapi.com/',runScripts:'outside-only'}),w=dom.window;w.localStorage.setItem('cekor.analytics.consent.v2','yes');w.eval(code.outputFiles[0].text);
+ const receipt={state:'used',transaction_id:`cvhapi_${'c'.repeat(64)}`,amount:15000,currency:'mkd',live:true};
+ assert.equal(w.commercial.trackCommercial(receipt),true);assert.equal(w.commercial.trackCommercial(receipt),false);assert.equal(w.commercial.trackCommercial(receipt),false);
+ assert.equal(w.commercial.trackCommercial({...receipt,state:'refunded',refund_amount:15001}),false);
+ assert.equal(w.commercial.trackCommercial({...receipt,state:'refunded',refund_amount:10000}),true);
+ const events=w.dataLayer.filter(x=>x[0]==='event');assert.equal(events.length,2);assert.equal(events[0][2].value,150);assert.equal(events[0][2].currency,'MKD');assert.equal(events[1][2].value,100);dom.window.close();
+});
 test('commercial analytics requires consent and a live receipt, deduplicates and forwards no private fields',async()=>{
  const code=await build({entryPoints:['src/commercial-measurement.js'],bundle:true,write:false,format:'iife',globalName:'commercial',define:{'import.meta.env.VITE_POSTHOG_KEY':'""','import.meta.env.VITE_POSTHOG_HOST':'"https://eu.i.posthog.com"'},logLevel:'silent'});
  const dom=new JSDOM('',{url:'https://www.cvhapi.com/mk/review/',runScripts:'outside-only'}),w=dom.window;

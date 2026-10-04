@@ -19,7 +19,7 @@ comparison=crop('compare-mk-full.jpg',(279,875,725,215))
 scenes=[
  {'title':['Твоето CV.','Појасно.'],'sub':'Запознај го CV Hapi.','image':cv,'duration':1.7,'caption':'Направи го следниот чекор со јасно CV.'},
  {'title':['Направи CV.','Преземи PDF.'],'sub':'Бесплатно. Без регистрација.','image':cv,'duration':3.8,'caption':'Уредувачот и стандардниот PDF се бесплатни.'},
- {'title':['Веќе имаш CV?','Подобри го.'],'sub':'AI-предлози за твојот документ.','image':editor,'duration':6,'caption':'Една AI-проверка — £2 еднократно.'},
+ {'title':['Веќе имаш CV?','Подобри го.'],'sub':'AI-предлози за твојот документ.','image':editor,'duration':6,'caption':'3 AI-проверки — 150 денари еднократно.'},
  {'title':['Ти ги избираш','измените.'],'sub':'Спореди. Провери. Зачувај.','image':comparison,'duration':3.5,'caption':'Провери ги фактите пред да ја зачуваш измената.'},
  {'title':['CV Hapi.'],'sub':'cvhapi.com','image':None,'duration':5.0,'caption':''}
 ]
