@@ -2,7 +2,7 @@
 artifact_contract: "ce-handoff/v1"
 created_at: "2026-10-04T12:00:00Z"
 title: "CV Hapi redesign, three-review bundle and growth continuation"
-summary: "Version 24 is live: import-first onboarding, guided editor and CV language sheet; browser language defaults, 150 MKD / three reviews and eight templates. Ads linking still blocked."
+summary: "Version 25 is live: compact AI/free review choice, optional fields collapsed and direct free editing; import-first onboarding, 150 MKD / three reviews and eight templates retained. Ads linking still blocked."
 keywords: ["cvhapi", "launch", "ga4", "clarity", "github", "paid-ai-paused"]
 cwd: "C:/Users/runef/Documents/ChatGPT/CV builder"
 branch: "codex/review-reliability-eur2"
@@ -47,3 +47,7 @@ User supplied https://github.com/quara0n/cv-hapi. It previously held main `f2004
 # Fragile local state
 
 Machine-local runtime was session 4978/PID 15180 (`npm run dev:test`); verify before use. Local owner unlimited reviews are guarded by sandbox credentials/loopback flags; hosted allowance remains bounded. Never reset hosted quota or expose `.env` values. User CV/review tabs may be memory-only; restarting the local server can trigger reloads. Do not reload user tabs to obtain new code. Test documents/databases and screenshots stay ignored and are not GitHub artifacts.
+
+## Latest review choice update
+
+Version 25 source b9ab779762895af8691087b63638238f10325a9e, deployment appgdep_6ac296eb618881918e4beb14efcf2a8d succeeded with environment revision 9. Review with AI / Continue without AI replaces the cluttered preparation flow. 141 tests and production builds passed. Completed review receipt and resolved PDF export race: docs/reviews/review-choice-20261004. Details: docs/releases/2026-10-04-review-choice.md. No new paid AI call or real-money purchase for this UI update.
