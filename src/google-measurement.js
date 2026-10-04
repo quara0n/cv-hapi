@@ -20,7 +20,7 @@ export function googleConsent(allowed){
  gtag('config',MEASUREMENT_ID,{send_page_view:false,allow_google_signals:false,allow_ad_personalization_signals:false,cookie_domain:'none',cookie_expires:86400,cookie_update:false,page_location:cleanLocation(),page_referrer:'',page_title:'CV Hapi CV'});
  const script=document.createElement('script');script.async=true;script.src=`https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`;script.referrerPolicy='no-referrer';document.head.append(script);
 }
-function cleanLocation(){const route=location.pathname.match(/^\/(mk|en)(?:\/|$)/)?.[1];const language=route||(['mk','en'].includes(document.documentElement.lang)?document.documentElement.lang:'mk');return `https://${location.hostname}/${language}/`}
+function cleanLocation(){const route=location.pathname.match(/^\/(mk|en)(?:\/|$)/)?.[1];const language=route||(['mk','en'].includes(document.documentElement.lang)?document.documentElement.lang:'mk');const review=/^\/(mk|en)\/review\/?$/.test(location.pathname);return `https://${location.hostname}/${language}/${review?'review/':''}`}
 export function googleTrack(event,properties={}){
  if(!googleEnabled()||!initialized||window[`ga-disable-${MEASUREMENT_ID}`]||!EVENTS.includes(event))return;
  const source=initialAttribution;

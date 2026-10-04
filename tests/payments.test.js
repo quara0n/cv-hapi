@@ -82,8 +82,11 @@ test('a paid result requires the right owner and delivery token before consuming
  const acknowledge=(cookie,key)=>handlePayments(new Request('https://cv.example/api/payments/delivered',{method:'POST',headers:{Origin:'https://cv.example',Cookie:cookie,'Content-Type':'application/json'},body:JSON.stringify({token:key})}),env);
  assert.equal((await acknowledge(`__Host-cvhapi-payment=${'f'.repeat(64)}`,delivery)).status,409);
  assert.equal((await acknowledge(`__Host-cvhapi-payment=${token}`,'wrong')).status,409);
- assert.equal((await acknowledge(`__Host-cvhapi-payment=${token}`,delivery)).status,200);
- assert.equal((await acknowledge(`__Host-cvhapi-payment=${token}`,delivery)).status,200);
+ const firstAck=await acknowledge(`__Host-cvhapi-payment=${token}`,delivery);assert.equal(firstAck.status,200);
+ const receipt=(await firstAck.json()).measurement;
+ assert.match(receipt.transaction_id,/^cvhapi_[a-f0-9]{64}$/);assert.equal(receipt.amount,200);assert.equal(receipt.currency,'eur');assert.equal(receipt.state,'used');assert.equal(receipt.live,false);
+ const repeatAck=await acknowledge(`__Host-cvhapi-payment=${token}`,delivery);assert.equal(repeatAck.status,200);assert.deepEqual((await repeatAck.json()).measurement,receipt);
+ assert.ok(!JSON.stringify(receipt).includes(token));assert.ok(!JSON.stringify(receipt).includes(delivery));
  let calls=0;assert.equal(await finishPayment(env,payment,false,async()=>{calls++;throw Error()}),'used');assert.equal(calls,0);db.close();
 });
 

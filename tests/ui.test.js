@@ -1,5 +1,14 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {JSDOM} from 'jsdom';import {build} from 'esbuild';
 const bundle=await build({entryPoints:['src/main.js'],bundle:true,write:false,format:'iife',loader:{'.css':'empty'},define:{'import.meta.env.VITE_POSTHOG_KEY':'""','import.meta.env.VITE_POSTHOG_HOST':'"https://eu.i.posthog.com"'},logLevel:'silent'});
+
+test('review landing URLs open the matching language and disclose the one-time price',()=>{
+ for(const language of ['mk','en']){
+  const dom=boot(null,`https://cv.test/${language}/review/`),d=dom.window.document;
+  assert.equal(d.documentElement.lang,language);assert.equal(d.querySelector('#review-toggle').getAttribute('aria-expanded'),'true');
+  assert.match(d.title,/£2/);assert.match(d.querySelector('.review-price').textContent,/£2/);assert.ok(d.querySelector('#review-source'));
+  dom.window.close();
+ }
+});
 test('private CV-only backend explains its scope and prevents unsupported letter submissions',async()=>{
  const dom=boot(),w=dom.window,d=w.document;w.fetch=async()=>({ok:true,json:async()=>({available:true,testMode:'private_cv_only'})});
  d.querySelector('[data-action="example"]').click();d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-from').click();

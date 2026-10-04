@@ -6,6 +6,10 @@ const enc=new TextEncoder();
 const hex=bytes=>Array.from(new Uint8Array(bytes),n=>n.toString(16).padStart(2,'0')).join('');
 export const paymentsEnabled=env=>['test','live'].includes(env.PAYMENTS_ENABLED)&&new RegExp(`^(?:sk|rk)_${env.PAYMENTS_ENABLED}_`).test(env.STRIPE_SECRET_KEY||'')&&!!env.STRIPE_WEBHOOK_SECRET&&!!env.DB;
 export const hash=async value=>hex(await crypto.subtle.digest('SHA-256',enc.encode(value)));
+async function measurementReceipt(env,order){
+ if(!order||!['used','refunded'].includes(order.state))return undefined;
+ return {state:order.state,transaction_id:`cvhapi_${await hash(`measurement:${order.id}`)}`,amount:200,currency:order.currency||'eur',live:env.PAYMENTS_ENABLED==='live'};
+}
 export async function verifySignature(raw,header,secret,now=Date.now()){
  const parts=(header||'').split(',').map(v=>v.split('=')),stamp=parts.find(v=>v[0]==='t')?.[1];
  if(!/^\d+$/.test(stamp||'')||Math.abs(now/1000-Number(stamp))>300)return false;
@@ -134,7 +138,8 @@ export async function handlePayments(request,env,transport=fetch){
    const tokenHash=await hash(body.token);
    const changed=await first(env,"UPDATE payments SET state='used',reserved=0 WHERE owner=? AND state='delivery_pending' AND delivery_hash=? AND lease_until>? RETURNING id",owner,tokenHash,Date.now());
    const order=changed||await first(env,"SELECT id FROM payments WHERE owner=? AND state='used' AND delivery_hash=?",owner,tokenHash);
-   return order?reply({state:'used'}):reply({error:'delivery_expired'},409);
+   const delivered=order?await first(env,'SELECT id,state,currency FROM payments WHERE id=?',order.id):null;
+   return delivered?reply({state:'used',measurement:await measurementReceipt(env,delivered)}):reply({error:'delivery_expired'},409);
   }
   if(path==='/api/payments/webhook'){
    if(request.method!=='POST')return reply({error:'method'},405);
@@ -160,7 +165,7 @@ export async function handlePayments(request,env,transport=fetch){
    let order=await first(env,'SELECT * FROM payments WHERE owner=? ORDER BY rowid DESC LIMIT 1',owner);
    if(order?.state==='pending'&&order.session){await confirmSession(env,await stripe(env,`checkout/sessions/${encodeURIComponent(order.session)}`,null,null,transport));order=await first(env,'SELECT * FROM payments WHERE owner=? ORDER BY rowid DESC LIMIT 1',owner)}
    if(order?.state==='refund_pending')order.state=await finishPayment(env,order,false,transport);
-   return reply({state:order?.state||'none'});
+   return reply({state:order?.state||'none',measurement:await measurementReceipt(env,order)});
   }
   if(path!=='/api/payments/checkout')return reply({error:'not_found'},404);
   if(request.method!=='POST')return reply({error:'method'},405);
