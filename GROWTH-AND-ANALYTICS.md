@@ -1,5 +1,9 @@
 # CV Hapi measurement — 2026-09-28
 
+## Current status — 4 October 2026
+
+The £2 GBP paid AI review and compact purchase modal are now published; the free-pilot/paused-service statements below are historical. Current acquisition research and the proposed purchase-measurement work are in [GROWTH-PLAN-2026-10-04.md](GROWTH-PLAN-2026-10-04.md), with a video storyboard in [VIDEO-AD-BRIEF.md](VIDEO-AD-BRIEF.md). Existing analytics still tracks free PDF and AI activity, not a verified purchase event. No ad campaign or advertising personalization was activated by this work. The existing NOK 300 total pilot ceiling is unchanged.
+
 ## Connected services
 
 GA4 property 556316817, stream 15861416022, measurement G-JYTW6J3BRZ.
