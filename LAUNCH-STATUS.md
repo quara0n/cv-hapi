@@ -1,3 +1,7 @@
+## Homepage video — latest publication
+
+Sites version 22 published the approved Macedonian voiced demo beside the homepage headline, with one-click native playback, captions and transcript. Source `ed4ffa841b5ba03b38f2a0c9146aba35ed4dd19f`; deployment `appgdep_6ac274c9e2748191a10830fd75b27f03`; environment revision 9 unchanged. Both builds succeeded. Google Ads launch is authorized up to NOK 300 total but blocked by Google's missing-link/invalid-account-ID errors. No campaign or spend started. See marketing/READINESS.md for exact evidence. Earlier statuses below are historical.
+
 ## Growth preparation — latest 4 October update
 
 Sites version 20 is live, source `69ff1e86477074d47fba7df25024001db6c31850`, deployment `appgdep_6ac26701d00c81918164486c079d7b07`, environment revision 9 preserved. Dedicated review routes, consented delivery-receipt purchase/refund events and www Search Console verification are published. All 129 tests pass. Google's live test confirms `/mk/` can be indexed; indexing requested, actual index inclusion not established. Initial sitemap processing reports Couldn't fetch despite an independent valid HTTP 200 XML response. Ads page views are secondary; purchase linking/import is incomplete. No paid advertising started. Both 20-second Macedonian voiced video exports are complete using the owner-supplied ElevenLabs audio. Current details and verification limits: [marketing/READINESS.md](marketing/READINESS.md). Earlier status sections below are historical.
