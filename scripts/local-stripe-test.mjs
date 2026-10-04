@@ -5,11 +5,12 @@ import {createServer as createViteServer} from 'vite';
 import {handleAPI} from '../worker/index.js';
 import {createLocalDatabase,localTestEnvironment} from './local-test-runtime.mjs';
 
-const port=5174,origin=`http://localhost:${port}`;
+const paidSandbox=process.env.CVHAPI_PAID_SANDBOX==='true';
+const port=paidSandbox?5175:5174,origin=`http://localhost:${port}`;
 mkdirSync('test-output',{recursive:true});
-const db=createLocalDatabase('test-output/local-stripe-test.sqlite');
+const db=createLocalDatabase(paidSandbox?'test-output/paid-repair-sandbox.sqlite':'test-output/local-stripe-test.sqlite');
 // This server never loads .env, which can contain live credentials.
-const configuration=()=>{try{return parseEnv(readFileSync('.env.local-test','utf8'))}catch{return {}}};
+const configuration=()=>{try{const values=parseEnv(readFileSync('.env.local-test','utf8'));return paidSandbox?{...values,LOCAL_TEST_OWNER_CREDIT:'false',LOCAL_TEST_REPAIR_ATTEMPT:'false',LOCAL_TEST_UNLIMITED_REVIEWS:'false'}:values}catch{return {}}};
 const vite=await createViteServer({configFile:false,envDir:'test-output/no-env',server:{middlewareMode:true,hmr:false},appType:'spa'});
 const server=createServer(async(req,res)=>{
  if(![`localhost:${port}`,`127.0.0.1:${port}`].includes(req.headers.host)){

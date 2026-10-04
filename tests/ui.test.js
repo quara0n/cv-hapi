@@ -8,7 +8,23 @@ test('private CV-only backend explains its scope and prevents unsupported letter
  const letter=d.querySelector('#review-letter');letter.value='An optional cover letter';letter.dispatchEvent(new w.Event('input'));assert.equal(d.querySelector('#review-ai').disabled,true);
  letter.value='';letter.dispatchEvent(new w.Event('input'));d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('#review-ai').disabled,false);dom.window.close();
 });
-function boot(saved,url='https://cv.test'){const dom=new JSDOM('<div id="app"></div>',{url,runScripts:'outside-only'});dom.window.structuredClone=structuredClone;dom.window.HTMLElement.prototype.scrollIntoView=function(options){dom.window.lastScroll={id:this.id,options}};dom.window.matchMedia=()=>({matches:false});dom.window.HTMLDialogElement.prototype.showModal=function(){this.open=true};dom.window.HTMLDialogElement.prototype.close=function(){this.open=false};if(saved)dom.window.localStorage.setItem('cekor.cv.v1',saved);dom.window.localStorage.setItem('cekor.ui-language','en');dom.window.eval(bundle.outputFiles[0].text);return dom}
+function boot(saved,url='https://cv.test'){const dom=new JSDOM('<div id="app"></div>',{url,runScripts:'outside-only'});dom.window.structuredClone=structuredClone;dom.window.navigator.locks={request:async(name,callback)=>callback()};dom.window.HTMLElement.prototype.scrollIntoView=function(options){dom.window.lastScroll={id:this.id,options}};dom.window.matchMedia=()=>({matches:false});dom.window.HTMLDialogElement.prototype.showModal=function(){this.open=true};dom.window.HTMLDialogElement.prototype.close=function(){this.open=false};if(saved)dom.window.localStorage.setItem('cekor.cv.v1',saved);dom.window.localStorage.setItem('cekor.ui-language','en');dom.window.eval(bundle.outputFiles[0].text);return dom}
+test('paid delivery acknowledgement follows a valid review and its failure preserves the result',async()=>{
+ for(const confirmed of [true,false]){
+  const dom=boot(),w=dom.window,d=w.document;w.AbortSignal=AbortSignal;const calls=[];
+  w.fetch=async(url,options)=>{
+   if(url==='/api/review/status')return{ok:true,json:async()=>({available:true})};
+   if(url==='/api/payments/config')return{ok:true,json:async()=>({enabled:false})};
+   calls.push(url);
+   if(url==='/api/payments/delivered'){assert.deepEqual(JSON.parse(options.body),{token:'a'.repeat(64)});return{ok:confirmed,json:async()=>({state:'used'})};}
+   return{ok:true,headers:{get:()=> 'a'.repeat(64)},json:async()=>({overview:'Complete feedback.',sections:[{document:'cv',name:'Profile',assessment:'Clarify your duties.',actions:[]}],priorities:[{title:'Details',why:'Brief',action:'Add real duties.'}],suggestions:[]})};
+  };
+  d.querySelector('[data-action="example"]').click();d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-from').click();d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-ai').click();await new Promise(r=>setTimeout(r,0));
+  assert.deepEqual(calls,['/api/review','/api/payments/delivered']);assert.ok(d.querySelector('#review-results-title'));assert.ok(d.querySelector('#review-edited'));
+  if(!confirmed)assert.match(d.querySelector('#review-message').textContent,/Delivery confirmation failed/);
+  dom.window.close();
+ }
+});
 test('returning to an exhausted review refreshes restored availability without clearing the CV',async()=>{
  const dom=boot(),w=dom.window,d=w.document;let restored=false,posted=0;
  w.fetch=async url=>{if(url==='/api/review')posted++;return{ok:true,json:async()=>url==='/api/review/status'?{available:restored,remaining:restored?1:0}:{enabled:false}}};
@@ -210,6 +226,7 @@ test('checkout stays single-flight when focus refreshes payment status',async()=
   return new Promise(resolve=>{finish=()=>resolve({ok:false,json:async()=>({error:'unavailable'})})});
  };
  d.querySelector('[data-action="example"]').click();d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-from').click();d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));
+ assert.equal(d.querySelector('[data-buy]').disabled,true);d.querySelector('[data-sales-consent]').click();
  d.querySelector('[data-buy]').click();assert.equal(checkouts,1);
  w.dispatchEvent(new w.Event('focus'));await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('[data-buy]').disabled,true);
  d.querySelector('[data-buy]').click();assert.equal(checkouts,1);finish();await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('[data-buy]').disabled,false);dom.window.close();

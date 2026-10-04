@@ -1,0 +1,21 @@
+# Paid AI review and recovery — 4 October 2026
+
+The owner explicitly authorized restoration of the EUR 2 paid service. This supersedes the earlier agent-selected pause. Runtime mode requires matching Stripe credentials, AI/privacy approval, checkout enablement and available capacity. Secrets remain in runtime configuration.
+
+Checkout atomically reserves a review before creating a fixed EUR 2 Stripe session. An active owner order and a stable idempotency key prevent duplicate checkout. Five new checkouts per address per hour limit unpaid reservation abuse. The counter keeps an hourly server-keyed digest, never the raw address. Browser Web Locks serialize initial HttpOnly owner-cookie creation across tabs; older browsers can check existing payments but must upgrade to purchase.
+
+Signed webhooks or direct Stripe verification confirm payment. A processing claim has a four-minute lease and unique attempt. A D1 transactional batch converts the capacity reservation into recorded provider usage. Reports require overview, sections and priorities, editorial audit and factual checks. Provider attempts, including failures, remain counted; deployments never reset usage. The public lifetime allowance is 100, preserving nine earlier attempts.
+
+Generation does not consume the purchase. The browser installs the valid report, then acknowledges its unguessable delivery token. Only that acknowledgement transitions delivery_pending to used. A stale failure cannot refund an acknowledged review. CVs and AI replies stay out of the payment database.
+
+Failures request a full Stripe refund. Interrupted processing, ten-minute unconfirmed delivery, and paid reviews not started within 24 hours are reconciled without an open customer tab. Expired unpaid reservations are released only after Stripe confirms expiry. Unknown checkout responses recover using the original idempotency key and stable creation body. Refund requests use retry leases, persistent refund IDs and idempotency. A failed/canceled refund is explicitly refund_failed, blocks repayment, and requires owner resolution.
+
+The enabled Sites cloud schedule **CV Hapi payment and refund recovery** calls the bounded reconciliation endpoint hourly and reports failures to the owner: automation `Automation_640d24f43680819193e3d6cfc1ceafe6`. The endpoint cannot accept caller-selected customer IDs or refunds. Cloud scheduling is separate from the Worker scheduled export; exporting that handler alone does not configure a timer. Schedule execution and provider availability remain external dependencies.
+
+Endpoints: `/api/payments/config`, `/checkout`, `/status`, `/webhook`, `/delivered`, `/reconcile`. Events: checkout.session.completed, checkout.session.async_payment_succeeded and charge.refunded at `https://cvhapi.com/api/payments/webhook`. Return URLs do not grant entitlement. Stripe receives no CV text. Additive migrations 0002–0005 preserve orders and counters.
+
+Bilingual `/terms.html` identifies the registered seller and address, total price, immediate-performance acceptance, cancellation rights, delivery/download boundary and refund policy. Orders record the accepted terms version. Separate AI document consent is required. Operator approval of DeepSeek does not establish verified retention, training, deletion or transfer terms; the UI and sales terms disclose these unresolved provider guarantees.
+
+Verification: a real Stripe **sandbox** checkout using fictional data led to a real DeepSeek report and browser delivery acknowledgement, stored state used and preserved usage. Automated tests cover concurrent final capacity, lost checkout response, expired orphan creation, signed events, provider failure, interrupted processing, lost delivery, refund failure and full paid API delivery. No new real-money charge is claimed. Physical receipt of the latest in-app browser PDF download was not captured by its download-event API; prior PDF export checks remain separate evidence.
+
+Nine review lenses supplied findings, and fixes were regression-tested. The review agent subsequently hit its account usage limit before rendering the final consolidated receipt; do not claim that missing receipt exists. An explicit final manual scan replaces the unavailable review tail.

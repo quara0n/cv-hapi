@@ -1,3 +1,7 @@
+## 4 October paid-service repair
+
+The user explicitly authorized fixing and reopening the EUR 2 AI review on www.cvhapi.com, superseding the earlier agent-selected pause. See [PAID-REPAIR.md](PAID-REPAIR.md) for checkout reservations, delivery acknowledgement, unattended refunds, sales acceptance and verification boundaries. Runtime revision 9 enables AI, live payments and checkout with a preserved lifetime allowance of 100; it takes effect when the repaired source is deployed. Historical pause statements below describe version 15. Verify terminal deployment success and public endpoints before reporting restoration complete.
+
 # CV Hapi release status — 4 October 2026
 
 The audited free-tools update is live at https://www.cvhapi.com/. Sites version 15 deployed successfully on 4 October, source `f1cd8afce436274fe1227b40b49c23a799211a91`, deployment `appgdep_6ac23c5cec8c81918f5351c59bde6e6e`, environment revision 8. Public AI, purchases and checkout remain paused. The sections below retain the audit trail; this release notice supersedes earlier local-only statements.

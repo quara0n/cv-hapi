@@ -1,3 +1,7 @@
+## 4 October paid-service repair
+
+The user explicitly authorized fixing and reopening the EUR 2 AI review on www.cvhapi.com, superseding the earlier agent-selected pause. See [PAID-REPAIR.md](PAID-REPAIR.md) for checkout reservations, delivery acknowledgement, unattended refunds, sales acceptance and verification boundaries. Runtime revision 9 enables AI, live payments and checkout with a preserved lifetime allowance of 100; it takes effect when the repaired source is deployed. Historical pause statements below describe version 15. Verify terminal deployment success and public endpoints before reporting restoration complete.
+
 # CV Hapi project context
 
 ## Start here

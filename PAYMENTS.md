@@ -1,3 +1,7 @@
+## 4 October paid-service repair
+
+The user explicitly authorized fixing and reopening the EUR 2 AI review on www.cvhapi.com, superseding the earlier agent-selected pause. See [PAID-REPAIR.md](PAID-REPAIR.md) for checkout reservations, delivery acknowledgement, unattended refunds, sales acceptance and verification boundaries. Runtime revision 9 enables AI, live payments and checkout with a preserved lifetime allowance of 100; it takes effect when the repaired source is deployed. Historical pause statements below describe version 15. Verify terminal deployment success and public endpoints before reporting restoration complete.
+
 # Stripe integration — paid launch paused
 
 4 October: sandbox/local owner testing is available; public purchases remain paused. Price: EUR 2 once per AI review, with free builder/PDF. Credentials stay outside source. Test/live modes require matching Stripe keys. Owner credit is limited to explicitly configured loopback sandbox tests. A key alone does not satisfy privacy/checkout/AI gates.
