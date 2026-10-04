@@ -1,5 +1,13 @@
 ## Current Search draft — evening 4 October
 
+## Latest verified Ads state — budget recovery and measurement gate
+
+The earlier budget reauthentication/save blocker is resolved. New Norwegian Google Ads account **297-799-3323**, ocid **8584207156**, is the active account. The old AUD account 143-420-6814 is closed and its draft must not launch.
+
+Campaign **281499290296765**, draft **10216892942**, `MK | Search | CV Hapi | NOK300 pilot`, now shows **All changes saved** and **Your campaign is ready to publish**. Budget durably saved as **NOK 200 campaign total**, start **5 October**, end **18 October 2026**, Norway account timezone. Owner cap remains **NOK 300 all-in**; NOK 100 is reserved for applicable additional costs. Search only, North Macedonia presence targeting, English, Search Partners/Display off, Maximize Clicks with NOK 1 CPC cap, AI Max and text/final URL expansion off. Seven exact/phrase review keywords, seven headlines, four descriptions, 150 MKD / three-review offer, EN review landing page with clean campaign UTMs. Enhanced conversions off. Screenshot: test-output/ads-nok-ready.png. **Publish has not been clicked; the campaign is not live.** Negative keywords still pending.
+
+GA4 property **556316817** belongs to the old Google login; the new Ads login has no access to it. This explains the empty owned-account picker. Do not create a duplicate property or grant broad Editor access as a workaround. Prepared a cross-account link request from the existing property to Ads 297-799-3323. Google discloses sharing requester name/email and property ID/name with Ads administrators and data flow under each product's terms. Concrete user confirmation requested before submitting this account connection. Plan: personalization off, no expanded property editing, then import purchase as the commercial conversion. Screenshot: test-output/ga4-ads-link-request.png. No request submitted yet; no linked conversion or real attributed purchase verified. Keep campaign draft and request tab for continuation.
+
 Current offer: **150 MKD once / three AI reviews / unlimited free editing and downloads**. This supersedes older £2/one-review preparation below. Actual draft: MK | Search | CV Hapi | NOK300 pilot; account 143-420-6814, campaign 281499301391213, draft 10217082388. Account AUD, GMT+11.
 
 North Macedonia only, presence targeting, Search only, Search Partners/Display off, English, no audience segments, AI Max/text customization/final URL expansion off survived recovery. Maximize Clicks, 0.15 AUD maximum CPC. Seven exact/phrase review keywords and corrected ad were restored after a save error.
