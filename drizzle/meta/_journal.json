@@ -43,6 +43,13 @@
       "when": 1791116927698,
       "tag": "0005_refund_recovery",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1791119945568,
+      "tag": "0006_payment_currency",
+      "breakpoints": true
     }
   ]
 }

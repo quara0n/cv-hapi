@@ -1,3 +1,7 @@
+## Purchase modal — 4 October update
+
+New purchases now use a compact purchase modal and cost £2 GBP, as explicitly requested by the owner. Existing EUR purchases retain their recorded currency and entitlement. Migration 0006 records currency; payment validation matches the order currency. The main review button opens the modal, and successful payment still starts the review automatically. All 126 tests passed, including modal open/close without an unpaid AI call and GBP/EUR payment validation. Earlier EUR pricing below is historical.
+
 # Paid AI review and recovery — 4 October 2026
 
 The owner explicitly authorized restoration of the EUR 2 paid service. This supersedes the earlier agent-selected pause. Runtime mode requires matching Stripe credentials, AI/privacy approval, checkout enablement and available capacity. Secrets remain in runtime configuration.

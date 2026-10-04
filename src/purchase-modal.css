@@ -1,0 +1,19 @@
+.purchase-modal{width:min(440px,calc(100vw - 32px));margin:auto;padding:32px;border:1px solid #dce3ee;border-radius:18px;max-height:calc(100dvh - 40px);overflow:auto;box-shadow:0 24px 90px #14244033}
+.purchase-modal::backdrop{background:#17263c70;backdrop-filter:blur(4px)}
+.purchase-modal .purchase-close{position:absolute;top:12px;right:12px;border:0;background:transparent;color:#64748b;font-size:26px;line-height:1;padding:8px;cursor:pointer}
+.purchase-modal h2{margin:0 30px 10px 0;font-size:24px;letter-spacing:-.5px}
+.purchase-modal .purchase-description{color:#64748b;font-size:14px;line-height:1.6;margin:0}
+.purchase-modal .purchase-price{font-size:48px;font-weight:750;letter-spacing:-2px;margin:22px 0 0;line-height:1.1}
+.purchase-modal .purchase-price span{font-size:14px;font-weight:500;letter-spacing:0;color:#64748b}
+.purchase-modal .purchase-includes{font-size:14px;margin:10px 0 24px;color:#475569}
+.purchase-modal .review-check{font-size:13px;line-height:1.55;align-items:flex-start;margin:0}
+.purchase-modal .review-check input{flex-shrink:0;margin-top:3px}
+.purchase-modal .purchase-withdrawal{font-size:11px;line-height:1.5;color:#64748b;margin:6px 0 20px 27px}
+.purchase-modal [data-buy]{width:100%;min-height:48px;font-size:16px;border-radius:9px}
+.purchase-modal .purchase-secure{font-size:11px;text-align:center;color:#64748b;margin:12px 0 20px}
+.purchase-modal [role=status]{font-size:13px;margin:12px 0;line-height:1.5}
+.purchase-modal [role=status]:empty{display:none}
+.purchase-modal .purchase-help{font-size:12px;border-top:1px solid #e8edf4;padding-top:16px;color:#64748b}
+.purchase-modal .purchase-help summary{cursor:pointer}
+.purchase-modal .purchase-help p{font-size:12px;font-weight:400}
+@media(max-width:480px){.purchase-modal{padding:26px}.purchase-modal h2{font-size:22px}}

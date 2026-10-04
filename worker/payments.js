@@ -37,7 +37,7 @@ async function allowCheckout(request,env){
 async function checkoutSession(env,order,transport){
  // Keep the creation body stable even when recovery happens after our local lease.
  // Reconciliation expires open Stripe sessions before releasing their reservation.
- return stripe(env,'checkout/sessions',{mode:'payment','payment_method_types[0]':'card','line_items[0][price_data][currency]':'eur','line_items[0][price_data][unit_amount]':'200','line_items[0][price_data][product_data][name]':`CV Hapi — one AI review${env.PAYMENTS_ENABLED==='test'?' (TEST)':''}`,'line_items[0][quantity]':'1',client_reference_id:order.id,success_url:`${order.checkout_origin}/payment-return.html?language=${order.checkout_language}`,cancel_url:`${order.checkout_origin}/payment-return.html?language=${order.checkout_language}`},`checkout-${order.id}`,transport);
+ return stripe(env,'checkout/sessions',{mode:'payment','payment_method_types[0]':'card','line_items[0][price_data][currency]':order.currency,'line_items[0][price_data][unit_amount]':'200','line_items[0][price_data][product_data][name]':`CV Hapi — one AI review${env.PAYMENTS_ENABLED==='test'?' (TEST)':''}`,'line_items[0][quantity]':'1',client_reference_id:order.id,success_url:`${order.checkout_origin}/payment-return.html?language=${order.checkout_language}`,cancel_url:`${order.checkout_origin}/payment-return.html?language=${order.checkout_language}`},`checkout-${order.id}`,transport);
 }
 export async function claimPayment(request,env){
  const owner=await paymentOwner(request);if(!owner)return null;
@@ -102,7 +102,9 @@ export async function reconcilePayments(env,transport=fetch,scopeOwner=null){
  return {processed,refundFailures:failed?.n||0};
 }
 async function confirmSession(env,session){
- if(session.mode!=='payment'||session.livemode!==(env.PAYMENTS_ENABLED==='live')||session.amount_total!==200||session.currency!=='eur')return;
+ if(session.mode!=='payment'||session.livemode!==(env.PAYMENTS_ENABLED==='live')||session.amount_total!==200)return;
+ const order=await first(env,'SELECT currency FROM payments WHERE id=? AND (session=? OR session IS NULL)',session.client_reference_id,session.id);
+ if(!order||session.currency!==order.currency)return;
  if(session.status==='expired'&&session.payment_status!=='paid'){
   await first(env,"UPDATE payments SET state='expired',reserved=0 WHERE id=? AND session=? AND state='pending' RETURNING id",session.client_reference_id,session.id);return;
  }
@@ -115,7 +117,7 @@ export async function handlePayments(request,env,transport=fetch){
  const url=new URL(request.url),path=url.pathname;
  if(path==='/api/payments/config'){
   const token=!await paymentOwner(request)&&paymentsEnabled(env)?hex(crypto.getRandomValues(new Uint8Array(32))):null;
-  return reply({enabled:!!paymentsEnabled(env)&&privacyApproved(env),test:env.PAYMENTS_ENABLED!=='live',amount:200,currency:'eur',...(localOwnerCredit(env,request)?{ownerCredit:true}:{}),...(env.CHECKOUT_ENABLED==='false'?{checkoutEnabled:false}:{})},200,token?{'Set-Cookie':ownerCookie(token)}:{});
+  return reply({enabled:!!paymentsEnabled(env)&&privacyApproved(env),test:env.PAYMENTS_ENABLED!=='live',amount:200,currency:'gbp',...(localOwnerCredit(env,request)?{ownerCredit:true}:{}),...(env.CHECKOUT_ENABLED==='false'?{checkoutEnabled:false}:{})},200,token?{'Set-Cookie':ownerCookie(token)}:{});
  }
  if(!paymentsEnabled(env))return reply({error:'payments_unavailable'},503);
  try{
@@ -175,12 +177,21 @@ export async function handlePayments(request,env,transport=fetch){
   await reconcilePayments(env,transport,oldOwner);
   const old=await first(env,'SELECT * FROM payments WHERE owner=? ORDER BY rowid DESC LIMIT 1',oldOwner);
   if(old&&['paid','processing','delivery_pending','refund_pending','refund_failed'].includes(old.state))return reply({error:'existing_order',state:old.state},409);
-  if(old?.state==='pending'&&old.session){const session=await stripe(env,`checkout/sessions/${encodeURIComponent(old.session)}`,null,null,transport);await confirmSession(env,session);if(session.status==='open'&&session.url)return reply({url:session.url});if(session.payment_status==='paid')return reply({error:'existing_order'},409)}
+  if(old?.state==='pending'&&old.session){
+   const session=await stripe(env,`checkout/sessions/${encodeURIComponent(old.session)}`,null,null,transport);await confirmSession(env,session);
+   if(session.payment_status==='paid')return reply({error:'existing_order'},409);
+   if(session.status==='open'&&session.url){
+    if(old.currency==='gbp')return reply({url:session.url});
+    const expired=await stripe(env,`checkout/sessions/${encodeURIComponent(old.session)}/expire`,{},`currency-change-${old.id}`,transport);
+    if(expired.status!=='expired'||expired.payment_status==='paid')throw Error('checkout_currency');
+    await first(env,"UPDATE payments SET state='expired',reserved=0 WHERE id=? AND state='pending' RETURNING id",old.id);
+   }
+  }
   const id=crypto.randomUUID();
   if(old?.state!=='pending'&&!await allowCheckout(request,env))return reply({error:'checkout_limit'},429);
   await first(env,"INSERT INTO ai_budget(id,used) VALUES ('pilot',0) ON CONFLICT(id) DO NOTHING RETURNING id");
   // One atomic SQL statement reserves the final slot and deduplicates active orders.
-  const inserted=await first(env,"INSERT INTO payments(id,owner,state,reserved,checkout_until,checkout_origin,checkout_language,terms_version) SELECT ?,?,'pending',1,?,?,?,? WHERE (SELECT used FROM ai_budget WHERE id='pilot')+(SELECT COUNT(*) FROM payments WHERE reserved=1)<? ON CONFLICT DO NOTHING RETURNING *",id,oldOwner,Date.now()+1830000,url.origin,url.searchParams.get('language')==='mk'?'mk':'en',SALES_TERMS_VERSION,cap);
+  const inserted=await first(env,"INSERT INTO payments(id,owner,state,reserved,checkout_until,checkout_origin,checkout_language,terms_version,currency) SELECT ?,?,'pending',1,?,?,?,?,'gbp' WHERE (SELECT used FROM ai_budget WHERE id='pilot')+(SELECT COUNT(*) FROM payments WHERE reserved=1)<? ON CONFLICT DO NOTHING RETURNING *",id,oldOwner,Date.now()+1830000,url.origin,url.searchParams.get('language')==='mk'?'mk':'en',SALES_TERMS_VERSION,cap);
   const order=inserted||await first(env,"SELECT * FROM payments WHERE owner=? AND state='pending' ORDER BY rowid DESC LIMIT 1",oldOwner);
   if(!order)return reply({error:'pilot_limit'},429);
   const session=await checkoutSession(env,order,transport);
