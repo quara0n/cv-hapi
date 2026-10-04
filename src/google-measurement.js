@@ -3,6 +3,7 @@ export const MEASUREMENT_ID='G-JYTW6J3BRZ';
 const productionHosts=['cvhapi.com','www.cvhapi.com'];
 let initialized=false;
 const initialAttribution=attribution(location.href,document.referrer);
+export const checkoutCampaign=()=>initialAttribution.campaign;
 export const googleEnabled=()=>productionHosts.includes(location.hostname);
 function gtag(){window.dataLayer=window.dataLayer||[];window.dataLayer.push(arguments)}
 export function googleConsent(allowed){

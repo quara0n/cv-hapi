@@ -57,6 +57,13 @@
       "when": 1791131568124,
       "tag": "0007_three_review_bundle",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1791144832210,
+      "tag": "0008_campaign_attribution",
+      "breakpoints": true
     }
   ]
 }

@@ -282,6 +282,26 @@ test('checkout stays single-flight when focus refreshes payment status',async()=
  d.querySelector('[data-buy]').click();assert.equal(checkouts,1);finish();await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('[data-buy]').disabled,false);dom.window.close();
 });
 
+test('checkout attribution survives URL cleanup and honors analytics privacy choices',async()=>{
+ for(const [allow,privacySignal,expected] of [[true,false,'mk-search-cv'],[false,false,undefined],[true,'gpc',undefined],[true,'dnt',undefined]]){
+  const dom=boot(null,'https://www.cvhapi.com/en/?utm_campaign=mk-search-cv&gclid=private-click'),w=dom.window,d=w.document;
+  let submitted;
+  w.fetch=async(url,options)=>{
+   if(url==='/api/review/status')return{ok:true,json:async()=>({available:true})};
+   if(url==='/api/payments/config')return{ok:true,json:async()=>({enabled:true,test:true})};
+   if(url==='/api/payments/status')return{ok:true,json:async()=>({state:'none'})};
+   submitted=JSON.parse(options.body);return{ok:false,json:async()=>({error:'unavailable'})};
+  };
+  if(allow)d.querySelector('#allow').click();
+  if(privacySignal==='gpc')Object.defineProperty(w.navigator,'globalPrivacyControl',{value:true});
+  if(privacySignal==='dnt')Object.defineProperty(w.navigator,'doNotTrack',{value:'1'});
+  w.history.replaceState(null,'','/en/');
+  d.querySelector('[data-action="example"]').click();d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));
+  d.querySelector('#review-from').click();d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));d.querySelector('[data-sales-consent]').click();d.querySelector('[data-buy]').click();await new Promise(r=>setTimeout(r,0));
+  assert.equal(submitted.campaign,expected);assert.equal(submitted.analyticsConsent,expected?true:undefined);assert.ok(!JSON.stringify(submitted).includes('private-click'));dom.window.close();
+ }
+});
+
 test('local file reading never advertises an AI request before consent',async()=>{
  const dom=boot(),w=dom.window,d=w.document;let finish;
  w.fetch=async()=>({ok:true,json:async()=>({available:true})});

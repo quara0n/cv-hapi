@@ -9,6 +9,20 @@ import {sqliteBinding} from '../scripts/local-test-runtime.mjs';
 function setup(){const db=new DatabaseSync(':memory:');for(const file of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())db.exec(readFileSync(`drizzle/${file}`,'utf8'));return{db,env:{PAYMENTS_ENABLED:'test',STRIPE_SECRET_KEY:'sk_test_fake',STRIPE_WEBHOOK_SECRET:'whsec_fake',AI_PRIVACY_APPROVED:'true',AI_ENABLED:'true',DEEPSEEK_API_KEY:'fake',AI_MAX_REVIEWS:'10',DB:sqliteBinding(db)}}}
 const req=(path,method='GET',cookie='__Host-cvhapi-payment='+ '9'.repeat(64))=>new Request(`https://cv.example/api/payments/${path}`,{method,headers:{Origin:'https://cv.example',...(cookie?{Cookie:cookie}:{})},...(path==='checkout'&&method==='POST'?{body:JSON.stringify({termsAccepted:true,immediatePerformance:true,termsVersion:SALES_TERMS_VERSION})}:{})});
 
+test('checkout stores only a consented campaign code and preserves it during recovery',async()=>{
+ for(const [analyticsConsent,campaign,expected] of [[true,'mk-search-cv','mk-search-cv'],[false,'mk-search-cv','none'],[true,'private CV text','none']]){
+  const {db,env}=setup();
+  const request=new Request(req('checkout','POST'),{body:JSON.stringify({termsAccepted:true,immediatePerformance:true,termsVersion:SALES_TERMS_VERSION,analyticsConsent,campaign,gclid:'never-store-this'})});
+  const bodies=[];
+  const transport=async(url,options)=>{if(options?.body){bodies.push(options.body.toString());assert.equal(options.body.get('metadata[campaign]'),expected==='none'?null:expected);assert.ok(!options.body.toString().includes('never-store-this'))}return Response.json({id:'cs_campaign',url:'https://checkout.stripe.com/c/pay/campaign',status:'open',payment_status:'unpaid'})};
+  assert.equal((await handlePayments(request,env,transport)).status,200);
+  assert.equal(db.prepare('SELECT campaign FROM payments').get().campaign,expected);
+  db.prepare('UPDATE payments SET session=NULL,checkout_until=0').run();
+  const {reconcilePayments}=await import('../worker/payments.js');await reconcilePayments(env,transport);
+  assert.equal(bodies[1],bodies[0]);db.close();
+ }
+});
+
 test('new checkout identities cannot bypass the hourly per-address reservation limit',async()=>{
  const {db,env}=setup();env.AI_MAX_REVIEWS='100';let sessions=0;
  for(let i=1;i<=6;i++){

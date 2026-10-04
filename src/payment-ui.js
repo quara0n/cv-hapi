@@ -2,6 +2,8 @@ const labels={en:{buy:'Pay 150 MKD once (test)',check:'Check payment',note:'TEST
 import {SALES_TERMS_VERSION} from './sales-terms.js';
 import './purchase-modal.css';
 import {trackCommercial} from './commercial-measurement.js';
+import {getConsent} from './telemetry.js';
+import {checkoutCampaign} from './google-measurement.js';
 export async function mountPayment(root,ui,onState,{isReady=()=>true,allowPurchase=true}={}){
  const t={...labels[ui]},container=document.createElement('dialog');container.className='payment-choice purchase-modal';container.setAttribute('data-clarity-mask','true');container.setAttribute('aria-labelledby','purchase-title');root.insertBefore(container,root.querySelector('#review-ai'));
  Object.assign(t,ui==='mk'?{
@@ -48,7 +50,7 @@ export async function mountPayment(root,ui,onState,{isReady=()=>true,allowPurcha
   if(channel)channel.onmessage=event=>{if(event.data?.type==='payment-return')refresh(true)};
   const observer=new MutationObserver(()=>{if(!container.isConnected){events.abort();channel?.close();observer.disconnect()}});
   observer.observe(document.body,{childList:true,subtree:true});
-  buy.onclick=async()=>{if(purchaseBlocked()||!allowPurchase||!isReady()||config.checkoutEnabled===false)return;purchasing=true;buy.disabled=true;try{const response=await fetch(`/api/payments/checkout?language=${ui==='mk'?'mk':'en'}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({termsAccepted:true,immediatePerformance:true,termsVersion:SALES_TERMS_VERSION})}),result=await response.json();if(!response.ok)throw Error();const url=new URL(result.url);if(url.origin!=='https://checkout.stripe.com')throw Error();const link=document.createElement('a');link.href=url.href;link.target='_blank';link.rel='noopener noreferrer';link.textContent=t.buy;container.append(link);checkoutStarted=true;link.click();message.textContent=t.pending}catch{message.textContent=t.error}finally{purchasing=false;buy.disabled=purchaseBlocked()}};
+  buy.onclick=async()=>{if(purchaseBlocked()||!allowPurchase||!isReady()||config.checkoutEnabled===false)return;purchasing=true;buy.disabled=true;try{const response=await fetch(`/api/payments/checkout?language=${ui==='mk'?'mk':'en'}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({termsAccepted:true,immediatePerformance:true,termsVersion:SALES_TERMS_VERSION,...(getConsent()&&!navigator.globalPrivacyControl&&navigator.doNotTrack!=='1'?{analyticsConsent:true,campaign:checkoutCampaign()}: {})})}),result=await response.json();if(!response.ok)throw Error();const url=new URL(result.url);if(url.origin!=='https://checkout.stripe.com')throw Error();const link=document.createElement('a');link.href=url.href;link.target='_blank';link.rel='noopener noreferrer';link.textContent=t.buy;container.append(link);checkoutStarted=true;link.click();message.textContent=t.pending}catch{message.textContent=t.error}finally{purchasing=false;buy.disabled=purchaseBlocked()}};
   await refresh();
  }catch{/* Payments unavailable: no checkout is advertised. The API fails closed when enabled. */}
 }

@@ -1,4 +1,4 @@
-.review-intro:has(+.review-panel) .review-price{display:none}
+.review-intro:has(+.review-panel) .review-price{display:block;font-size:13px;line-height:1.7;max-width:580px;margin:12px auto 0}
 .review-panel:not(.import-mode){max-width:780px;margin:auto}
 .review-source-options{border:0;background:transparent;margin:0 0 20px;padding:0}
 .review-source-options>summary{display:flex;justify-content:space-between;gap:16px;padding:12px 0;font-size:14px;overflow-wrap:anywhere;color:var(--muted)}

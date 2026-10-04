@@ -1,6 +1,7 @@
 // Test and live credentials are intentionally not interchangeable.
 import {privacyApproved,reviewLimit,localOwnerCredit} from './ai-config.js';
 import {SALES_TERMS_VERSION} from '../src/sales-terms.js';
+import {campaignCode} from '../src/campaigns.js';
 const reply=(value,status=200,headers={})=>Response.json(value,{status,headers:{'Cache-Control':'no-store',...headers}});
 export const CURRENT_OFFER=Object.freeze({currency:'mkd',amount:15000,reviewCount:3});
 const entitlement=order=>order?{totalReviews:order.review_count,remainingReviews:['refunded','refund_pending','refund_failed'].includes(order.state)?0:Math.max(0,order.review_count-order.reviews_delivered)}:{};
@@ -44,7 +45,7 @@ async function allowCheckout(request,env){
 async function checkoutSession(env,order,transport){
  // Keep the creation body stable even when recovery happens after our local lease.
  // Reconciliation expires open Stripe sessions before releasing their reservation.
- return stripe(env,'checkout/sessions',{mode:'payment','payment_method_types[0]':'card','line_items[0][price_data][currency]':order.currency,'line_items[0][price_data][unit_amount]':String(order.amount),'line_items[0][price_data][product_data][name]':`CV Hapi — ${order.review_count===3?'three AI reviews':'one AI review'}${env.PAYMENTS_ENABLED==='test'?' (TEST)':''}`,'line_items[0][quantity]':'1',client_reference_id:order.id,success_url:`${order.checkout_origin}/payment-return.html?language=${order.checkout_language}`,cancel_url:`${order.checkout_origin}/payment-return.html?language=${order.checkout_language}`},`checkout-${order.id}`,transport);
+ return stripe(env,'checkout/sessions',{...(campaignCode(order.campaign)!=='none'?{'metadata[campaign]':order.campaign}:{}),mode:'payment','payment_method_types[0]':'card','line_items[0][price_data][currency]':order.currency,'line_items[0][price_data][unit_amount]':String(order.amount),'line_items[0][price_data][product_data][name]':`CV Hapi — ${order.review_count===3?'three AI reviews':'one AI review'}${env.PAYMENTS_ENABLED==='test'?' (TEST)':''}`,'line_items[0][quantity]':'1',client_reference_id:order.id,success_url:`${order.checkout_origin}/payment-return.html?language=${order.checkout_language}`,cancel_url:`${order.checkout_origin}/payment-return.html?language=${order.checkout_language}`},`checkout-${order.id}`,transport);
 }
 export async function claimPayment(request,env){
  const owner=await paymentOwner(request);if(!owner)return null;
@@ -206,7 +207,7 @@ export async function handlePayments(request,env,transport=fetch){
   if(old?.state!=='pending'&&!await allowCheckout(request,env))return reply({error:'checkout_limit'},429);
   await first(env,"INSERT INTO ai_budget(id,used) VALUES ('pilot',0) ON CONFLICT(id) DO NOTHING RETURNING id");
   // One atomic SQL statement reserves the final slot and deduplicates active orders.
-  const inserted=await first(env,"INSERT INTO payments(id,owner,state,reserved,checkout_until,checkout_origin,checkout_language,terms_version,currency,amount,review_count) SELECT ?,?,'pending',?,?,?,?,?,?,?,? WHERE (SELECT used FROM ai_budget WHERE id='pilot')+(SELECT COALESCE(SUM(reserved),0) FROM payments)+?<=? ON CONFLICT DO NOTHING RETURNING *",id,oldOwner,CURRENT_OFFER.reviewCount,Date.now()+1830000,url.origin,url.searchParams.get('language')==='mk'?'mk':'en',SALES_TERMS_VERSION,CURRENT_OFFER.currency,CURRENT_OFFER.amount,CURRENT_OFFER.reviewCount,CURRENT_OFFER.reviewCount,cap);
+  const inserted=await first(env,"INSERT INTO payments(id,owner,state,reserved,checkout_until,checkout_origin,checkout_language,terms_version,currency,amount,review_count,campaign) SELECT ?,?,'pending',?,?,?,?,?,?,?,?,? WHERE (SELECT used FROM ai_budget WHERE id='pilot')+(SELECT COALESCE(SUM(reserved),0) FROM payments)+?<=? ON CONFLICT DO NOTHING RETURNING *",id,oldOwner,CURRENT_OFFER.reviewCount,Date.now()+1830000,url.origin,url.searchParams.get('language')==='mk'?'mk':'en',SALES_TERMS_VERSION,CURRENT_OFFER.currency,CURRENT_OFFER.amount,CURRENT_OFFER.reviewCount,acceptance.analyticsConsent===true?campaignCode(acceptance.campaign):'none',CURRENT_OFFER.reviewCount,cap);
   const order=inserted||await first(env,"SELECT * FROM payments WHERE owner=? AND state='pending' ORDER BY rowid DESC LIMIT 1",oldOwner);
   if(!order)return reply({error:'pilot_limit'},429);
   const session=await checkoutSession(env,order,transport);
