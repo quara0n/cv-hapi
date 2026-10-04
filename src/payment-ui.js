@@ -22,7 +22,7 @@ export async function mountPayment(root,ui,onState,{isReady=()=>true,allowPurcha
   container.innerHTML=`<p>${t.note}</p><button type="button" class="secondary" data-buy>${t.buy}</button> <button type="button" class="secondary" data-check>${t.check}</button><p role="status"></p>`;
   if(allowPurchase&&config.checkoutEnabled!==false){
    const terms=document.createElement('label');terms.className='review-check';
-   terms.innerHTML=`<input type="checkbox" data-sales-consent> ${ui==='mk'?'Ги прифаќам':'I accept the'} <a href="/terms.html" target="_blank" rel="noopener">${ui==='mk'?'условите за продажба':'sales terms'}</a>. ${ui==='mk'?'Барам проверката да започне веднаш. Разбирам дека правото на повлекување завршува откако услугата е целосно извршена.':'I request the review to start immediately. I understand that the withdrawal right ends once the service has been fully performed.'}`;
+   terms.innerHTML=`<input type="checkbox" data-sales-consent><span>${ui==='mk'?'Ги прифаќам':'I accept the'} <a href="/terms.html" target="_blank" rel="noopener">${ui==='mk'?'условите за продажба':'sales terms'}</a>. ${ui==='mk'?'Барам проверката да започне веднаш. Разбирам дека правото на повлекување завршува откако услугата е целосно извршена.':'I request the review to start immediately. I understand that the withdrawal right ends once the service has been fully performed.'}</span>`;
    container.insertBefore(terms,container.querySelector('[data-buy]'));
   }
   const message=container.querySelector('[role=status]'),buy=container.querySelector('[data-buy]'),check=container.querySelector('[data-check]');
