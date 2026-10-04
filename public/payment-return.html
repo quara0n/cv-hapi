@@ -1,20 +1,25 @@
 <!doctype html>
 <html lang="en">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="referrer" content="no-referrer">
-<title>CV Hapi — return to your review</title>
+<title>CV Hapi</title>
 <body style="font:18px system-ui;max-width:40rem;margin:10vh auto;padding:24px;color:#172748">
-<h1>Continue your CV review</h1>
-<p id="payment-status" role="status">Checking payment… / Се проверува плаќањето…</p>
-<p>Your CV and feedback are in the original CV Hapi tab. Return there to continue from where you left off. Payment unlocks the review; it does not change your CV automatically.</p>
-<p lang="mk">CV-то и мислењето се во првото јазиче со CV Hapi. Врати се таму за да продолжиш. Плаќањето ја отклучува проверката; не го менува CV-то автоматски.</p>
-<button id="return" type="button" style="padding:14px 20px;background:#234bff;color:white;border:0;border-radius:8px;font:inherit">Back to my CV review / Назад кон проверката</button>
-<p id="return-hint">If this tab stays open, switch to your original CV Hapi tab. Keep that tab open until you download your reviewed documents.</p>
+<main>
+<h1 id="heading"></h1>
+<p id="payment-status" role="status"></p>
+<p id="explanation"></p>
+<button id="return" type="button" style="padding:14px 20px;background:#234bff;color:white;border:0;border-radius:8px;font:inherit"></button>
+<p id="return-hint"></p>
+</main>
 <script>
+const copy={en:{heading:'Continue your CV review',checking:'Checking payment…',explanation:'Your uploaded CV is in the original review tab. Return there to see the review progress, feedback or any error.',back:'Back to my CV review',hint:'Keep your original review tab open until you download your reviewed documents.',switch:'Switch to your original CV review tab to continue.',paid:'Payment verified. Your AI review will appear in the original review tab.',pending:'Payment has not been confirmed. Return to your review tab and choose Check payment.',refunded:'Your payment was refunded. Return to your review tab for the error details.',refundPending:'A refund has been requested. Return to your review tab for details.',error:'Payment could not be checked. Return to your review tab and choose Check payment.'},mk:{heading:'Продолжи со проверката на CV-то',checking:'Се проверува плаќањето…',explanation:'Прикаченото CV е во првото јазиче за проверка. Врати се таму за напредокот, мислењето или пораката за грешка.',back:'Назад кон проверката на CV-то',hint:'Остави го првото јазиче отворено додека не ги преземеш проверените документи.',switch:'Врати се во првото јазиче за проверка на CV-то.',paid:'Плаќањето е потврдено. AI-проверката ќе се појави во првото јазиче за проверка.',pending:'Плаќањето не е потврдено. Врати се во јазичето за проверка и избери Провери плаќање.',refunded:'Уплатата е вратена. Врати се во јазичето за проверка за деталите за грешката.',refundPending:'Побарано е враќање на уплатата. Врати се во јазичето за проверка за детали.',error:'Плаќањето не може да се провери. Врати се во јазичето за проверка и избери Провери плаќање.'}};
+let language=new URL(location.href).searchParams.get('language');
+if(!['en','mk'].includes(language)){try{language=localStorage.getItem('cekor.ui-language')}catch{}}
+language=language==='mk'?'mk':'en';const t=copy[language];document.documentElement.lang=language;document.title=`CV Hapi — ${t.heading}`;
+const q=id=>document.getElementById(id);q('heading').textContent=t.heading;q('payment-status').textContent=t.checking;q('explanation').textContent=t.explanation;q('return').textContent=t.back;q('return-hint').textContent=t.hint;
 const channel=typeof BroadcastChannel==='function'?new BroadcastChannel('cvhapi-payment-return'):null;
 const notify=()=>channel?.postMessage({type:'payment-return'});
-notify();
-document.querySelector('#return').onclick=()=>{notify();document.querySelector('#return-hint').textContent='Switch to your original CV Hapi tab to continue. / Врати се во првото јазиче со CV Hapi за да продолжиш.';window.close()};
-fetch('/api/payments/status',{cache:'no-store'}).then(async response=>{if(!response.ok)throw Error();return response.json()}).then(result=>{document.querySelector('#payment-status').textContent=['paid','processing','used'].includes(result.state)?'Payment verified. Continue in your original CV tab. / Плаќањето е потврдено. Продолжи во првото јазиче.':result.state==='refunded'?'Your payment was refunded. / Уплатата е вратена.':result.state==='refund_pending'?'A refund has been requested. Contact support@cvhapi.com for help. / Побарано е враќање на уплатата.':'Payment has not been confirmed. Return to your original tab and choose Check payment. / Плаќањето не е потврдено. Врати се и избери Провери плаќање.';notify()}).catch(()=>{document.querySelector('#payment-status').textContent='Payment could not be checked. Return to your original tab and choose Check payment. / Плаќањето не може да се провери. Врати се и избери Провери плаќање.'});
+q('return').onclick=()=>{notify();q('return-hint').textContent=t.switch;window.close()};
+fetch('/api/payments/status',{cache:'no-store'}).then(async response=>{if(!response.ok)throw Error();return response.json()}).then(result=>{q('payment-status').textContent=['paid','processing','used'].includes(result.state)?t.paid:result.state==='refunded'?t.refunded:result.state==='refund_pending'?t.refundPending:t.pending;notify()}).catch(()=>{q('payment-status').textContent=t.error;notify()});
 window.addEventListener('pagehide',()=>channel?.close());
 </script>
 </body></html>

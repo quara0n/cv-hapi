@@ -36,3 +36,77 @@
 }
 
 #review-ai,#review-results-title{scroll-margin-top:100px}.review-next{background:#edf2ff;padding:16px;border-radius:8px}.change-status{font-size:14px;font-weight:700;color:#52658c}.rewrite-card.applied{border:2px solid #22865e}.rewrite-card.applied .change-status{color:#176747}.rewrite-card button[aria-disabled=true]{opacity:.7;cursor:default}
+
+header .header-build{display:none}@media(max-width:760px){header .header-download{display:none}header .header-build{display:block}}
+
+[hidden]{display:none!important}
+
+.review-depth{margin-top:28px;padding-top:20px;border-top:1px solid #dbe2ef}
+.review-depth h4{font-size:20px;margin:0 0 18px}
+.review-depth h5{font-size:17px;margin:0 0 10px}
+.review-depth p,.review-depth li{line-height:1.65}
+.review-depth ol>li{margin:0 0 22px;padding-left:8px}
+.review-section{padding:18px;margin:14px 0;border:1px solid #dbe2ef;border-radius:10px;background:#f8faff}
+.review-section li{margin:8px 0}
+.review-overview{white-space:pre-line}
+.section-tools,.workshop-heading,.workshop-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.section-tools{margin-top:20px}.section-done{color:#176747;font-weight:600;font-size:14px}
+.section-workshop{margin-top:22px;padding:24px;background:#fff;border:1px solid #a9bced;border-radius:12px}
+.workshop-heading{justify-content:space-between;margin-bottom:16px}.section-workshop h6{font-size:20px;margin:0;scroll-margin-top:100px}
+.workshop-details{border:1px solid #dbe2ef;background:#f7f9ff;border-radius:8px;padding:16px;margin:18px 0}
+.workshop-details summary{cursor:pointer;font-weight:650;color:#234bff}.workshop-fields{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0}
+.workshop-fields label:has(textarea){grid-column:1/-1}.workshop-fields input,.workshop-fields textarea{background:white}
+.section-workshop>label{display:block;margin:20px 0}.section-workshop textarea{min-height:110px}.section-workshop>label textarea{min-height:220px}
+.workshop-preview{margin-top:22px}.workshop-preview h6{font-size:17px;margin-bottom:16px}.workshop-preview pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}
+.workshop-actions{margin-top:18px}.workshop-status{color:#52658c;font-size:14px}.workshop-apply{padding-top:16px;border-top:1px solid #dbe2ef}
+@media(max-width:760px){.section-workshop{padding:16px}.workshop-fields{grid-template-columns:1fr}.workshop-heading{align-items:flex-start}.workshop-actions button{width:100%}}
+
+/* Compact overview; full advice and writing examples remain available on demand. */
+.section-card-heading,.field-heading{display:flex;align-items:start;justify-content:space-between;gap:12px}
+.section-card-heading h5,.field-heading label{margin:0}
+.review-section-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.review-section-list>.review-section{margin:0;background:white;padding:20px}
+.review-section-list>.review-section:has(.section-workshop){grid-column:1/-1}
+.section-description{color:var(--muted);font-size:14px;margin:12px 0 0;max-width:65ch}
+.review-depth{margin-top:22px;padding-top:18px}.review-depth h4{margin-bottom:12px}
+.section-tools{margin-top:14px}.section-tools button{padding:10px 14px;font-size:14px}
+.section-workshop{border-color:var(--line);padding:20px;background:#fafbfe;margin-top:18px}
+.section-workshop>.hint{margin:6px 0}.workshop-heading{margin-bottom:6px}
+.workshop-heading .eyebrow{display:none}.workshop-details{background:white;margin:14px 0}
+.section-workshop>label textarea{min-height:150px}.workshop-fields{gap:18px}
+.workshop-field.wide{grid-column:1/-1}.field-heading{align-items:center;margin-bottom:8px}
+.field-heading label{font-size:14px;font-weight:600}.workshop-field input,.workshop-field textarea{margin:0;width:100%}
+.report-details{padding:14px 0;border-top:1px solid var(--line);border-bottom:0}
+.report-details>summary{font-size:15px;color:#344158}.report-details ul,.report-details ol{margin-top:18px}
+.detail-count{display:inline-block;font-size:12px;color:var(--muted);background:#eef1f6;border-radius:20px;padding:1px 8px;margin-left:6px}
+.wording-details{border:0;padding:0}.wording-details[open] .rewrite-pair{margin-top:18px}.rewrite-card{padding:16px;margin:12px 0}.change-status{margin:0 0 6px;font-size:12px}
+main:has(.review-panel)>.career-hero,main:has(.review-panel)>.career-steps,main:has(.review-panel)>#application{display:none}
+.info-help{position:relative;display:inline-block;flex:0 0 auto;border:0;padding:0;margin:0;line-height:1.5}
+.info-help>summary{display:grid;place-items:center;width:26px;height:26px;border:1px solid #c8d1df;border-radius:50%;font-size:14px;color:#52658c;background:white;list-style:none;cursor:pointer}
+.info-help>summary::-webkit-details-marker{display:none}.info-help[open]>summary{color:var(--blue);border-color:var(--blue);background:#f1f4ff}
+.help-panel{position:absolute;z-index:20;right:0;top:28px;width:min(410px,calc(100vw - 60px));max-height:380px;overflow:auto;padding:18px;background:white;border:1px solid #d2dae8;border-radius:10px;box-shadow:0 12px 36px #182b4926;color:#344158;text-align:left;font-size:14px;font-weight:400}
+.help-panel p{margin:8px 0;line-height:1.6}.help-panel .hint{font-size:12px}.help-panel strong{font-size:14px}
+.writing-examples{list-style:none;padding:0;margin:10px 0 0}.writing-examples li{border-top:1px solid #edf0f5;padding:10px 0;margin:0;display:flex;align-items:start;justify-content:space-between;gap:12px}
+.writing-examples .text-button{flex-shrink:0;color:var(--blue);padding:0;font-size:12px;text-decoration:underline}
+.section-wording{margin:14px 0;padding:12px 14px;border-left:3px solid #aabcf0;background:#f4f7fe;border-radius:0 8px 8px 0;font-size:14px}
+.section-wording>strong{font-size:12px;color:#53658a}.section-wording p{margin:6px 0;line-height:1.55;white-space:pre-line;overflow-wrap:anywhere}.section-wording>.text-button{padding:2px 0;color:var(--blue)}
+.wording-option{padding:10px 0;border-top:1px solid #dfe6f4}.wording-option .text-button{padding:2px 0;color:var(--blue)}.inside-wording{background:white;border:1px solid var(--line);border-left:3px solid #aabcf0}.suggested-wording-heading{margin-top:24px}
+@media(max-width:760px){.review-section-list{grid-template-columns:1fr}.review-section-list>.review-section{padding:16px}.section-workshop{padding:16px}.help-panel{max-height:300px}.writing-examples li{display:block}.writing-examples .text-button{display:block;margin-top:7px}}
+
+/* Start with the builder; optional tools follow the document. */
+.career-hero{display:block;min-height:0;margin:0 0 28px}
+.hero-copy h1{font-size:clamp(30px,3.2vw,44px)}
+.hero-actions{margin-top:20px}
+.builder-heading{scroll-margin-top:20px;margin:0 0 16px}
+.builder-heading h2{font-size:20px;margin:0}
+#application,#review-workspace{margin-top:28px}
+.review-price{font-size:13px;color:var(--muted)}
+main.builder-started .review-intro .review-price{display:block}
+@media(max-width:760px){
+ .career-hero{margin-bottom:24px}
+ body .mobile-preview{display:block;position:fixed;bottom:18px;right:18px;z-index:25;box-shadow:0 4px 18px #17274840}
+ body #toast{bottom:76px}
+ main{padding-bottom:88px}
+ header .header-build{display:none}
+ body:has(main.builder-started) header .header-build{display:block}
+}

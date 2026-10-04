@@ -1,8 +1,8 @@
 # CV Hapi
 
-29 September update: review-loss fixes A/B, accurate remaining quota D and false payment flag E are implemented locally. Intended one-time price is EUR 2. An API privacy gate is implemented but the provider's contractual basis is **not resolved**; see [API-PRIVACY.md](API-PRIVACY.md). These changes await deployment.
+4 October audit: shorter copy, repaired review/checkout state, 111 passing tests and a successful production build. Real local DeepSeek review of a fictional PDF: six sections, five priorities, 15 recommendations and two verified rewrites. This update remains local and undeployed. Free tools have a prepared release candidate; paid AI is blocked by delivery/processing recovery and unresolved provider/commercial disclosures. See [LAUNCH-STATUS.md](LAUNCH-STATUS.md).
 
-English/Macedonian CV pilot for North Macedonia. Live: https://cv-hapi.quara0n.chatgpt.site/en/ (also /mk/).
+English/Macedonian CV product for North Macedonia. Live: https://cvhapi.com/ (also /mk/).
 
 ## Current product
 
@@ -10,25 +10,39 @@ English/Macedonian CV pilot for North Macedonia. Live: https://cv-hapi.quara0n.c
 - Editable fixed-template cover letter and combined application PDF.
 - PDF, DOCX and TXT import, read in the browser (5 MB; PDFs up to 12 pages; CV text up to 20,000 characters). Scans need OCR elsewhere.
 - Optional DeepSeek feedback against a job advertisement, exact source quotes and individually accepted wording suggestions.
+- Section editors for profile, experience, education, skills, languages, contact details and cover letter. Starting drafts use existing text, verified rewrites and user-entered facts. Preview and factual confirmation precede application; ambiguous sections require manual placement. Drafts remain in tab memory until downloaded.
+- Compact section cards show one next step, with full assessments/actions behind an info button. Priorities, vacancy comparison, questions and wording comparisons expand on demand. Field info buttons open on hover, keyboard focus or tap and offer optional writing examples; known chiropractor roles get relevant patient-focus and method examples. Choosing an example fills a field only, never applies it directly to the CV. Examples are local templates, not inferred facts or another AI call.
+- Each supported section also shows a visible wording idea before opening its editor. Inside, two adaptable phrases can be appended to the draft; bracketed facts must be supplied before applying. Verified AI rewrites have their own Suggested wording heading, with the first two comparisons expanded by default.
 - Revised text can be edited and downloaded as a clean text-layout PDF or TXT. Uploaded layout is not preserved.
-- No signup, subscription, OCR or automatic translation. Everything remains free during this pilot. Stripe test-mode code is implemented but disabled; see PAYMENTS.md for account and launch blockers.
+- No signup, subscription, OCR or automatic translation. Builder/PDF are free; intended AI price is EUR 2 once. Stripe live payment was verified, then paused because AI capacity was nearly exhausted. See the October handoff for current state and PAYMENTS.md for architecture.
 
 ## Run and verify
 
 Node 22+ required. Run `npm ci`, `npm run dev`, `npm test`, `npm run build`.
-The Vite preview intentionally reports AI unavailable; the real API runs in the deployed Worker.
+The ordinary Vite server reports AI unavailable. Use `npm run dev:test` for the local site with its real AI backend, or the deployed Worker for hosted operation.
 On this Windows host esbuild may need execution outside the sandbox due to parent-directory access restrictions.
+The local AI server must also run with outbound network access. A server launched inside the restricted Codex sandbox can serve localhost while DeepSeek connections fail with `EACCES`. Before handing over an AI retry, verify provider connectivity in the same execution context as the server; a localhost availability response only checks configuration and quota.
 
 Build output: `dist/client` for browser assets, `dist/server/index.js` for Worker, and `dist/.openai` for Sites manifest and migrations.
 
+### Local Stripe sandbox and real AI test
+
+Put a Stripe sandbox secret key (`sk_test_` or `rk_test_`) and `DEEPSEEK_API_KEY` in the ignored `.env.local-test` file. Run `node scripts/local-stripe-test.mjs` and open http://localhost:5174/. This separate server uses the existing payment/AI implementation, rejects live Stripe keys, and verifies the test payment through Stripe status polling. No webhook forwarding is needed for this manual test; webhook delivery is not tested by this setup. Keys reload on each API request.
+
+The owner authorized unlimited local reviews. `LOCAL_TEST_UNLIMITED_REVIEWS=true` requires owner-credit/repair flags, loopback requests and Stripe sandbox credentials; hosted/live requests retain their configured limit. Attempts remain recorded in ignored `test-output/local-stripe-test.sqlite`. Do not delete the database or reset the hosted counter for more attempts. Public AI/purchases remain paused. Test card: `4242 4242 4242 4242`, future expiry, three-digit CVC; never a real card. Consent only after checking the exact submitted text.
+
+Completed-review commentary follows the selected interface language through DeepSeek translation cached in the current tab. Original CV text, evidence quotations, proposed rewrites and user drafts remain unchanged. Translation requires consent and a used paid entitlement or guarded local owner access; it counts toward provider attempt limits without another Stripe purchase.
+
+Reviews use generation, editorial audit for extensive feedback and factual/language checks within a shared deadline. Owner-credit tests do not verify checkout/webhooks.
+
 ## AI and privacy
 
-See [AI-REVIEW.md](AI-REVIEW.md) for integration and limits. Runtime environment has a secret `DEEPSEEK_API_KEY`, `AI_ENABLED=true` and `AI_MAX_REVIEWS=10`.
-The user authorized **10 analyses total including tests**, not per user/day. D1 atomically reserves a slot before each provider call; failures consume a slot. Never reset the counter during deployment or migration.
+See [AI-REVIEW.md](AI-REVIEW.md) for integration and limits. Last confirmed deployed environment has `AI_ENABLED=false`, `PAYMENTS_ENABLED=false` and `AI_MAX_REVIEWS=10`. A stored, unapplied environment revision depends on a new checkout guard; **do not deploy it with old source**. Details are in the October handoff. Secrets are in ignored local/runtime configuration, never browser bundles.
+The hosted pilot remains capped at ten reserved reviews; later unlimited authorization applies only to guarded local owner testing. D1 atomically reserves a slot before each provider call; failures consume a slot. Never reset the counter during deployment or migration.
 
 Files are extracted locally. Only after explicit consent are displayed CV text and vacancy sent through the server to DeepSeek. Our database stores the quota counter and, when payments are enabled, opaque payment IDs/state, not CVs or replies. DeepSeek processes submitted text under its own privacy policy. AI can still make mistakes; user review is essential.
 
-GA4 G-JYTW6J3BRZ uses consent-gated allowlisted events. Enhanced measurement and arbitrary CV properties are disabled. Microsoft Clarity project ypjcjxa0o9 uses separate 18+ recording consent, strict masking and consentv2; a masked synthetic recording was verified live. [GROWTH-AND-ANALYTICS.md](GROWTH-AND-ANALYTICS.md) describes measurement.
+GA4 G-JYTW6J3BRZ uses consent-gated allowlisted events. Enhanced measurement and arbitrary CV properties are disabled. Microsoft Clarity project ypjcjxa0o9 uses separate 18+ recording consent, strict masking and consentv2; a masked synthetic recording was verified on the earlier host. Custom-domain hostname fixes are local; ingestion on cvhapi.com has not been verified. [GROWTH-AND-ANALYTICS.md](GROWTH-AND-ANALYTICS.md) describes measurement.
 
 ## Deployment and continuity
 
@@ -38,10 +52,10 @@ Read the Sites building/hosting skills before publishing. Reuse the project ID i
 
 ## Remaining launch gates
 
-cvhapi.mk and cvhapi.com were available at the September 28 check. The .com cart quoted EUR 19.50 for one year before final tax/login. No domain was purchased. Ads have not launched; the user authorized a maximum NOK 300 total pilot. The existing Ads account uses AUD and GMT+10; Macedonian is not a supported targeting language. Do not confuse daily budget with the total spending limit.
+cvhapi.com has been purchased and connected. Support is support@cvhapi.com via forwarding, rather than a new Gmail account. Ads have not launched; the user authorized a maximum NOK 300 total pilot. The existing Ads account uses AUD and GMT+10; Macedonian is not a supported targeting language. Do not confuse daily budget with the total spending limit.
 
-Before charging EUR 2, validate value with real users, review Macedonian wording, finish seller/payment onboarding and all commercial launch gates in PAYMENTS.md. Free tools including Europass remain credible competitors; demand and willingness to pay are not proven by a functioning prototype.
+Before reopening EUR 2 checkout, resolve capacity/result recovery and commercial disclosures. [TERMS-OF-SALE-DRAFT.md](TERMS-OF-SALE-DRAFT.md) is unpublished and needs owner review, seller address, cancellation disclosures and VAT assessment. Provider processing terms remain unresolved. Free tools including Europass remain credible competitors; demand and willingness to pay are not proven by a functioning prototype.
 
 ## Verification boundary
 
-32 automated tests pass: editing, restore/reset, escaping, analytics consent/allowlisting, review consent and explicit apply, API validation and durable quota. Browser PDF/DOCX import and an actual DeepSeek review were verified with fictional data. Revised PDF download was verified as a readable one-page document. More real-device/mobile and native Macedonian quality checks remain.
+4 October: all 111 tests and production build pass. TXT/DOCX fixtures, real PDF upload/downloads, Cyrillic/multi-page PDFs, section apply/undo, consent and checkout/reset races checked. Desktop and 390-pixel browser layouts inspected; physical-device and native Macedonian editorial quality remain unverified. Real hosted Stripe/webhooks and paid interrupted-delivery recovery remain open. [LAUNCH-STATUS.md](LAUNCH-STATUS.md) records boundaries. Nothing deployed.

@@ -4,7 +4,7 @@ export const CLARITY_ID='ypjcjxa0o9';
 const preferenceKey='cvhapi.replay.consent.v1';
 let allowed=false,loaded=false,stopped=false;
 try{allowed=localStorage.getItem(preferenceKey)==='yes'}catch{}
-const permitted=()=>allowed&&!navigator.globalPrivacyControl&&navigator.doNotTrack!=='1'&&location.hostname==='cv-hapi.quara0n.chatgpt.site';
+const permitted=()=>allowed&&!navigator.globalPrivacyControl&&navigator.doNotTrack!=='1'&&['cvhapi.com','www.cvhapi.com'].includes(location.hostname);
 export const getReplayConsent=()=>allowed;
 export const replayNeedsReload=()=>stopped;
 

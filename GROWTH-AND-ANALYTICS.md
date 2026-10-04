@@ -49,3 +49,10 @@ MKhost direct lookup on 2026-09-28 returned cvhapi.mk and cvhapi.com available.
 ## Live verification, September 28
 
 A synthetic live Clarity recording was received and visually checked: all text was masked, including CV preview. Evidence: test-output/clarity-masked-live.png. GA4 realtime received a synthetic visit; do not count it as a customer. Saved open funnel CV Hapi — CV to PDF has the five builder steps above and device breakdown. Its current last-28-days range excludes today; normal reporting latency applies. Exploration: https://analytics.google.com/analytics/web/#/analysis/a283629177p556316817/edit/Z0O2ccM_S_WiY0Femv9LDw .
+
+
+## 4 October release configuration
+
+Primary public address: https://www.cvhapi.com/; apex remains connected. Both domains are allowlisted for GA4/Clarity. Root analytics locations now follow the selected interface language, keeping query values, fragments and arbitrary referrers out of custom events. Consent and separate adult recording consent are preserved; recordings mask all document content. GA4 and Clarity dashboards are accessible under the existing owner account. Historical visits include synthetic QA; they do not establish customer activity.
+
+Free-tool release is authorized; AI_ENABLED, PAYMENTS_ENABLED and CHECKOUT_ENABLED are set false for the release environment. Ads remain on hold. Current saved builder funnel is available at the existing exploration URL above. Upcoming live synthetic analytics verification is separate from historical results.

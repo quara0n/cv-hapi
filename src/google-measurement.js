@@ -1,9 +1,9 @@
 import {EVENTS,safeProperties,attribution} from './telemetry-core.js';
 export const MEASUREMENT_ID='G-JYTW6J3BRZ';
-const productionHost='cv-hapi.quara0n.chatgpt.site';
+const productionHosts=['cvhapi.com','www.cvhapi.com'];
 let initialized=false;
 const initialAttribution=attribution(location.href,document.referrer);
-export const googleEnabled=()=>location.hostname===productionHost;
+export const googleEnabled=()=>productionHosts.includes(location.hostname);
 function gtag(){window.dataLayer=window.dataLayer||[];window.dataLayer.push(arguments)}
 export function googleConsent(allowed){
  if(!googleEnabled())return;
@@ -20,7 +20,7 @@ export function googleConsent(allowed){
  gtag('config',MEASUREMENT_ID,{send_page_view:false,allow_google_signals:false,allow_ad_personalization_signals:false,cookie_domain:'none',cookie_expires:86400,cookie_update:false,page_location:cleanLocation(),page_referrer:'',page_title:'CV Hapi CV'});
  const script=document.createElement('script');script.async=true;script.src=`https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`;script.referrerPolicy='no-referrer';document.head.append(script);
 }
-function cleanLocation(){return `https://${productionHost}${/^\/mk(?:\/|$)/.test(location.pathname)?'/mk/':'/en/'}`}
+function cleanLocation(){const route=location.pathname.match(/^\/(mk|en)(?:\/|$)/)?.[1];const language=route||(['mk','en'].includes(document.documentElement.lang)?document.documentElement.lang:'mk');return `https://${location.hostname}/${language}/`}
 export function googleTrack(event,properties={}){
  if(!googleEnabled()||!initialized||window[`ga-disable-${MEASUREMENT_ID}`]||!EVENTS.includes(event))return;
  const source=initialAttribution;

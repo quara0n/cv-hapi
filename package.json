@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
+    "dev:test": "node scripts/local-stripe-test.mjs",
     "build": "vite build && node scripts/seo.mjs && node scripts/worker-build.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "test": "node --test tests/*.test.js"
