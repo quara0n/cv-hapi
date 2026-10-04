@@ -53,3 +53,17 @@ Machine-local runtime was session 4978/PID 15180 (`npm run dev:test`); verify be
 ## Latest review choice update
 
 Version 25 source b9ab779762895af8691087b63638238f10325a9e, deployment appgdep_6ac296eb618881918e4beb14efcf2a8d succeeded with environment revision 9. Review with AI / Continue without AI replaces the cluttered preparation flow. 141 tests and production builds passed. Completed review receipt and resolved PDF export race: docs/reviews/review-choice-20261004. Details: docs/releases/2026-10-04-review-choice.md. No new paid AI call or real-money purchase for this UI update.
+
+## New Norwegian Ads setup — owner-authorized continuation
+
+Owner explicitly approved continuing a new account on runefinne1989@gmail.com after the old account was observed as closed. New setup displays customer ID 297-799-3323, ocid 8584207156. Billing country Norway, Norway timezone (GMT+02 currently), currency NOK confirmed. Used Set up an account only: no campaign created on this account. Correct business description 150 MKD / three reviews entered; irrelevant Electronics category removed; skipped private telephone/YouTube linking. Phone guidance and promotional emails set No.
+
+Payment form now accessible, existing payment profile/card offered. Google states a temporary NOK 100 authorization, typically removed within a week. Submit accepts Google Ads Terms and completes billing; NOT clicked, pending owner's explicit agreement. Promotional offer requires NOK 4000 spend to qualify; this is not a planned spend and never overrides the owner's NOK 300 total cap. Original AUD draft belongs to OLD account; cannot describe it as the new NOK campaign. Preserve new setup tab; evidence test-output/ads-nok-payment-ready.png. No advertising launched.
+
+## Current NOK account and campaign — 4 October evening
+
+Owner completed billing/account submission and advertiser-name step. New account 297-799-3323 (runefinne1989@gmail.com), ocid 8584207156, Norway/NOK/Central European timezone. Overview shows NOK 0.00 balance, a primary payment method and no upcoming payment. This replaces the old closed AUD account as the active setup target. Overview alone does not establish all advertiser-verification checks approved.
+
+Actual new Search draft: campaign 281499290296765, draft 10216892942, MK | Search | CV Hapi | NOK300 pilot. Search only, North Macedonia only, presence rather than interest, English, Display/Search Partners off, AI Max and text/URL expansion off. Maximize Clicks with NOK 1 CPC cap. Enhanced conversions explicitly unchecked. Seven exact/phrase review keywords and seven headlines/four descriptions entered and Done clicked. Correct 150 MKD / three-review bundle copy, import-first EN review destination with allowed UTMs. Negative keywords not yet applied; GA4 linking/purchase import not yet verified for this new account.
+
+BLOCK: selecting Campaign total budget triggers Confirm it's you; Confirm returned Try again in in-app browser. Total budget NOT selected/saved; recommended daily NOK 1.15 remains selected underneath prompt. Do NOT publish using that daily budget. Intended fixed 200 NOK total / 5–18 October, leaving reserve for applicable costs within owner NOK 300 total ceiling. No new-account campaign published and no spend initiated. Owner asked to open the draft in normal Chrome/Edge using runefinne1989@gmail.com and complete reauthentication on Budget. Screenshot test-output/ads-nok-budget-auth.png. Keep new account campaign tab open; old AUD draft is unrelated and must not launch.
