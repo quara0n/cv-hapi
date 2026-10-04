@@ -1,3 +1,9 @@
+## Redesign and three-review offer — latest publication
+
+Sites version 23 successfully deployed from `f609349971c12bfe77612198e88630f9aa8b24b7`, deployment `appgdep_6ac285dbf02c8191a7f2233ee5716b8c`, environment revision 9 preserved. New customers pay 150 MKD once for three AI reviews; editing and downloads remain unlimited and free. Eight real PDF templates and the redesigned six-step editor are live. The public introduction video has the new ElevenLabs narration, three-review/150-denari message, subtitles and animated brand ending.
+
+136 tests and the production build passed. All templates and ten-page pagination fixtures rendered; desktop and mobile-width browser layouts checked. Production `/api/payments/config` returned `enabled:true,test:false,amount:15000,currency:mkd,reviewCount:3`; `/api/review/status` returned `available:true,remaining:91`. Hosted D1 contains payment_deliveries and all four new bundle columns. See [release verification](docs/releases/2026-10-04-redesign.md) for test boundaries and browser-cookie access. No new real-money purchase is claimed. Google Ads linking remains blocked and no additional spend occurred. Earlier pricing, versions and pause sections below are historical.
+
 ## Homepage video — latest publication
 
 Sites version 22 published the approved Macedonian voiced demo beside the homepage headline, with one-click native playback, captions and transcript. Source `ed4ffa841b5ba03b38f2a0c9146aba35ed4dd19f`; deployment `appgdep_6ac274c9e2748191a10830fd75b27f03`; environment revision 9 unchanged. Both builds succeeded. Google Ads launch is authorized up to NOK 300 total but blocked by Google's missing-link/invalid-account-ID errors. No campaign or spend started. See marketing/READINESS.md for exact evidence. Earlier statuses below are historical.

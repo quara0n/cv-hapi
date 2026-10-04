@@ -1,16 +1,18 @@
 ---
 artifact_contract: "ce-handoff/v1"
 created_at: "2026-10-04T12:00:00Z"
-title: "CV Hapi free-tools release and morning analytics"
-summary: "Version 15 is live on www.cvhapi.com; analytics conversion and privacy settings checked, paid AI paused, daily 07:00 reports scheduled."
+title: "CV Hapi redesign, three-review bundle and growth continuation"
+summary: "Version 23 is live: 150 MKD for three AI reviews, unlimited downloads, eight templates, redesigned homepage/editor and updated Macedonian video. Ads linking still blocked."
 keywords: ["cvhapi", "launch", "ga4", "clarity", "github", "paid-ai-paused"]
 cwd: "C:/Users/runef/Documents/ChatGPT/CV builder"
 branch: "codex/review-reliability-eur2"
-head: "f1cd8afce436274fe1227b40b49c23a799211a91"
-resume_focus: "Use real usage reports to choose fixes or experiments; finish paid-launch recovery gates before enabling checkout"
+head: "f609349971c12bfe77612198e88630f9aa8b24b7"
+resume_focus: "Read the newest LAUNCH-STATUS and docs/releases/2026-10-04-redesign.md; continue authorized Google Ads setup without exceeding NOK 300 total."
 ---
 
 # Current state
+
+The current release is Sites version 23, source `f609349971c12bfe77612198e88630f9aa8b24b7`, deployment `appgdep_6ac285dbf02c8191a7f2233ee5716b8c`, environment revision 9. New purchases are 150 MKD once for three AI reviews. Unlimited free editing/downloads, eight templates, the redesigned homepage/editor and updated video are published. 136 tests/build passed; hosted offer, availability and additive migration verified. Read the latest LAUNCH-STATUS.md entry and docs/releases/2026-10-04-redesign.md before older details. No new real-money charge is claimed. The paragraphs below describe the earlier release and are historical.
 
 The user requested online launch, analytics, repository continuity, a GitHub push and a daily 07:00 morning report with recommendations. Main domain is https://www.cvhapi.com/; apex also works. Free tools published successfully through Sites version 15, deployment `appgdep_6ac23c5cec8c81918f5351c59bde6e6e`, environment revision 8, source SHA above. Native deployment URL: https://cv-hapi.quara0n.chatgpt.site. Public audience preserved. AI/payments/checkout flags explicitly false; secrets and D1 preserved. Paid AI pause is the agent's release decision grounded in the unresolved gates in LAUNCH-STATUS.md, communicated to the user.
 
