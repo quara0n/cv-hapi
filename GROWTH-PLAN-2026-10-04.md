@@ -1,5 +1,107 @@
 # CV Hapi growth plan — 4 October 2026
 
+## Current recommendation and verified state — evening update
+
+This section supersedes the older £2, one-review and preparation-only statements below. The current product is **150 MKD once for three AI reviews**, with free editing and unlimited PDF downloads. Sites v26 is live; the sidebar alignment fix is published. Paid acquisition is still not running. The owner authorizes **NOK 300 total including tax and currency costs**, not a recurring daily budget.
+
+An actual Google Search draft now exists in account 143-420-6814: `MK | Search | CV Hapi | NOK300 pilot`, campaign ID 281499301391213, draft ID 10217082388. Direct Ads creation works despite the earlier GA4 creation failure. Configuration observed after recovery: North Macedonia only, presence targeting, English, Google Search only, Search Partners and Display unchecked, AI Max/text customization/final URL expansion off, Maximize Clicks with 0.15 AUD CPC ceiling. Seven exact/phrase review keywords and corrected 150 MKD copy were entered again after a save failure. The CPC warning is a recommendation to use conversion bidding, not evidence that conversion tracking works.
+
+The proposed flight is 5–18 October in the account's GMT+11 timezone, with **30 AUD campaign total**, approximately NOK 200 at Google's observed 4 October 18:04 UTC quote of 6.68 NOK/AUD. This leaves a substantial reserve within NOK 300 for tax and currency costs, but actual billing treatment is unavailable. Google requires identity reauthentication when saving the budget. The budget appeared in the review screen but did not survive the first recovery reload: **do not describe it as durably saved or launch-ready** until it is saved after verification and read back. Verification returned “Try again.” Billing reports insufficient access. No Publish action was performed.
+
+GA4's current snapshot is three active users, three new users, 41 events and zero key events over seven days; one realtime user is in Norway. These may be owner tests, not evidence of customers. The GA4–Ads link list is empty and the owned-account picker has no results. A purchase event implementation does not establish a completed Ads import. The first commercial goal must be a retained, delivered paid order, counted once per bundle, rather than all three review uses or free downloads.
+
+### Acquisition strategy
+
+Use the entire small paid pilot in Search. Test people explicitly seeking CV feedback rather than buying generic traffic for `cv`, `jobs`, or free templates. The first experiment asks whether someone searching for a review will import a CV and buy the bundle. The pilot can reveal broken targeting, poor query fit and obvious friction; NOK 300 cannot establish a reliable long-term conversion rate or prove profitability. Do not split it across Meta, YouTube and Search or chase Google's optimization score by expanding targeting.
+
+The fresh owner-account Planner evidence shows 10–100 monthly searches for each of four English review/checker variants in North Macedonia. Variants overlap; do not add them together. Low volume may mean the pilot cannot spend the budget at a viable bid. If that happens, inspect eligibility and search terms before raising bids. Broader builder keywords have more demand but a different, frequently free, intent. Keep them for organic content first.
+
+Local competition changes the positioning. Thrivity explicitly advertises free PDF, no hidden fees or subscription and four CV languages. Its experience and ATS claims are marketing claims we have not independently tested. CV Hapi should emphasize **bring your existing CV, compare specific suggestions, choose your own edits, pay once**. “Free CV” alone is not a distinctive promise. Do not promise employment, interviews, universal ATS approval or an official Europass service.
+
+### Query-to-page map and organic work
+
+| Intent / query family | Destination and useful content | Commercial role |
+|---|---|---|
+| `cv на македонски`, `napravi cv` | Existing `/mk/`: make/edit a CV, visible template examples, free PDF and clear starting choices | Acquire useful free-tool users |
+| `cv review`, `ai cv review`, `cv checker` | Existing `/en/review/`: import first, review or continue free, 150 MKD / three reviews | Paid pilot destination |
+| `cv primer`, Macedonian CV example/PDF/Word searches | Proposed original Macedonian example guide with a complete fictional CV and explanation of each section | Earn relevant discovery and tool clicks |
+| No experience / first CV | Proposed Macedonian guide showing education, volunteering and transferable skills without fabricated experience | Help first-time applicants |
+| Cover-letter example | Proposed factual Macedonian example tailored to a fictional vacancy, with an editable starting point | Complement the CV journey |
+| English CV for applications abroad | Later guide comparing truthful Macedonian/English phrasing and CV conventions | Validate demand before expansion |
+
+Publish the first three guides as substantive individual pages, with unique titles, self canonicals, crawlable links from the homepage and sitemap entries. These guides are **planned, not currently published**. Each should contain the full example rather than a screenshot alone, a practical checklist and a contextual link to start/import a CV. Use fictional people and organizations; never publish real applicant documents for SEO. Avoid dozens of near-identical profession/location pages generated merely to capture keywords.
+
+Suggested English homepage title: `Free CV Builder & PDF Download | CV Hapi`. Review title: `AI CV Review: 3 Reviews for 150 MKD | CV Hapi`. Suggested Macedonian homepage title: `Направи CV на македонски и преземи PDF | CV Hapi`. Have native-language editorial review of guides and snippets before publishing. Titles should describe the actual page; Google may choose another title or snippet. There is no special word-count target or value in a meta-keywords tag.
+
+### Technical SEO priorities
+
+The site already prerenders the home and review routes in English and Macedonian, with canonical URLs, language alternates and a four-URL sitemap. Live HTTP checks returned 200 for robots.txt, sitemap.xml and `/mk/`; the sitemap is well-formed XML and robots permits crawling. Search Console nevertheless reports “Couldn't fetch,” and Page indexing is still processing. This discrepancy remains unresolved: an HTTP 200 from our client does not prove Google's crawler fetched or indexed the URLs. Inspect the current canonical URL in Search Console, compare its reported fetch/canonical details and recheck after processing. Do not repeatedly request indexing or claim rankings from the live indexability test.
+
+Keep each localized page self-canonical with reciprocal `hreflang="en"` / `hreflang="mk"`, fully qualified URLs and a deliberate x-default. Do not canonicalize English to Macedonian. `mk` identifies the language; country targeting in Ads is separate. Keep personal builder state and payment-return tokens out of indexable URLs. Prerender public explanations and link them using actual anchors rather than expecting crawlers to click wizard buttons.
+
+Measure mobile performance before changing assets further. Google's targets are LCP within 2.5 seconds, INP below 200 ms and CLS below 0.1, assessed with real-user data when available. These are targets, not measurements of this site or ranking guarantees. The homepage video already uses a poster and preload none. PDF/font/import dependencies are loaded separately; a large lazy PDF chunk does not by itself prove poor initial loading. Check Lighthouse and PageSpeed Insights for the actual public pages and verify changes on a normal mobile device. Reserve media dimensions and keep import/review responsive under slow-network conditions.
+
+Normal SEO fundamentals also apply to Google AI search. Google's documentation states that no additional AI-specific markup or special text file is required. Eligibility still depends on indexing and snippet eligibility, and appearance is not guaranteed. Structured data should describe visible facts; never add fake ratings. Google's 2026 changelog says FAQ rich results have been removed, so use FAQs to answer users, not as a rich-result shortcut. A homepage demo is complementary video, not a dedicated watch page; a later how-it-works page with transcript and valid video metadata could qualify for video discovery, without guaranteeing it.
+
+### Search execution and optimization rules
+
+The first ad group uses `[cv review]`, `"cv review"`, `[ai cv review]`, `"ai cv review"`, `[cv checker]`, `"cv checker"` and `[resume review]`. Exact/phrase still permit close variants, so inspect actual search terms. Candidate negatives include job vacancies, job listings, recruiter jobs and irrelevant courses. Do not blanket-exclude `free`: our free builder is real, and a negative should reflect the specific paid-review group's unwanted intent. Negative terms are prepared and have not yet been applied in Ads.
+
+Creative must disclose the current offer and match the landing page: “3 AI Reviews · 150 MKD,” “Review Your Existing CV,” “No Subscription. Pay Once.” Avoid price-free clickbait followed by a payment surprise. Keep the import action obvious on mobile, explain supported file formats before browsing, preserve the continue-free route and show the charge at checkout. Do not send paid review traffic to a generic homepage merely to increase session counts.
+
+Add only useful, verified sitelinks: free builder, pricing/three-review explanation, how it works and help/terms where the destinations actually provide those answers. Prepare unique destinations before adding assets; do not create redundant links simply to improve ad strength. Current draft has one responsive ad with seven headlines and four descriptions. A small pilot will not support a meaningful multi-variant experiment. Once there is enough traffic, change one substantive promise at a time and compare retained paid deliveries rather than selecting the highest CTR alone.
+
+Before activation, read back the persisted country, presence setting, networks, expansion switches, CPC cap, total budget and dates. Verify billing access/tax treatment and the correct GA4 property/Ads purchase action. Keep the bundle purchase primary and free PDF/import events secondary. Do not switch to Maximize Conversions or target ROAS from zero verified commercial events just because Google recommends it. No first-position or competitor-outranking guarantee follows from paying Google.
+
+Stop spending immediately for wrong-country traffic, a broken import/checkout/review delivery, price mismatch or a missing enforced total cap. Review relevant queries and funnel errors after the first usable clicks; exclude clearly irrelevant terms. At the end of the flight, stop and reconcile account spend, delivered orders, refunds and actual net margin. Zero sales from a tiny sample is a reason to diagnose, not proof that demand is zero. Do not automatically refill the budget.
+
+### Unit economics and measurement
+
+Calculate contribution per **three-review bundle**, including the cost of all three reviews, payment and settlement FX fees, applicable taxes, expected refunds and variable support. Unlimited downloads do not justify assuming subscription lifetime value. Break-even CPA equals that contribution; break-even CPC equals contribution multiplied by paid-delivered conversion rate.
+
+| Hypothetical net bundle contribution | 2% conversion | 5% conversion | 10% conversion |
+|---|---:|---:|---:|
+| 90 MKD | 1.8 MKD CPC | 4.5 MKD CPC | 9 MKD CPC |
+| 110 MKD | 2.2 MKD CPC | 5.5 MKD CPC | 11 MKD CPC |
+
+These are illustrative scenarios, not measured margins or conversion rates. The draft's 0.15 AUD ceiling is a conservative learning setting, not a proven profitable bid. Use actual settlement records to calculate the real ceiling before scaling.
+
+Track the path: ad click → review landing → import success → AI/payment choice → checkout → payment → first review delivered → retained order. Diagnose each loss separately. Report relevant click count/CPC, import success rate, checkout start rate, retained delivered CPA and net contribution. GA4 and Clarity help locate friction, while payment records establish revenue and refunds. Browser consent limits coverage; never “fix” attribution by sending CV text, email addresses, full payment URLs or document contents to analytics. Google Ads linking is currently blocked; account permissions must be resolved without silently broadening data access.
+
+### Instagram, Facebook and partnerships
+
+DataReportal reports 1.67 million internet users, 1.03 million social-media user identities and 910,000 potential Instagram users in late 2025. Identities/ad reach are not unique active jobseekers or expected purchasers, and audiences overlap. This supports testing the existing Macedonian demo organically, not spending the small Search budget on speculative demographic segments. Use clear subtitles, a real product action in the opening seconds and a branded ending. Publish separate vertical/feed compositions with commercial-use audio rights confirmed. Organic publication and outreach have not been performed by this research.
+
+Start messaging around existing CV improvement, first applications and honest English applications. Include varied ages and occupations in fictional demonstrations; do not assume gender, unemployment or financial difficulty from search history. Do not buy applicant lists or build audiences from CV uploads. Paid Meta is a later separately budgeted experiment after Search economics and tracking are understood. Check the actual creative against Meta's current employment-category requirements before publishing; general career advice does not authorize job-offer targeting assumptions.
+
+The local SERP sample contained university resources, Vrabotuvanje, other publishers and document-sharing pages. It was browsed from Norway with Macedonian query parameters, so it is not a verified local ranking audit. Vrabotuvanje's CV article stresses truthful, concrete experience and job-specific examples. University career centers and job-advice publishers are plausible partnership targets for an original guide or demonstration. Their self-reported traffic is not an independently verified forecast. Prepare a useful editorial contribution before contacting anyone; no messages were sent.
+
+### Work order
+
+1. Finish Google identity/billing and durable draft saving; verify commercial conversion setup and the bounded flight before launch.
+2. Resolve Search Console processing/fetch evidence and improve public title/snippet clarity.
+3. Publish three original Macedonian guides with complete examples and direct tool links, with native-language review.
+4. Measure mobile import/payment friction and real delivery economics during the single Search pilot.
+5. Use the voiced product demo organically; consider another paid channel only after a separate budget decision and usable evidence.
+
+### Sources checked for this update
+
+- [Google SEO starter guide](https://developers.google.com/search/docs/fundamentals/seo-starter-guide): useful content, titles/snippets and common SEO misconceptions.
+- [Localized versions](https://developers.google.com/search/docs/specialty/international/localized-versions): reciprocal, fully qualified language annotations.
+- [Google AI features](https://developers.google.com/search/docs/appearance/ai-features): normal SEO and indexing eligibility, no special AI markup.
+- [Core Web Vitals](https://developers.google.com/search/docs/appearance/core-web-vitals): LCP, INP and CLS targets.
+- [Search documentation updates](https://developers.google.com/search/updates#removing-faq-rich-result): 2026 FAQ rich-result removal.
+- [Video SEO](https://developers.google.com/search/docs/appearance/video): dedicated watch pages and crawlable stable assets.
+- [Generative AI content guidance](https://developers.google.com/search/docs/fundamentals/using-gen-ai-content): added value and scaled-content abuse.
+- [Digital 2026 North Macedonia](https://datareportal.com/reports/digital-2026-north-macedonia): dated audience estimates and methodology caveats.
+- [Thrivity CV builder](https://thrivity.com.mk/pages/napravi-cv/): directly observed local competitor positioning.
+- [Vrabotuvanje CV advice](https://www.vrabotuvanje.com.mk/sovet/7821f276-0e44-11f0-9518-0254e1e2ead1/barate-nova-rabota-nekolku-soveti-kako-da-napisete-cv-sto-kje-ve-izdvoi-od-drugite): local advice intent, article dated 4 March 2023.
+- [Google currency quote](https://www.google.com/finance/quote/AUD-NOK): observed search converter quote 6.68 NOK/AUD on 4 October; card settlement and tax still unverified.
+
+## Historical preparation and research
+
+The sections below retain earlier offer and release receipts. Apply the current recommendation above when configuring advertising; older £2 economics and one-review creative are superseded.
+
 ## Decision
 
 Use a small Google Search pilot to test willingness to pay for the £2 AI review, and prepare a real product-demo video for a later Meta test. Build Macedonian organic search content alongside it. Keep the existing NOK 300 **total** learning budget in one paid channel; dividing it between Google, Instagram, Facebook and YouTube would produce very little evidence per channel.

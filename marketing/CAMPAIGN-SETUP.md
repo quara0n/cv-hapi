@@ -1,3 +1,12 @@
+## Current Search draft — evening 4 October
+
+Current offer: **150 MKD once / three AI reviews / unlimited free editing and downloads**. This supersedes older £2/one-review preparation below. Actual draft: MK | Search | CV Hapi | NOK300 pilot; account 143-420-6814, campaign 281499301391213, draft 10217082388. Account AUD, GMT+11.
+
+North Macedonia only, presence targeting, Search only, Search Partners/Display off, English, no audience segments, AI Max/text customization/final URL expansion off survived recovery. Maximize Clicks, 0.15 AUD maximum CPC. Seven exact/phrase review keywords and corrected ad were restored after a save error.
+
+Proposed flight 5–18 October, **30 AUD campaign total**, about NOK 200 at the observed 6.68 NOK/AUD quote. NOK 300 is the all-in ceiling including taxes and FX. Budget appeared in review but identity reauthentication blocks durable saving; the initial attempt did not survive reload. Verification returned Try again. Billing access denied. No Publish action or spend. GA4–Ads link and commercial conversion import still unverified.
+
+After owner verification in normal Chrome/Edge, repeat budget action and read back persisted settings; verify billing costs and purchase goal before activation. No recurring daily budget, automatic refill or broad expansion. Proposed negatives remain unapplied. Current evidence, economics, SEO and stop rules are in GROWTH-PLAN-2026-10-04.md. Screenshot: test-output/ads-pilot-verification.png. Earlier receipts below are historical.
 # CV Hapi: prepared campaign setup
 
 Prepared 4 October 2026. Nothing in this folder launches advertising. Total advertising spend remains NOK 0 for this preparation. The authorized pilot ceiling is NOK 300 total, including any applicable tax and currency costs; the existing Google Ads account uses AUD and GMT+10.

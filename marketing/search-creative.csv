@@ -1,26 +1,22 @@
 Type,Text,Match type,Status
-Headline,AI CV Review for £2,,Prepared only
-Headline,One Review. No Subscription.,,Prepared only
-Headline,Make Your CV Clearer,,Prepared only
-Headline,Choose Your CV Edits,,Prepared only
-Headline,Feedback on Your Existing CV,,Prepared only
-Headline,Review Your Cover Letter,,Prepared only
-Headline,Keep Control of Your CV,,Prepared only
-Headline,Free CV Builder and PDF,,Prepared only
-Headline,CV Hapi,,Prepared only
-Description,Get AI feedback on your CV and optional cover letter. £2 once. No subscription.,,Prepared only
-Description,Compare suggested wording and choose your edits. Check facts before saving.,,Prepared only
-Description,Already have a CV? Review its wording with AI. Your original stays unchanged.,,Prepared only
-Description,The CV builder and standard PDF are free. Pay only for one optional AI review.,,Prepared only
-Keyword,cv review,Exact,Planner 10–100 monthly; intent unproven
-Keyword,cv review,Phrase,Planner 10–100 monthly; intent unproven
-Keyword,cv checker,Exact,Planner 10–100 monthly; intent unproven
-Keyword,resume review,Exact,Planner 10–100 monthly; intent unproven
-Keyword,ai cv review,Exact,Planner 10–100 monthly; intent unproven
-Negative,free cv review,Phrase,Proposed
-Negative,free resume review,Phrase,Proposed
-Negative,job vacancies,Phrase,Proposed
-Negative,job listings,Phrase,Proposed
-Negative,recruiter jobs,Phrase,Proposed
-Negative,cv examples,Phrase,Proposed
-Negative,europass,Phrase,Proposed
+Headline,3 AI Reviews · 150 MKD,,Draft entered; launch blocked
+Headline,Review Your Existing CV,,Draft entered; launch blocked
+Headline,CV Hapi,,Draft entered; launch blocked
+Headline,No Subscription. Pay Once.,,Draft entered; launch blocked
+Headline,Make Your CV Clearer,,Draft entered; launch blocked
+Headline,Choose Your Own Improvements,,Draft entered; launch blocked
+Headline,Free Editing & PDF Downloads,,Draft entered; launch blocked
+Description,Import your CV. Get 3 AI reviews for 150 MKD once. No subscription.,,Draft entered; launch blocked
+Description,Compare AI suggestions and choose your edits. Keep control of your CV.,,Draft entered; launch blocked
+Description,Build or edit your CV and download PDFs for free. AI review is optional.,,Draft entered; launch blocked
+Description,Bring your existing CV. Improve the wording while keeping your facts.,,Draft entered; launch blocked
+Keyword,cv review,Exact,Draft entered; demand unproven
+Keyword,cv review,Phrase,Draft entered; demand unproven
+Keyword,ai cv review,Exact,Draft entered; demand unproven
+Keyword,ai cv review,Phrase,Draft entered; demand unproven
+Keyword,cv checker,Exact,Draft entered; demand unproven
+Keyword,cv checker,Phrase,Draft entered; demand unproven
+Keyword,resume review,Exact,Draft entered; demand unproven
+Negative,job vacancies,Phrase,Proposed; not applied
+Negative,job listings,Phrase,Proposed; not applied
+Negative,recruiter jobs,Phrase,Proposed; not applied

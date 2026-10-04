@@ -1,3 +1,12 @@
+## Current Search draft — evening 4 October
+
+Current offer: **150 MKD once / three AI reviews / unlimited free editing and downloads**. This supersedes older £2/one-review preparation below. Actual draft: MK | Search | CV Hapi | NOK300 pilot; account 143-420-6814, campaign 281499301391213, draft 10217082388. Account AUD, GMT+11.
+
+North Macedonia only, presence targeting, Search only, Search Partners/Display off, English, no audience segments, AI Max/text customization/final URL expansion off survived recovery. Maximize Clicks, 0.15 AUD maximum CPC. Seven exact/phrase review keywords and corrected ad were restored after a save error.
+
+Proposed flight 5–18 October, **30 AUD campaign total**, about NOK 200 at the observed 6.68 NOK/AUD quote. NOK 300 is the all-in ceiling including taxes and FX. Budget appeared in review but identity reauthentication blocks durable saving; the initial attempt did not survive reload. Verification returned Try again. Billing access denied. No Publish action or spend. GA4–Ads link and commercial conversion import still unverified.
+
+After owner verification in normal Chrome/Edge, repeat budget action and read back persisted settings; verify billing costs and purchase goal before activation. No recurring daily budget, automatic refill or broad expansion. Proposed negatives remain unapplied. Current evidence, economics, SEO and stop rules are in GROWTH-PLAN-2026-10-04.md. Screenshot: test-output/ads-pilot-verification.png. Earlier receipts below are historical.
 ## Latest homepage and Ads launch attempt — 4 October 2026
 
 Sites version 22 succeeded at 17:46 Europe/Oslo, source `ed4ffa841b5ba03b38f2a0c9146aba35ed4dd19f`, deployment `appgdep_6ac274c9e2748191a10830fd75b27f03`, environment revision 9 preserved. The approved voiced video is visible to the right of the headline/actions on desktop, paused with native controls and preload none. It stacks below the introduction at the mobile CSS breakpoint. English/Macedonian caption tracks and a text transcript are supplied. Actual local playback reached 20 seconds; the right-column bounds and paused initial state were verified. Builds and five-route prerender succeeded. Screenshot: `test-output/homepage-video-right.jpg`. A requested 390-pixel browser viewport was not reflected in the reported width, so do not claim a verified 390-pixel browser test from that attempt. The source uses a single-column breakpoint at 760 pixels.

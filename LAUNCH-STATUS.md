@@ -1,3 +1,6 @@
+## Sidebar alignment — latest publication
+
+Sites version 26 successfully deployed source `22662bedd1de6b992d37cf943434b8ebfd0e312f`, deployment `appgdep_6ac29925c5a08191b4f59862fe86e12b`, environment revision 9 and public access preserved. Desktop sidebar buttons now align their numbered badges and labels at a common left edge. Local browser geometry confirms all six badges at x=73.59375; screenshot test-output/sidebar-spacing.png. This is a CSS-only alignment change with no new tests; production build and completed focused review passed (docs/reviews/sidebar-spacing-20261004). The previous 141-test run remains applicable to unchanged behavior.
 ## Simple review choice — latest publication
 
 Sites version 25 is live, source `b9ab779762895af8691087b63638238f10325a9e`, deployment `appgdep_6ac296eb618881918e4beb14efcf2a8d`, environment revision 9 and public access preserved. The imported-CV screen now offers Review with AI or Continue without AI. File replacement, optional documents and detailed privacy information are expandable. Free continuation opens editing/downloads directly without AI requests or credit use; Back preserves edits. The 150 MKD / three-review offer and existing payment flow remain.
