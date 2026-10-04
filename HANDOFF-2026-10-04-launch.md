@@ -2,15 +2,17 @@
 artifact_contract: "ce-handoff/v1"
 created_at: "2026-10-04T12:00:00Z"
 title: "CV Hapi redesign, three-review bundle and growth continuation"
-summary: "Version 23 is live: 150 MKD for three AI reviews, unlimited downloads, eight templates, redesigned homepage/editor and updated Macedonian video. Ads linking still blocked."
+summary: "Version 24 is live: import-first onboarding, guided editor and CV language sheet; browser language defaults, 150 MKD / three reviews and eight templates. Ads linking still blocked."
 keywords: ["cvhapi", "launch", "ga4", "clarity", "github", "paid-ai-paused"]
 cwd: "C:/Users/runef/Documents/ChatGPT/CV builder"
 branch: "codex/review-reliability-eur2"
-head: "f609349971c12bfe77612198e88630f9aa8b24b7"
+head: "080b42e8ca49965f7aaba05fc04afe5a93feb42e"
 resume_focus: "Read the newest LAUNCH-STATUS and docs/releases/2026-10-04-redesign.md; continue authorized Google Ads setup without exceeding NOK 300 total."
 ---
 
 # Current state
+
+Sites version 24 is live from 080b42e8ca49965f7aaba05fc04afe5a93feb42e, deployment appgdep_6ac29157e1ec819192e1570825eeabc9, environment revision 9. Import-first entry, staged local file reading, editor sidebar and CV-language dialog/mobile sheet are published. All 140 tests/build pass; two completed review receipts have no findings. Browser language defaults use Macedonian/English preferences with saved-choice and route overrides; no geolocation. Read docs/releases/2026-10-04-onboarding.md. Earlier version notes below are historical.
 
 The current release is Sites version 23, source `f609349971c12bfe77612198e88630f9aa8b24b7`, deployment `appgdep_6ac285dbf02c8191a7f2233ee5716b8c`, environment revision 9. New purchases are 150 MKD once for three AI reviews. Unlimited free editing/downloads, eight templates, the redesigned homepage/editor and updated video are published. 136 tests/build passed; hosted offer, availability and additive migration verified. Read the latest LAUNCH-STATUS.md entry and docs/releases/2026-10-04-redesign.md before older details. No new real-money charge is claimed. The paragraphs below describe the earlier release and are historical.
 
