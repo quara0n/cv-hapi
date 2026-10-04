@@ -371,3 +371,18 @@ test('a complete paid API review is delivered once and consumed only after brows
   assert.ok(!JSON.stringify(db.prepare('SELECT * FROM payments').get()).includes(suggestion.original));
  }finally{db.close()}
 });
+
+test('paid truncation recovery delivers one verified review without refunding or consuming a second credit',async()=>{
+ const {db,env}=setup(),token='e'.repeat(64);let aiCalls=0,stripeCalls=0;
+ db.prepare("INSERT INTO payments(id,owner,session,intent,state,currency,amount,review_count,reserved) VALUES ('retry-review',?,'cs','pi','paid','mkd',15000,3,3)").run(await hash(token));
+ const draft={overview:'Complete assessment',sections:[{document:'cv',name:'Experience',assessment:'Brief duties.',actions:['Add actual duties.']}],priorities:[{title:'Detail',why:'Brief duties.',action:'Add your actual responsibilities.'}],jobMatches:[],strengths:[],questions:[],suggestions:[]};
+ const response=await handleAPI(new Request('https://cv.example/api/review',{method:'POST',headers:{Origin:'https://cv.example',Cookie:`__Host-cvhapi-payment=${token}`,'Content-Type':'application/json'},body:JSON.stringify({text:'Care assistant. Helped residents with meals and daily activities. Worked with colleagues at Example Home.',job:'',language:'en',consent:true})}),env,async(url,options)=>{
+  if(new URL(url).hostname==='api.stripe.com'){stripeCalls++;throw Error('Unexpected refund')}
+  const body=JSON.parse(options.body);aiCalls++;
+  if(aiCalls===1)return Response.json({choices:[{finish_reason:'length',message:{content:'{"overview":"cut'}}]});
+  if(aiCalls===2)assert.equal(body.max_tokens,16000);
+  return Response.json({choices:[{finish_reason:'stop',message:{content:JSON.stringify(aiCalls===2?draft:{feedback:draft})}}]});
+ });
+ assert.equal(response.status,200);assert.equal((await response.json()).overview,draft.overview);assert.ok(response.headers.get('X-Review-Delivery-Token'));assert.equal(stripeCalls,0);assert.equal(aiCalls,3);
+ assert.deepEqual({...db.prepare('SELECT state,reserved,reviews_delivered FROM payments').get()},{state:'delivery_pending',reserved:2,reviews_delivered:0});assert.equal(db.prepare('SELECT used FROM ai_budget').get().used,1);db.close();
+});

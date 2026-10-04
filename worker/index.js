@@ -7,6 +7,7 @@ import {reviewPrompt} from './review-prompt.js';
 import {auditFeedback} from './feedback-review.js';
 import {translateFeedback} from './review-language.js';
 import {paymentOwner} from './payments.js';
+import {completeResponse} from './provider-response.js';
 
 const json=(body,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export async function limitedJSON(message,limit){const reader=message.body?.getReader();if(!reader)throw new Error('body');let size=0,chunks=[];try{for(;;){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>limit){await reader.cancel();throw new Error('size')}chunks.push(value)}}finally{reader.releaseLock()}const bytes=new Uint8Array(size);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length}return JSON.parse(new TextDecoder().decode(bytes))}
@@ -83,9 +84,9 @@ export async function handleAPI(request,env,upstream=fetch){
  const system=reviewPrompt(input.language);
  const reviewDeadline=Date.now()+REVIEW_TIMEOUT_MS,reviewSignal=AbortSignal.timeout(REVIEW_TIMEOUT_MS);
  try{
-  const response=await upstream('https://api.deepseek.com/chat/completions',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${env.DEEPSEEK_API_KEY}`},body:JSON.stringify({model:reviewModel(env),messages:[{role:'system',content:system},{role:'user',content:JSON.stringify({cv:input.text,vacancy:input.job,coverLetter:input.letter||''})}],thinking:{type:'disabled'},response_format:{type:'json_object'},max_tokens:8000,stream:false}),signal:reviewSignal});
+  const {response,result}=await completeResponse(upstream,'https://api.deepseek.com/chat/completions',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${env.DEEPSEEK_API_KEY}`},body:JSON.stringify({model:reviewModel(env),messages:[{role:'system',content:system},{role:'user',content:JSON.stringify({cv:input.text,vacancy:input.job,coverLetter:input.letter||''})}],thinking:{type:'disabled'},response_format:{type:'json_object'},max_tokens:8000,stream:false}),signal:reviewSignal},limitedJSON,160000);
   if(!response.ok){await response.body?.cancel();return await fail('provider_unavailable',502)}
-  const result=await limitedJSON(response,160000),choice=result.choices?.[0];if(choice?.finish_reason!=='stop'||typeof choice.message?.content!=='string')throw new Error('incomplete');
+  const choice=result.choices?.[0];if(choice?.finish_reason!=='stop'||typeof choice.message?.content!=='string')throw new Error('incomplete');
   const proposed=JSON.parse(choice.message.content);
   let validated=validateReview(proposed,input.text,input.letter||'',input.job);
   if(!validated.overview.trim()&&!['sections','priorities','suggestions','strengths','questions','jobMatches'].some(key=>validated[key].length))throw Error('verification_feedback_empty');
