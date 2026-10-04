@@ -17,16 +17,16 @@ b=json.loads((ROOT/'cv-bounds.json').read_text()); cv=crop('product-mk-full.jpg'
 editor=crop('review-mk-full.jpg',(279,900,725,360))
 comparison=crop('compare-mk-full.jpg',(279,875,725,215))
 scenes=[
- {'title':['Твоето CV.','Појасно.'],'sub':'Запознај го CV Hapi.','image':cv,'duration':3.5,'caption':'Направи го следниот чекор со јасно CV.'},
- {'title':['Направи CV.','Преземи PDF.'],'sub':'Бесплатно. Без регистрација.','image':cv,'duration':5.5,'caption':'Уредувачот и стандардниот PDF се бесплатни.'},
- {'title':['Веќе имаш CV?','Подобри го.'],'sub':'AI-предлози за твојот документ.','image':editor,'duration':5.5,'caption':'Една AI-проверка — £2 еднократно.'},
- {'title':['Ти ги избираш','измените.'],'sub':'Спореди. Провери. Зачувај.','image':comparison,'duration':5.5,'caption':'Провери ги фактите пред да ја зачуваш измената.'},
+ {'title':['Твоето CV.','Појасно.'],'sub':'Запознај го CV Hapi.','image':cv,'duration':1.7,'caption':'Направи го следниот чекор со јасно CV.'},
+ {'title':['Направи CV.','Преземи PDF.'],'sub':'Бесплатно. Без регистрација.','image':cv,'duration':3.8,'caption':'Уредувачот и стандардниот PDF се бесплатни.'},
+ {'title':['Веќе имаш CV?','Подобри го.'],'sub':'AI-предлози за твојот документ.','image':editor,'duration':6,'caption':'Една AI-проверка — £2 еднократно.'},
+ {'title':['Ти ги избираш','измените.'],'sub':'Спореди. Провери. Зачувај.','image':comparison,'duration':3.5,'caption':'Провери ги фактите пред да ја зачуваш измената.'},
  {'title':['CV Hapi.','Твојот следен чекор.'],'sub':'cvhapi.com','image':None,'duration':5.0,'caption':'Бесплатен PDF · AI-проверка £2 · Без претплата.'}
 ]
 duration=sum(s['duration'] for s in scenes)
 if args.audio:
- duration=max(duration,float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',args.audio]).decode())+1)
- scenes[-1]['duration']+=duration-25
+ extra=max(0,float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',args.audio]).decode())+1-duration)
+ scenes[-1]['duration']+=extra;duration+=extra
 def centered(draw,text,y,size=44,bold=False,color=INK):
  f=font(size,bold);box=draw.textbbox((0,0),text,font=f);draw.text(((W-(box[2]-box[0]))/2,y),text,font=f,fill=color)
 def wrap(text,size,maxwidth):

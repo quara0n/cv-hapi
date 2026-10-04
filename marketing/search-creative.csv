@@ -12,11 +12,11 @@ Description,Get AI feedback on your CV and optional cover letter. £2 once. No s
 Description,Compare suggested wording and choose your edits. Check facts before saving.,,Prepared only
 Description,Already have a CV? Review its wording with AI. Your original stays unchanged.,,Prepared only
 Description,The CV builder and standard PDF are free. Pay only for one optional AI review.,,Prepared only
-Keyword,cv review,Exact,Demand unverified
-Keyword,cv review,Phrase,Demand unverified
-Keyword,cv checker,Exact,Demand unverified
-Keyword,resume review,Exact,Demand unverified
-Keyword,ai cv review,Exact,Demand unverified
+Keyword,cv review,Exact,Planner 10–100 monthly; intent unproven
+Keyword,cv review,Phrase,Planner 10–100 monthly; intent unproven
+Keyword,cv checker,Exact,Planner 10–100 monthly; intent unproven
+Keyword,resume review,Exact,Planner 10–100 monthly; intent unproven
+Keyword,ai cv review,Exact,Planner 10–100 monthly; intent unproven
 Negative,free cv review,Phrase,Proposed
 Negative,free resume review,Phrase,Proposed
 Negative,job vacancies,Phrase,Proposed
