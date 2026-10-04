@@ -14,15 +14,15 @@ The voice script deliberately spells CV, PDF and the brand phonetically for Mace
 | 1.7–5.5 s | Readable CV and builder crop | Направи CV. Преземи PDF. Бесплатно. Без регистрација. |
 | 5.5–11.5 s | Real completed AI review and editable fictional profile | Веќе имаш CV? Подобри го. Една AI-проверка — £2 еднократно. |
 | 11.5–15 s | Real original/revised wording comparison | Ти ги избираш измените. Спореди. Провери. Зачувај. |
-| 15–20 s | Brand card, complete price, URL and action | CV Hapi. Твојот следен чекор. Бесплатно CV + PDF. AI-проверка £2 еднократно. Без претплата. Почни на cvhapi.com. |
+| 15–20 s | CVhapi letters assemble individually; homepage headline fades in, then the URL | Направи CV. Преземи го бесплатно. cvhapi.com. No price or purchase card on the ending. |
 
-Burned-in captions explain the offer with sound off. Every scene says “Скратено демо · измислен пример”. The actual recorded review took about 81 seconds, returned HTTP 200 and delivered one anchored wording edit. It removed vague “Креативна” from the fictional marketing profile; no work experience, qualification or metric was invented. The demo does not portray a real paid checkout or a three-second AI response.
+Burned-in captions explain the offer with sound off; £2 appears in the earlier AI-review scene. Product demonstration scenes say “Скратено демо · измислен пример”. The final five seconds are a clean brand animation: dark CV, blue hapi, individual letter reveals with easing, then the exact current Macedonian homepage headline “Направи CV. Преземи го бесплатно.” and the URL. The actual recorded review took about 81 seconds, returned HTTP 200 and delivered one anchored wording edit. It removed vague “Креативна” from the fictional marketing profile; no work experience, qualification or metric was invented. The demo does not portray a real paid checkout or a three-second AI response.
 
 ## Audio and production
 
 ElevenLabs: Elena — Playful, Bright, Bouncy; model Eleven v4; Macedonian override; stability 0.5; similarity 0.75; MP3 44.1 kHz / 128 kbps. A generated result with two takes is saved in account history, 257 included credits used, 39,743 remaining. Active Starter displayed commercial speech rights. The owner completed account setup and purchase; the agent did not subscribe or upgrade.
 
-In-app browser download attempts did not produce a local file. The owner supplied the downloaded MP3; the working copy is `marketing/video/voiceover-mk.mp3`, duration 17.711 seconds. Both voiced exports are complete, with the end card held through 20 seconds. Native pronunciation and exact spoken-phrase timing have not been independently listened to; review the supplied video before public posting.
+In-app browser download attempts did not produce a local file. The owner supplied the downloaded MP3; the working copy is `marketing/video/voiceover-mk.mp3`, duration 17.711 seconds. Both voiced exports are complete, with the assembled brand held through 20 seconds. The original voiceover is retained and closes with the brand and “Твојот следен чекор.” Native pronunciation and exact spoken-phrase timing have not been independently listened to; review the supplied video before public posting.
 
 Renderer: `marketing/video/render_video.py`, Pillow typography and actual UI crops, restrained motion, H.264 CRF 20, yuv420p, faststart. Final audio is AAC 48 kHz, 192 kbps with −16 LUFS normalization, −1.5 dB true-peak target and a padded end hold. No music or third-party stock footage.
 

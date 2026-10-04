@@ -21,7 +21,7 @@ scenes=[
  {'title':['Направи CV.','Преземи PDF.'],'sub':'Бесплатно. Без регистрација.','image':cv,'duration':3.8,'caption':'Уредувачот и стандардниот PDF се бесплатни.'},
  {'title':['Веќе имаш CV?','Подобри го.'],'sub':'AI-предлози за твојот документ.','image':editor,'duration':6,'caption':'Една AI-проверка — £2 еднократно.'},
  {'title':['Ти ги избираш','измените.'],'sub':'Спореди. Провери. Зачувај.','image':comparison,'duration':3.5,'caption':'Провери ги фактите пред да ја зачуваш измената.'},
- {'title':['CV Hapi.','Твојот следен чекор.'],'sub':'cvhapi.com','image':None,'duration':5.0,'caption':'Бесплатен PDF · AI-проверка £2 · Без претплата.'}
+ {'title':['CV Hapi.'],'sub':'cvhapi.com','image':None,'duration':5.0,'caption':''}
 ]
 duration=sum(s['duration'] for s in scenes)
 if args.audio:
@@ -39,6 +39,25 @@ def wrap(text,size,maxwidth):
  return lines
 def frame(scene,progress):
  im=Image.new('RGB',(W,H),BG);d=ImageDraw.Draw(im)
+ if scene['image'] is None:
+  # Build the site's wordmark letter by letter, then reveal its homepage headline.
+  elapsed=progress*scene['duration'];word='CVhapi';f=font(152,True)
+  widths=[f.getlength(letter) for letter in word];x=(W-sum(widths))/2;y=H*.36
+  for index,letter in enumerate(word):
+   t=max(0,min(1,(elapsed-.12-index*.15)/.45));ease=1-(1-t)**3
+   layer=Image.new('RGBA',(W,H));ld=ImageDraw.Draw(layer)
+   rgb=(36,45,62) if index<2 else (49,92,243)
+   ld.text((x,y+(1-ease)*45),letter,font=f,fill=(*rgb,round(255*t)))
+   im=Image.alpha_composite(im.convert('RGBA'),layer).convert('RGB');x+=widths[index]
+  for text,yy,size,delay,color in [
+   ('Направи CV.',y+215,52,1.35,INK),
+   ('Преземи го бесплатно.',y+285,52,1.55,BLUE),
+   ('cvhapi.com',y+415,35,2.1,MUTED)]:
+   t=max(0,min(1,(elapsed-delay)/.6));layer=Image.new('RGBA',(W,H));ld=ImageDraw.Draw(layer)
+   centered(ld,text,yy+(1-t)*16,size,True if size==52 else False,color)
+   layer.putalpha(layer.getchannel('A').point(lambda a:round(a*t)))
+   im=Image.alpha_composite(im.convert('RGBA'),layer).convert('RGB')
+  return im
  d.text((88,100),'CV',font=font(46,True),fill=INK);d.text((153,100),'hapi',font=font(46,True),fill=BLUE)
  d.rounded_rectangle((W-270,104,W-90,157),radius=24,fill='#e8edff');d.text((W-249,111),'ТВОЈОТ CV',font=font(22,True),fill=BLUE)
  title_y=230 if H==1920 else 205
@@ -51,14 +70,6 @@ def frame(scene,progress):
   x=(W-image.width)//2;y=title_y+280+(maxh-image.height)//2-int(8*progress)
   d.rounded_rectangle((x-13,y-13,x+image.width+13,y+image.height+13),radius=24,fill='#dde1ec')
   im.paste(image,(x,y));d=ImageDraw.Draw(im)
- else:
-  y=title_y+340
-  d.rounded_rectangle((100,y,980,y+305),radius=32,fill='white',outline='#dce2f4',width=2)
-  centered(d,'Бесплатно CV + PDF',y+45,42,True)
-  centered(d,'AI-проверка · £2 еднократно',y+122,40,True,BLUE)
-  centered(d,'Без претплата',y+195,34,False,MUTED)
-  d.rounded_rectangle((230,y+370,850,y+475),radius=24,fill=BLUE)
-  centered(d,'Почни на cvhapi.com',y+391,39,True,'white')
  cy=H-(390 if H==1920 else 230)
  lines=wrap(scene['caption'],34,880)
  for j,line in enumerate(lines):centered(d,line,cy+j*49,34,True)
