@@ -41,6 +41,13 @@ test('a staged replacement file can be imported and switching source clears its 
  w.confirm=()=>true;d.querySelector('#review-from').click();assert.equal(d.querySelector('.review-panel').classList.contains('import-mode'),false);assert.equal(d.querySelector('#review-file-name').textContent,'');assert.equal(d.querySelector('#review-import-submit').disabled,true);
  stage();d.querySelector('#review-paste').click();assert.equal(d.querySelector('.review-panel').classList.contains('import-mode'),false);assert.equal(d.querySelector('#review-import-submit').disabled,true);assert.equal(d.querySelector('#review-consent').checked,false);dom.window.close();
 });
+test('the review choice keeps optional inputs collapsed and continues to free editing without an AI request',async()=>{
+ const dom=boot(),w=dom.window,d=w.document;const requests=[];w.fetch=async url=>{requests.push(url);return{ok:true,json:async()=>({available:true})}};
+ d.querySelector('[data-action="example"]').click();d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-from').click();
+ assert.match(d.querySelector('#review-local').textContent,/Continue without AI/);assert.equal(d.querySelector('.review-extras').open,false);assert.equal(d.querySelector('.review-source-options').open,false);assert.equal(d.querySelector('#review-consent').checked,false);
+ const original=d.querySelector('#review-source').value;d.querySelector('#review-local').click();assert.ok(d.querySelector('.review-panel.free-edit'));assert.equal(d.querySelector('#review-edited').value,original);assert.equal(d.querySelector('#review-consent').checked,false);assert.ok(!requests.includes('/api/review'));assert.equal(d.querySelector('#review-pdf').disabled,true);d.querySelector('#review-checked').click();assert.equal(d.querySelector('#review-pdf').disabled,false);
+ d.querySelector('#review-edited').value=original+' My added detail.';d.querySelector('#review-edited').dispatchEvent(new w.Event('input'));d.querySelector('#review-choice-back').click();assert.equal(d.querySelector('.review-panel').classList.contains('free-edit'),false);assert.equal(d.querySelector('#review-source').value,original+' My added detail.');assert.equal(d.querySelector('#review-consent').checked,false);assert.ok(!requests.includes('/api/review'));dom.window.close();
+});
 test('owned bundle credits require an explicit review action after consent and payment refresh',async()=>{
  const dom=boot(),w=dom.window,d=w.document;let reviews=0;
  w.fetch=async url=>{if(url==='/api/review'){reviews++;return{ok:false,status:503,json:async()=>({error:'unavailable'})}}return{ok:true,json:async()=>url==='/api/review/status'?{available:true}:url==='/api/payments/config'?{enabled:true,test:false}:{state:'paid',remainingReviews:3}}};
@@ -97,6 +104,7 @@ test('review studio navigates sections without losing drafts and previews only t
  w.fetch=async url=>{if(url==='/api/review')calls++;return{ok:true,json:async()=>url==='/api/review/status'?{available:true}:url==='/api/payments/config'?{enabled:false}:{overview:'Reviewed.',sections:[{document:'cv',name:'Profile',assessment:'Clarify your focus.',actions:[]},{document:'cv',name:'Skills',assessment:'List actual skills.',actions:[]}],suggestions:[]}}};
  d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-source').value=source;d.querySelector('#review-source').dispatchEvent(new w.Event('input'));d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-ai').click();await new Promise(r=>setTimeout(r,0));
  assert.equal(d.querySelectorAll('[data-select-section]').length,2);
+ for(const id of ['review-source','review-job','review-letter','review-file'])assert.ok(d.querySelector('.studio-source #'+id));
  assert.equal(d.querySelector('.review-studio').dataset.guided,'welcome');assert.equal(d.querySelector('.guide-full-feedback').open,false);
  d.querySelector('#review-guide-start').click();assert.equal(d.querySelector('.review-studio').dataset.guided,'editing');assert.equal(d.querySelector('.guide-writing-help').open,false);
  const draft=d.querySelector('[data-section-draft]');draft.value='My unsaved wording.';draft.dispatchEvent(new w.Event('input'));assert.doesNotMatch(d.querySelector('.studio-paper').textContent,/My unsaved wording/);
@@ -245,7 +253,7 @@ test('shared vacancy syncs both ways and prevents overwriting a finished or in-f
  d.querySelector('#pack-open').click();fill('pack-ad','Friendly service');d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));assert.equal(d.getElementById('review-job').value,'Friendly service');assert.equal(d.getElementById('review-consent').disabled,true);
  fill('review-job','Accurate cash handling');assert.equal(d.getElementById('pack-ad').value,'Accurate cash handling');
  fill('review-source','Customer service assistant with experience helping customers choose products and handling checkout transactions.');d.querySelector('#review-local').click();w.confirm=()=>false;fill('pack-ad','Replacement');assert.equal(d.getElementById('pack-ad').value,'Accurate cash handling');assert.ok(d.getElementById('review-edited'));
- w.confirm=()=>true;fill('pack-ad','New vacancy');assert.equal(d.getElementById('review-job').value,'New vacancy');assert.equal(d.getElementById('review-edited'),null);dom.window.close();
+ w.confirm=()=>true;fill('pack-ad','New vacancy');assert.equal(d.getElementById('review-job').value,'New vacancy');assert.equal(d.getElementById('review-edited'),null);assert.equal(d.querySelector('.review-panel.free-edit'),null);dom.window.close();
 });
 test('sample is marked on the paper and requirement changes invalidate a reviewed letter',()=>{
  const dom=boot(),w=dom.window,d=w.document;const fill=(id,value)=>{const el=d.getElementById(id);el.value=value;el.dispatchEvent(new w.Event('input'))};assert.match(d.querySelector('.paper .sample-badge').textContent,/Example/);

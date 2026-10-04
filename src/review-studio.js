@@ -70,7 +70,7 @@ export function mountReviewStudio(root,state,ui,repaint){
  root.querySelector('#review-show-edited').onclick=()=>{setView('preview');preview.scrollIntoView({block:'start',behavior:'instant'})};
  const source=root.ownerDocument.createElement('details');source.className='studio-source';
  source.innerHTML=`<summary>${say(ui,'Uploaded documents · review another CV','Прикачени документи · нова AI-проверка')}</summary>`;
- const inputs=[...root.querySelector('.review-panel').children].filter(node=>node.matches('.import-zone,.pack-grid,label,.review-actions,.ai-choice'));
+ const inputs=[...root.querySelector('.review-panel').children].filter(node=>node.matches('.review-source-options,.review-document,.review-extras,.ai-choice'));
  for(const node of inputs)source.append(node);
  results.after(source);
  mountReviewGuide(root,state,ui,repaint);

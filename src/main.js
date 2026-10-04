@@ -10,6 +10,7 @@ import './style.css';
 import './redesign.css';
 import './review-studio.css';
 import './onboarding.css';
+import './review-choice.css';
 import {mountApplication,resetApplication} from './application-ui.js';
 import {blank,example,exampleEnglish,normalize,hasContent,escapeHtml as e,headings,limits,STORAGE_KEY,cvWarnings,descriptionLines} from './model.js';
 import {resetVacancy} from './vacancy.js';
