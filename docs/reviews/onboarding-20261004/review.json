@@ -1,0 +1,51 @@
+{
+  "status": "complete",
+  "verdict": "Ready to merge",
+  "scope": {
+    "base": "HEAD",
+    "branch": "codex/review-reliability-eur2",
+    "head_sha": "cbc8d70abaed79efca6639259b330c9a06705b97",
+    "pr_url": null,
+    "files_changed": 8
+  },
+  "intent": "Offer a recommended existing-CV import path and a scratch/continue path. Stage files until explicit local import, preserve draft/review consent and replacement safeguards, and show bilingual responsive onboarding with actual completion marks.",
+  "intent_confidence": "explicit",
+  "reviewers": [
+    "correctness",
+    "adversarial"
+  ],
+  "findings": [],
+  "actionable_findings": [],
+  "triage_groups": [],
+  "pre_existing_findings": [],
+  "requirements_completeness": null,
+  "learnings": [],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "residual_risks": [],
+  "testing_gaps": [],
+  "coverage": {
+    "depth": "focused",
+    "criteria_files": [
+      "CLAUDE.md"
+    ],
+    "criteria_source": "instruction-file fallback; no governing CODING_STANDARDS.md found",
+    "cross_model_pass": "not run: no installed different-family CLI route found",
+    "independent_read": "local adversarial fallback, same serving family; no cross-model promotion",
+    "validator": "not run on focused path",
+    "not_assessed": [
+      "learnings",
+      "agent-native gaps",
+      "deployment notes",
+      "old backend/payment/template implementation"
+    ],
+    "plan": "No explicit plan; branch keywords are generic and no unambiguous onboarding plan discovered. Release note used only as intent/verification context.",
+    "verification": "Caller reported 139 full tests and production build passed after final source-switch regression; browser actual Cyrillic PDF import, desktop/sidebar and English/Macedonian mobile checks passed. Adversarial reader mechanically verified declined replacement performs zero reads and preserves original/revised text; failed replacement import preserves prior data and reports error; builder choice closes an open review.",
+    "excluded_untracked": [
+      "docs/releases/2026-10-04-onboarding.md (context only)"
+    ],
+    "artifact_limit": "Temporary directories varied across Windows sandbox calls; durable artifacts written in repository. Stage log restarted at receipt creation after temporary metadata summarize permission failure."
+  },
+  "artifact_path": "C:\\Users\\runef\\Documents\\ChatGPT\\CV builder\\docs\\reviews\\onboarding-20261004",
+  "run_id": "onboarding-20261004"
+}

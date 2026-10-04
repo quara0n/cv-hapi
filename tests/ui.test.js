@@ -18,6 +18,29 @@ test('private CV-only backend explains its scope and prevents unsupported letter
  letter.value='';letter.dispatchEvent(new w.Event('input'));d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('#review-ai').disabled,false);dom.window.close();
 });
 function boot(saved,url='https://cv.test'){const dom=new JSDOM('<div id="app"></div>',{url,runScripts:'outside-only'});dom.window.structuredClone=structuredClone;dom.window.navigator.locks={request:async(name,callback)=>callback()};dom.window.HTMLElement.prototype.scrollIntoView=function(options){dom.window.lastScroll={id:this.id,options}};dom.window.matchMedia=()=>({matches:false});dom.window.HTMLDialogElement.prototype.showModal=function(){this.open=true};dom.window.HTMLDialogElement.prototype.close=function(){this.open=false};if(saved)dom.window.localStorage.setItem('cekor.cv.v1',saved);dom.window.localStorage.setItem('cekor.ui-language','en');dom.window.eval(bundle.outputFiles[0].text);return dom}
+test('start choices recommend import and preserve a saved CV when continuing the builder',()=>{
+ const saved=JSON.stringify({name:'Alex Example',summary:'My existing profile',template:'horizon'}),dom=boot(saved),d=dom.window.document;
+ d.querySelector('.hero-actions [data-action="start"]').click();assert.equal(d.querySelector('#modal').open,true);assert.ok(d.querySelector('[data-start-import]').classList.contains('recommended'));assert.match(d.querySelector('[data-start-build]').textContent,/Continue my CV/);
+ d.querySelector('[data-start-build]').click();assert.ok(d.querySelector('main').classList.contains('builder-started'));assert.equal(d.querySelector('#name').value,'Alex Example');assert.ok(d.querySelector('.paper.horizon'));
+ d.querySelector('[data-home]').click();d.querySelector('.hero-actions [data-action="start"]').click();d.querySelector('[data-start-import]').click();assert.ok(d.querySelector('.review-panel.import-mode'));assert.equal(d.querySelector('#review-source').value,'');assert.equal(d.querySelector('#review-consent').checked,false);dom.window.close();
+});
+test('dropping a document stages it until import and never submits it to AI',async()=>{
+ const dom=boot(),w=dom.window,d=w.document;const requests=[];w.fetch=async url=>{requests.push(url);return{ok:true,json:async()=>({available:true})}};
+ d.querySelector('.hero-actions [data-action="start"]').click();d.querySelector('[data-start-import]').click();await new Promise(r=>setTimeout(r,0));
+ const text='Alex Example. I help residents with meals and daily activities and communicate with colleagues.';let reads=0;
+ const drop=new w.Event('drop',{cancelable:true});Object.defineProperty(drop,'dataTransfer',{value:{files:[{name:'my-cv.txt',size:100,text:async()=>{reads++;return text}}]}});d.querySelector('#review-dropzone').dispatchEvent(drop);
+ assert.equal(reads,0);assert.match(d.querySelector('#review-file-name').textContent,/my-cv.txt/);assert.equal(d.querySelector('#review-import-submit').disabled,false);
+ d.querySelector('#review-import-submit').click();for(let i=0;i<20&&d.querySelector('#review-source').value!==text;i++)await new Promise(r=>setTimeout(r,0));
+ assert.equal(reads,1);assert.equal(d.querySelector('#review-source').value,text);assert.equal(d.querySelector('.review-panel').classList.contains('import-mode'),false);assert.equal(d.querySelector('#review-consent').checked,false);assert.ok(!requests.includes('/api/review'));dom.window.close();
+});
+test('a staged replacement file can be imported and switching source clears its pending state',async()=>{
+ const dom=boot(),w=dom.window,d=w.document;w.fetch=async()=>({ok:true,json:async()=>({available:true})});
+ d.querySelector('[data-action="example"]').click();d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-from').click();
+ const stage=()=>{const event=new w.Event('drop',{cancelable:true});Object.defineProperty(event,'dataTransfer',{value:{files:[{name:'replacement.txt',size:100,text:async()=> 'Replacement CV text with sufficient experience and qualifications to review its contents safely.'}]}});d.querySelector('#review-dropzone').dispatchEvent(event)};
+ stage();assert.ok(d.querySelector('.review-panel.import-mode'));assert.equal(d.querySelector('#review-import-submit').disabled,false);
+ w.confirm=()=>true;d.querySelector('#review-from').click();assert.equal(d.querySelector('.review-panel').classList.contains('import-mode'),false);assert.equal(d.querySelector('#review-file-name').textContent,'');assert.equal(d.querySelector('#review-import-submit').disabled,true);
+ stage();d.querySelector('#review-paste').click();assert.equal(d.querySelector('.review-panel').classList.contains('import-mode'),false);assert.equal(d.querySelector('#review-import-submit').disabled,true);assert.equal(d.querySelector('#review-consent').checked,false);dom.window.close();
+});
 test('owned bundle credits require an explicit review action after consent and payment refresh',async()=>{
  const dom=boot(),w=dom.window,d=w.document;let reviews=0;
  w.fetch=async url=>{if(url==='/api/review'){reviews++;return{ok:false,status:503,json:async()=>({error:'unavailable'})}}return{ok:true,json:async()=>url==='/api/review/status'?{available:true}:url==='/api/payments/config'?{enabled:true,test:false}:{state:'paid',remainingReviews:3}}};
@@ -232,7 +255,7 @@ test('sample is marked on the paper and requirement changes invalidate a reviewe
 
 test('footer keeps support and removes seller details and stale pilot payment claims',()=>{const dom=boot(),d=dom.window.document;assert.match(d.querySelector('footer').textContent,/support@cvhapi.com/);assert.doesNotMatch(d.querySelector('footer').textContent,/RUNE FINNE|915553346|Test version|Free pilot|Payments are not active/);d.querySelector('[data-step="5"]').click();assert.doesNotMatch(d.querySelector('.export-card').textContent,/Test version|Free pilot|Payments are not active/);dom.window.close()});
 
-test('production custom domain offers analytics consent and shows AI price before consent',()=>{for(const host of ['cvhapi.com','www.cvhapi.com']){const dom=boot(undefined,'https://'+host),d=dom.window.document;assert.ok(d.querySelector('#consent').textContent.trim());assert.equal(d.querySelector('.hero-actions [data-action="review"]').textContent,'Review my CV');assert.match(d.querySelector('.review-price').textContent,/150 MKD one-time/);assert.equal(d.querySelector('header .header-build').dataset.action,'build');assert.equal(d.querySelectorAll('script[src]').length,0);dom.window.close()}});
+test('production custom domain offers analytics consent and shows AI price before consent',()=>{for(const host of ['cvhapi.com','www.cvhapi.com']){const dom=boot(undefined,'https://'+host),d=dom.window.document;assert.ok(d.querySelector('#consent').textContent.trim());assert.match(d.querySelector('.hero-actions [data-action="review"]').textContent,/import it/);assert.match(d.querySelector('.review-price').textContent,/150 MKD one-time/);assert.equal(d.querySelector('header .header-build').dataset.action,'start');assert.equal(d.querySelectorAll('script[src]').length,0);dom.window.close()}});
 
 test('checkout stays single-flight when focus refreshes payment status',async()=>{
  const dom=boot(),w=dom.window,d=w.document;w.AbortSignal=AbortSignal;
@@ -255,7 +278,7 @@ test('local file reading never advertises an AI request before consent',async()=
  const dom=boot(),w=dom.window,d=w.document;let finish;
  w.fetch=async()=>({ok:true,json:async()=>({available:true})});
  d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));
- const input=d.querySelector('#review-file');Object.defineProperty(input,'files',{value:[{name:'cv.txt',size:100,text:()=>new Promise(resolve=>finish=resolve)}]});input.dispatchEvent(new w.Event('change'));
+ const input=d.querySelector('#review-file');Object.defineProperty(input,'files',{value:[{name:'cv.txt',size:100,text:()=>new Promise(resolve=>finish=resolve)}]});input.dispatchEvent(new w.Event('change'));assert.equal(d.querySelector('.import-reading'),null);d.querySelector('#review-import-submit').click();
  assert.equal(d.querySelector('#review-progress'),null);assert.match(d.querySelector('#review-ai').textContent,/Reading the document/);assert.equal(d.querySelector('#review-consent').checked,false);
  for(let i=0;i<20&&!finish;i++)await new Promise(r=>setTimeout(r,0));assert.ok(finish);finish('Alex Example. I help residents with meals and daily activities and communicate with colleagues.');await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('#review-source').disabled,false);assert.equal(d.querySelector('#review-consent').checked,false);dom.window.close();
 });
@@ -267,7 +290,7 @@ test('landing page leads into the builder with one price disclosure and honest s
  assert.equal(d.querySelector('.preview-toolbar').textContent.trim(),'Your CV');assert.doesNotMatch(d.querySelector('#preview-caption').textContent,/Fictional example/);
  assert.ok(d.querySelector('.workspace').compareDocumentPosition(d.querySelector('#application'))&w.Node.DOCUMENT_POSITION_FOLLOWING);
  assert.ok(d.querySelector('.workspace').compareDocumentPosition(d.querySelector('#review-workspace'))&w.Node.DOCUMENT_POSITION_FOLLOWING);
- assert.equal(d.querySelectorAll('#how-it-works').length,1);d.querySelector('#review-toggle').click();assert.equal(d.querySelector('.builder-heading').hidden,true);d.querySelector('header a[href="#how-it-works"]').click();assert.equal(d.querySelector('#how-it-works').hidden,false);assert.equal(d.querySelector('#review-toggle').getAttribute('aria-expanded'),'false');assert.equal(d.querySelector('#builder-title').textContent,'CV builder');
+ assert.equal(d.querySelectorAll('#how-it-works').length,1);d.querySelector('#review-toggle').click();assert.equal(d.querySelector('.builder-heading').hidden,true);d.querySelector('header a[href="#how-it-works"]').click();assert.equal(d.querySelector('#how-it-works').hidden,false);assert.equal(d.querySelector('#review-toggle').getAttribute('aria-expanded'),'false');assert.equal(d.querySelector('#builder-title').textContent,'Your CV, taking shape.');
  assert.equal(d.querySelector('.header-download').hidden,true);assert.equal(d.querySelector('#mobile-preview').hidden,false);
  for(const button of d.querySelectorAll('header button,.hero-actions button,#review-toggle'))assert.doesNotMatch(button.textContent,/150 MKD/);
  assert.equal(d.querySelectorAll('.review-price').length,1);assert.match(d.querySelector('.review-price').textContent,/150 MKD one-time/);
@@ -292,10 +315,15 @@ test('switching review language translates commentary once and preserves documen
  d.querySelector('[data-ui-language="en"]').click();assert.match(d.querySelector('.guide-copy h4').textContent,/Profile/);d.querySelector('[data-ui-language="mk"]').click();assert.match(d.querySelector('.guide-copy h4').textContent,/Профил/);assert.equal(reviews,1);assert.equal(translations,1);dom.window.close();
 });
 
- test('first visit defaults to Macedonian while explicit English routes and saved preferences still work',()=>{
- const bootLanguage=(url,preferred)=>{const dom=new JSDOM('<div id="app"></div>',{url,runScripts:'outside-only'});dom.window.structuredClone=structuredClone;dom.window.matchMedia=()=>({matches:false});if(preferred)dom.window.localStorage.setItem('cekor.ui-language',preferred);dom.window.eval(bundle.outputFiles[0].text);return dom};
- for(const [url,preferred,expected] of [['https://cv.test/',null,'mk'],['https://cv.test/en/',null,'en'],['https://cv.test/mk/',null,'mk'],['https://cv.test/','en','en']]){const dom=bootLanguage(url,preferred);assert.equal(dom.window.document.documentElement.lang,expected);assert.equal(dom.window.document.querySelector('#cv-language')?.value??dom.window.document.querySelector('[data-ui-language="'+expected+'"]').getAttribute('aria-pressed'),'true');dom.window.close()}
+ test('first visit follows supported browser language with route and saved-choice overrides',()=>{
+ const bootLanguage=(url,preferred,languages)=>{const dom=new JSDOM('<div id="app"></div>',{url,runScripts:'outside-only'});dom.window.structuredClone=structuredClone;dom.window.matchMedia=()=>({matches:false});Object.defineProperty(dom.window.navigator,'languages',{value:languages});if(preferred)dom.window.localStorage.setItem('cekor.ui-language',preferred);dom.window.eval(bundle.outputFiles[0].text);return dom};
+ for(const [url,preferred,languages,expected] of [['https://cv.test/',null,['mk-MK','en'],'mk'],['https://cv.test/',null,['en-GB'],'en'],['https://cv.test/',null,['nb-NO'],'mk'],['https://cv.test/en/',null,['mk'],'en'],['https://cv.test/mk/',null,['en'],'mk'],['https://cv.test/','en',['mk'],'en']]){const dom=bootLanguage(url,preferred,languages);assert.equal(dom.window.document.documentElement.lang,expected);assert.equal(dom.window.document.querySelector('#cv-language')?.value??dom.window.document.querySelector('[data-ui-language="'+expected+'"]').getAttribute('aria-pressed'),'true');dom.window.close()}
  });
+test('CV language picker changes headings without translating writing or the interface',()=>{
+ const dom=boot(JSON.stringify({name:'Alex Example',summary:'My original English profile',language:'en'})),d=dom.window.document;
+ d.querySelector('[data-action="build"]').click();d.querySelector('[data-action="cv-language"]').click();assert.equal(d.querySelector('#modal').open,true);d.querySelector('#dialog-cv-language').value='mk';d.querySelector('[data-language-cancel]').click();assert.match(d.querySelector('.cv-language-trigger').textContent,/English/);
+ d.querySelector('[data-action="cv-language"]').click();d.querySelector('#dialog-cv-language').value='mk';d.querySelector('[data-language-save]').click();assert.equal(d.documentElement.lang,'en');assert.match(d.querySelector('.cv-language-trigger').textContent,/Македонски/);assert.match(d.querySelector('#preview').textContent,/ПРОФИЛ/);assert.match(d.querySelector('#preview').textContent,/My original English profile/);assert.equal(d.querySelector('#name').value,'Alex Example');assert.equal(JSON.parse(dom.window.localStorage.getItem('cekor.cv.v1')).language,'mk');dom.window.close();
+});
 
 test('Macedonian review guidance and field-help labels stay localized after applying a section',async()=>{
  const dom=boot(),w=dom.window,d=w.document;w.AbortSignal=AbortSignal;

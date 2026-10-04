@@ -1,0 +1,54 @@
+{
+  "status": "complete",
+  "verdict": "Ready to merge",
+  "scope": {
+    "base": "HEAD supplemental delta after onboarding-20261004 receipt",
+    "branch": "codex/review-reliability-eur2",
+    "head_sha": "cbc8d70abaed79efca6639259b330c9a06705b97",
+    "pr_url": null,
+    "files_changed": 5,
+    "files": [
+      "src/cv-language-dialog.js",
+      "src/language-preference.js",
+      "src/main.js (language additions only)",
+      "src/onboarding.css (language dialog/sheet rules only)",
+      "tests/ui.test.js (language tests only)"
+    ]
+  },
+  "intent": "Provide desktop CV-language dialog/mobile sheet. Cancel preserves language; Save changes preview/PDF section headings with existing persistence, preserving entered writing and interface. Select initial supported browser preference with saved-choice and route precedence, preserving existing populated CV language.",
+  "intent_confidence": "explicit",
+  "reviewers": [
+    "correctness"
+  ],
+  "findings": [],
+  "actionable_findings": [],
+  "triage_groups": [],
+  "pre_existing_findings": [],
+  "requirements_completeness": null,
+  "learnings": [],
+  "agent_native_gaps": [],
+  "deployment_notes": [],
+  "residual_risks": [],
+  "testing_gaps": [],
+  "coverage": {
+    "depth": "lite",
+    "criteria_files": [
+      "CLAUDE.md"
+    ],
+    "criteria_source": "Instruction-file fallback; no governing CODING_STANDARDS.md found",
+    "agents_dispatched": 0,
+    "not_assessed": [
+      "Learnings",
+      "Agent-native gaps",
+      "Deployment notes",
+      "Previously reviewed onboarding",
+      "Backend/payment/template implementation"
+    ],
+    "scope_helper": "Helper facts cover full uncommitted tree: 127 changed lines, 67 executable non-test lines, small size, no full-depth floor. Supplemental content review is restricted to five language delta files/regions.",
+    "verification": "Reviewed added UI assertions for Cancel/Save, preserved writing/interface, persisted CV language, browser-language fallback, route and saved-language precedence. Caller is running tests; receipt does not claim their final outcome.",
+    "gate_reason": "Local preference and heading changes fail visibly at the UI control; no silent external process, money/auth/public API boundary or full-depth floor.",
+    "plan": "No explicit plan or unambiguous branch-matched plan found; direct owner requirements supplied in invocation."
+  },
+  "artifact_path": "C:\\Users\\runef\\Documents\\ChatGPT\\CV builder\\docs\\reviews\\cv-language-20261004",
+  "run_id": "cv-language-20261004"
+}

@@ -1,0 +1,6 @@
+{"phase": "start", "stage": "scope", "ts": "2026-10-04T17:45:04.426697+00:00"}
+{"facts": {"changed_lines": 127, "depth": "lite", "exec_nontest_lines": 67, "size_band": "small", "unclassified_lines": {".css": 12, ".md": 8}}, "phase": "end", "stage": "scope", "ts": "2026-10-04T17:45:04.575031+00:00"}
+{"phase": "start", "stage": "review", "ts": "2026-10-04T17:45:04.575031+00:00"}
+{"candidates": 0, "phase": "end", "reviewers": 1, "stage": "review", "ts": "2026-10-04T17:45:04.722244+00:00"}
+{"phase": "start", "stage": "receipt", "ts": "2026-10-04T17:45:04.722244+00:00"}
+{"phase": "end", "stage": "receipt", "ts": "2026-10-04T17:45:04.866923+00:00"}

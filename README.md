@@ -1,3 +1,6 @@
+## Import-first onboarding — 4 October update
+
+Start your CV Hapi now opens two choices: recommended local document import and scratch/continue builder. Files are staged until explicit Import; source switches clear pending files. A real reading animation and three-step review journey guide the import path. Desktop editing uses a navy step sidebar with completion marks based on entered data. The 150 MKD / three-review offer and eight templates remain. A separate CV-language picker changes section headings only. Initial UI language follows supported browser preferences, then saved choice and explicit route, with Macedonian fallback. See docs/releases/2026-10-04-onboarding.md and the latest LAUNCH-STATUS.md for verification and publication.
 ## Purchase modal — 4 October update
 
 New purchases cost 150 MKD once for three AI reviews. Editing and PDF downloads remain unlimited and free. Existing EUR/GBP purchases retain their recorded single-review entitlement. Migration 0007 records the amount, review allowance, confirmed deliveries and refund amount; checkout and recovery validate the recorded order. Customers explicitly choose when to use existing credits. A checkout initiated in the current review flow starts its first review after verified return. The homepage and six-step editor offer eight templates with previews rendered from the actual PDF layouts. The video, narration, subtitles and sales terms use the same three-review offer. Earlier pricing and launch notes below are historical.
@@ -14,7 +17,7 @@ English/Macedonian CV product for North Macedonia. Live: https://www.cvhapi.com/
 
 ## Current product
 
-- Free CV builder with three designs, live preview and Unicode PDF export.
+- Free CV builder with eight designs, live preview and Unicode PDF export.
 - Editable fixed-template cover letter and combined application PDF.
 - PDF, DOCX and TXT import, read in the browser (5 MB; PDFs up to 12 pages; CV text up to 20,000 characters). Scans need OCR elsewhere.
 - Optional DeepSeek feedback against a job advertisement, exact source quotes and individually accepted wording suggestions.
