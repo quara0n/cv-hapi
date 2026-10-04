@@ -1,3 +1,7 @@
+## Growth preparation — latest 4 October update
+
+Sites version 20 is live, source `69ff1e86477074d47fba7df25024001db6c31850`, deployment `appgdep_6ac26701d00c81918164486c079d7b07`, environment revision 9 preserved. Dedicated review routes, consented delivery-receipt purchase/refund events and www Search Console verification are published. All 129 tests pass. Google's live test confirms `/mk/` can be indexed; indexing requested, actual index inclusion not established. Initial sitemap processing reports Couldn't fetch despite an independent valid HTTP 200 XML response. Ads page views are secondary; purchase linking/import is incomplete. No paid advertising started. The Macedonian voiceover is generated; local audio export and final voiced video remain pending. Current details and verification limits: [marketing/READINESS.md](marketing/READINESS.md). Earlier status sections below are historical.
+
 ## Purchase modal — 4 October update
 
 New purchases now use a compact purchase modal and cost £2 GBP, as explicitly requested by the owner. Existing EUR purchases retain their recorded currency and entitlement. Migration 0006 records currency; payment validation matches the order currency. The main review button opens the modal, and successful payment still starts the review automatically. All 126 tests passed, including modal open/close without an unpaid AI call and GBP/EUR payment validation. Earlier EUR pricing below is historical.

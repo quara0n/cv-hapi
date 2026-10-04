@@ -2,7 +2,7 @@
 
 ## Current status — 4 October 2026
 
-The £2 GBP paid AI review and compact purchase modal are now published; the free-pilot/paused-service statements below are historical. Current acquisition research and the proposed purchase-measurement work are in [GROWTH-PLAN-2026-10-04.md](GROWTH-PLAN-2026-10-04.md), with a video storyboard in [VIDEO-AD-BRIEF.md](VIDEO-AD-BRIEF.md). Existing analytics still tracks free PDF and AI activity, not a verified purchase event. No ad campaign or advertising personalization was activated by this work. The existing NOK 300 total pilot ceiling is unchanged.
+The £2 GBP paid AI review and compact purchase modal are published; the free-pilot/paused-service statements below are historical. Sites version 20 also includes consented server-receipt-based purchase/refund measurement and distinct review routes. All 129 tests passed. A live delivered purchase has not yet been observed in GA4 or imported into Google Ads. The misleading page-view primary goal was changed to secondary; Ads linking/import remains incomplete. See [marketing/READINESS.md](marketing/READINESS.md) for exact evidence and limits, [GROWTH-PLAN-2026-10-04.md](GROWTH-PLAN-2026-10-04.md) for research, and [VIDEO-AD-BRIEF.md](VIDEO-AD-BRIEF.md) for the Macedonian video. No ad campaign or advertising personalization was activated. NOK 300 remains a total pilot ceiling.
 
 ## Connected services
 

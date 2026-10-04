@@ -1,54 +1,48 @@
-# CV Hapi video ad — production brief
+# CV Hapi Macedonian video — production record
 
-Prepared 4 October 2026. Recommendation: make a simple 15-second product demo, using the actual UI and a fictional CV. This brief is ready for production; no video has been rendered or published yet.
+Prepared 4 October 2026. The original white/slate/blue product-demo video is composed in vertical 1080×1920 and a separately arranged 1080×1350 feed version, 24 fps. Current timeline is 20 seconds, with a final-card extension if the exported narration needs it. Silent previews exist; the final voiced exports are pending a local ElevenLabs audio file. Nothing has been posted or launched as a paid ad.
 
-The product itself is the visual proof. Show a readable suggestion and a user choosing an edit. Keep the site's white/slate/blue appearance, rounded cards and restrained motion. Avoid stock interview scenes, fake testimonials, invented job offers and AI-generated interface text.
+## Script and storyboard
 
-## First cut: “Make your CV clearer”
+The voice script deliberately spells CV, PDF and the brand phonetically for Macedonian pronunciation:
 
-| Time | Picture | Caption | Optional voiceover |
-|---|---|---|---|
-| 0–2 s | Tight crop of a fictional CV profile; CV Hapi wordmark visible | Make your CV clearer. | “Make your CV clearer.” |
-| 2–5 s | Actual Review my CV interface, fictional document already entered | Add your CV. | “Add your CV for AI feedback.” |
-| 5–9 s | Actual completed report; enlarge one real section recommendation | See what to improve. | “See suggestions for clearer wording.” |
-| 9–12 s | Actual editor; choose a verified wording edit, show original and revised phrase | Choose your edits. | “Choose the edits that fit.” |
-| 12–15 s | Clean end card matching the purchase modal | AI review · £2 once\nNo subscription\ncvhapi.com | “One AI review. Two pounds. No subscription.” |
+> Запознај го Си Ви Хапи. Направи јасно си ви и преземи пе де еф бесплатно. Веќе имаш си ви? Добиј предлози од вештачка интелигенција за две британски фунти, еднократно. Спореди ги верзиите и избери ги измените. Без претплата. Си Ви Хапи. Твојот следен чекор.
 
-The first-frame document and report must come from the same fictional example. Choose feedback that preserves facts; no invented metrics, qualifications or experience. Use the real report in the sandbox, not a fabricated generated score. An edited timeline should not imply the review completes in three seconds: include a small “Demo shortened” caption where generation is skipped. Do not show test-card details or label a test checkout as an actual purchase. The end card can use the published £2 modal design without making a charge.
+| Time | Actual visual | Macedonian headline / offer |
+|---|---|---|
+| 0–1.7 s | Fictional CV in the real builder | Твоето CV. Појасно. |
+| 1.7–5.5 s | Readable CV and builder crop | Направи CV. Преземи PDF. Бесплатно. Без регистрација. |
+| 5.5–11.5 s | Real completed AI review and editable fictional profile | Веќе имаш CV? Подобри го. Една AI-проверка — £2 еднократно. |
+| 11.5–15 s | Real original/revised wording comparison | Ти ги избираш измените. Спореди. Провери. Зачувај. |
+| 15–20 s | Brand card, complete price, URL and action | CV Hapi. Твојот следен чекор. Бесплатно CV + PDF. AI-проверка £2 еднократно. Без претплата. Почни на cvhapi.com. |
 
-English post/ad copy:
+Burned-in captions explain the offer with sound off. Every scene says “Скратено демо · измислен пример”. The actual recorded review took about 81 seconds, returned HTTP 200 and delivered one anchored wording edit. It removed vague “Креативна” from the fictional marketing profile; no work experience, qualification or metric was invented. The demo does not portray a real paid checkout or a three-second AI response.
 
-> Clearer wording for your next application. Get AI feedback on your CV and optional cover letter, then choose your edits. £2 for one review. No subscription. The CV builder and standard PDF are free.
+## Audio and production
 
-Suggested Macedonian caption draft for native review before publication:
+ElevenLabs: Elena — Playful, Bright, Bouncy; model Eleven v4; Macedonian override; stability 0.5; similarity 0.75; MP3 44.1 kHz / 128 kbps. A generated result with two takes is saved in account history, 257 included credits used, 39,743 remaining. Active Starter displayed commercial speech rights. The owner completed account setup and purchase; the agent did not subscribe or upgrade.
 
-> Појасно CV за следната апликација. Добиј AI-предлози за CV и незадолжително мотивациско писмо, па избери што ќе измениш. £2 за една проверка. Без претплата. Уредувачот и стандардниот PDF се бесплатни.
+In-app browser download attempts did not produce a local file. Owner-assisted export requested to `marketing/video/voiceover-mk.mp3`. Do not label a silent preview as a voiced final. Pronunciation and exact narration alignment must be checked once audio is available; native-language review is still useful before public publication.
 
-Keep Macedonian and English as separate exports, with matching destinations. The English Google video format would need the relevant supported-language checks; the Macedonian version is proposed for organic social/Meta, not unsupported Google ad copy.
+Renderer: `marketing/video/render_video.py`, Pillow typography and actual UI crops, restrained motion, H.264 CRF 20, yuv420p, faststart. Final audio is AAC 192 kbps with −16 LUFS normalization, −1.5 dB true-peak target and a padded end hold. No music or third-party stock footage.
 
-## Deliverables and layout
+Run after export:
 
-- Main file: 1080 × 1920, 9:16, 15 seconds, MP4/H.264 with AAC audio, 30 fps. These export choices are practical defaults; validate current platform upload limits before publishing.
-- Burned-in readable captions; optional separately supplied subtitle file. The complete offer must be understandable with sound off.
-- Use subtle original or properly licensed commercial-use audio. A song available for an organic Reel is not automatically licensed for ads.
-- Keep important text, price, logo and action inside the placement preview's safe zone. Avoid fixed universal pixel claims because interface overlays vary.
-- Prepare a separately arranged 4:5 feed cut rather than cropping away the price or UI. Enlarged interface crops should show one action per shot.
-- Thumbnail: “AI CV review · £2 once” with a readable actual product card, using fictional content.
-- No autoplay video on the builder; use a click-to-play example on a future review landing page if it helps visitors.
+```powershell
+python marketing/video/render_video.py --audio marketing/video/voiceover-mk.mp3
+python marketing/video/render_video.py --audio marketing/video/voiceover-mk.mp3 --feed
+```
 
-## Two hooks to test later
+Expected final deliverables: `marketing/video/cvhapi-mk-vertical.mp4` and `marketing/video/cvhapi-mk-feed.mp4`. Existing files ending `-silent-preview.mp4` are review drafts. Inspect both final exports at phone size with and without sound; confirm audio streams, duration, unclipped text, readable offer, pronunciation and the destination language. Placement previews remain necessary because Reels/Stories interface overlays vary.
 
-Variant A starts “Make your CV clearer.” Variant B starts “From vague wording to a clearer CV.” Keep the remaining footage, price and destination identical. Compare the video with a static product screenshot under the same offer. The small NOK 300 Search pilot cannot also fund a meaningful randomized Meta creative test; use organic feedback first and a separately capped paid test later.
+## Distribution preparation
 
-Do not declare a winner from views or cheap clicks. Report retained delivered reviews per spend, click-to-delivery conversion and refunds alongside click-through and video retention. Use the same attribution window when comparing creatives and distinguish view-through claims from clicks that led to delivery.
+First use: organic Macedonian social demo. Paid Meta is a later separately funded test, not part of the NOK 300 Search pilot. Macedonian is not in Google's current supported advertising-language list; this is not prepared as Macedonian Google ad creative. Use `/mk/` for the free-builder-led organic post and `/mk/review/` for the paid-review destination. Both are published routes.
 
-## Recording and review checklist
+Macedonian post copy:
 
-1. Record the existing fictional sandbox report, one real suggestion and the actual editor; preserve the user's personal documents and tabs.
-2. Record at enough resolution for clean crops. Remove personal browser chrome, account details, file paths, developer messages and payment identifiers.
-3. Match the final £2 price to the public site and keep “once/no subscription” visible on the end card for three seconds.
-4. Watch at phone size both muted and with sound; all text must remain readable, with no clipped UI or misleading timing.
-5. Verify the destination opens the expected language/review flow before posting. The dedicated review URL in the growth plan is proposed, not currently implemented.
-6. Use a normal product action such as “Review my CV.” Avoid employment-outcome promises or copy asserting the viewer is unemployed.
+> Направи јасно CV и преземи PDF бесплатно. Веќе имаш CV? Добиј AI-предлози за £2 еднократно, спореди ги верзиите и избери ги измените. Без претплата. Почни на cvhapi.com.
 
-Sources: Meta's [Reels guidance](https://www.facebook.com/business/ads/facebook-instagram-reels-ads) recommends vertical video, audio and safe zones; its aggregate lift claims are not a forecast for this product. Meta's [employment-ad guidance](https://www.facebook.com/business/help/1537759006681893) excludes general career advice unrelated to listings. See GROWTH-PLAN-2026-10-04.md for channel economics, demographic evidence and targeting constraints.
+Headline: “Твоето CV. Појасно.” CTA: Learn More. No hiring guarantees, invented testimonials or claims about the viewer's private employment status. Compare future hooks against retained delivered reviews and refunds, not views alone. Keep the offer/destination identical across a real creative test.
+
+Sources and placement guidance: [Meta Reels](https://www.facebook.com/business/ads/facebook-instagram-reels-ads), [Meta employment-ad guidance](https://www.facebook.com/business/help/1537759006681893), and the twelve cited research sources in [GROWTH-PLAN-2026-10-04.md](GROWTH-PLAN-2026-10-04.md). Preparation receipts and blockers are in [marketing/READINESS.md](marketing/READINESS.md).

@@ -6,7 +6,7 @@ Use a small Google Search pilot to test willingness to pay for the £2 AI review
 
 The £2 modal is published on www.cvhapi.com, with matching live GBP Checkout. The 126-test suite passed. A new live unpaid Checkout session was created, verified as £2 GBP and expired successfully without charging a card. The real paid delivery flow was exercised in Stripe test mode with DeepSeek; a new real-money customer payment was not made. These receipts establish specific product checks, not proven acquisition performance.
 
-This document is research and a campaign specification. No advertising was launched, no additional advertising budget was authorized, and no video-generation service was purchased. Paid conversion tracking and an ad-specific review landing page remain implementation work before an effective paid acquisition test.
+This document is research and a campaign specification. No advertising was launched and no additional advertising budget was authorized. Sites version 20 now publishes consented delivery-receipt purchase/refund tracking and dedicated review routes; the current suite passes 129 tests. www ownership is verified and `/mk/` passed Google's live indexability test, with indexing requested. Google Ads purchase linking/import remains incomplete and no real-money purchase has been demonstrated. Macedonian ElevenLabs speech is generated, with local export pending for the final video. The owner purchased its subscription separately; the agent made no purchase. Current receipts are in [marketing/READINESS.md](marketing/READINESS.md).
 
 ## What the evidence supports
 
@@ -23,7 +23,7 @@ The existing owner-account Keyword Planner research was recorded on 28 September
 | cv primer | 10–100 | 0.23–0.91 | Example-led organic content |
 | napravi cv | 10–100 | 0.13–1.31 | Relevant local builder intent |
 
-The full evidence is in SEARCH-DEMAND-MK.md. Do not sum overlapping close-variant rows, interpret advertiser competition as SEO difficulty, or treat historical bid estimates as guaranteed CPC. Paid AI-review keyword volumes have **not** been measured; they need a focused Planner check before launch. The older NOK 10 economics in that file are historical and do not describe the current £2 product.
+The historical builder evidence is in SEARCH-DEMAND-MK.md. A fresh paid-review Planner check is now saved in [marketing/REVIEW-SEARCH-DEMAND-2026-10-04.md](marketing/REVIEW-SEARCH-DEMAND-2026-10-04.md): four English review/checker terms each show 10–100 monthly searches, while Macedonian terms lack reported data. Do not sum overlapping variants, interpret advertiser competition as SEO difficulty, or treat historical bid estimates as guaranteed CPC. The older NOK 10 economics are historical and do not describe the current £2 product.
 
 DataReportal's Digital 2026 report, published 8 November 2025 using mostly October 2025 data, reports [1]:
 
