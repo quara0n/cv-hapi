@@ -1,8 +1,8 @@
 # CV Hapi
 
-4 October audit: shorter copy, repaired review/checkout state, 111 passing tests and a successful production build. Real local DeepSeek review of a fictional PDF: six sections, five priorities, 15 recommendations and two verified rewrites. This update remains local and undeployed. Free tools have a prepared release candidate; paid AI is blocked by delivery/processing recovery and unresolved provider/commercial disclosures. See [LAUNCH-STATUS.md](LAUNCH-STATUS.md).
+4 October release: shorter copy, guided section editing, Macedonian default, 111 passing tests and successful production build. Free tools are live in Sites version 15. Paid AI remains paused pending delivery/processing recovery and provider/commercial disclosures. Start with [CLAUDE.md](CLAUDE.md), [current handoff](HANDOFF-2026-10-04-launch.md) and [LAUNCH-STATUS.md](LAUNCH-STATUS.md).
 
-English/Macedonian CV product for North Macedonia. Live: https://cvhapi.com/ (also /mk/).
+English/Macedonian CV product for North Macedonia. Live: https://www.cvhapi.com/ (also /mk/ and /en/). GitHub: https://github.com/quara0n/cv-hapi.
 
 ## Current product
 
@@ -37,12 +37,12 @@ Reviews use generation, editorial audit for extensive feedback and factual/langu
 
 ## AI and privacy
 
-See [AI-REVIEW.md](AI-REVIEW.md) for integration and limits. Last confirmed deployed environment has `AI_ENABLED=false`, `PAYMENTS_ENABLED=false` and `AI_MAX_REVIEWS=10`. A stored, unapplied environment revision depends on a new checkout guard; **do not deploy it with old source**. Details are in the October handoff. Secrets are in ignored local/runtime configuration, never browser bundles.
+See [AI-REVIEW.md](AI-REVIEW.md) for integration and limits. Version 15 uses environment revision 8 with `AI_ENABLED=false`, `PAYMENTS_ENABLED=false`, `CHECKOUT_ENABLED=false` and the existing hosted allowance. The earlier unsafe pending revision was superseded. Secrets are in ignored local/runtime configuration, never browser bundles.
 The hosted pilot remains capped at ten reserved reviews; later unlimited authorization applies only to guarded local owner testing. D1 atomically reserves a slot before each provider call; failures consume a slot. Never reset the counter during deployment or migration.
 
 Files are extracted locally. Only after explicit consent are displayed CV text and vacancy sent through the server to DeepSeek. Our database stores the quota counter and, when payments are enabled, opaque payment IDs/state, not CVs or replies. DeepSeek processes submitted text under its own privacy policy. AI can still make mistakes; user review is essential.
 
-GA4 G-JYTW6J3BRZ uses consent-gated allowlisted events. Enhanced measurement and arbitrary CV properties are disabled. Microsoft Clarity project ypjcjxa0o9 uses separate 18+ recording consent, strict masking and consentv2; a masked synthetic recording was verified on the earlier host. Custom-domain hostname fixes are local; ingestion on cvhapi.com has not been verified. [GROWTH-AND-ANALYTICS.md](GROWTH-AND-ANALYTICS.md) describes measurement.
+GA4 G-JYTW6J3BRZ uses consent-gated allowlisted events and `cekor_pdf_generated` is a key event. Microsoft Clarity project ypjcjxa0o9 uses separate 18+ recording consent, strict masking and consentv2. Custom-domain tracking is deployed; both dashboards showed the synthetic launch session. Fresh replay masking still needs inspection; a masked synthetic recording was verified on the earlier host. A daily 07:00 Oslo Codex report includes metrics and fix/experiment/wait recommendations. [GROWTH-AND-ANALYTICS.md](GROWTH-AND-ANALYTICS.md) describes coverage and limitations.
 
 ## Deployment and continuity
 
@@ -58,4 +58,4 @@ Before reopening EUR 2 checkout, resolve capacity/result recovery and commercial
 
 ## Verification boundary
 
-4 October: all 111 tests and production build pass. TXT/DOCX fixtures, real PDF upload/downloads, Cyrillic/multi-page PDFs, section apply/undo, consent and checkout/reset races checked. Desktop and 390-pixel browser layouts inspected; physical-device and native Macedonian editorial quality remain unverified. Real hosted Stripe/webhooks and paid interrupted-delivery recovery remain open. [LAUNCH-STATUS.md](LAUNCH-STATUS.md) records boundaries. Nothing deployed.
+4 October: all 111 tests and production build pass. TXT/DOCX fixtures, real PDF upload/downloads, Cyrillic/multi-page PDFs, section apply/undo, consent and checkout/reset races checked. Desktop and 390-pixel browser layouts inspected; physical-device and native Macedonian editorial quality remain unverified. Version 15 is deployed. Real hosted Stripe/webhooks and paid interrupted-delivery recovery remain open. [LAUNCH-STATUS.md](LAUNCH-STATUS.md) records boundaries.

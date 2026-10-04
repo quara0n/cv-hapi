@@ -1,10 +1,10 @@
 # CV Hapi release status — 4 October 2026
 
-The existing site is online at https://cvhapi.com/. This audited update is local and has not been deployed. The production build is prepared in `dist/`. Public AI reviews and purchases were confirmed paused through their public configuration endpoints on 4 October.
+The audited free-tools update is live at https://www.cvhapi.com/. Sites version 15 deployed successfully on 4 October, source `f1cd8afce436274fe1227b40b49c23a799211a91`, deployment `appgdep_6ac23c5cec8c81918f5351c59bde6e6e`, environment revision 8. Public AI, purchases and checkout remain paused. The sections below retain the audit trail; this release notice supersedes earlier local-only statements.
 
 ## Verified in this audit
 
-- Regression suite: 110 passing tests. Production build succeeds; English/Macedonian pages, Worker and migrations are present. Browser assets pass a credential-pattern scan. Exact build hashes: `test-output/launch-build-manifest.json`.
+- Regression suite: 111 passing tests. Production build succeeds; English/Macedonian pages, Worker and migrations are present. Browser assets pass a credential-pattern scan. Exact build hashes: `test-output/launch-build-manifest.json`.
 - Browser: builder steps, required-name validation, design selection, cover-letter drafting/factual confirmation, real PDF upload, AI consent, section editing/application/undo, revised PDF download, privacy dialog and analytics decline. English/Macedonian desktop and 390-pixel mobile layouts inspected without document-wide overflow in checked views.
 - Real DeepSeek review of a fictional PDF: six sections, five priorities, 15 section recommendations and two verified wording changes. Original preserved. Local owner test without a Stripe charge; not evidence of production reliability or editorial quality for every CV.
 - PDFs: three templates, Cyrillic characters, six-page long CV and two-page combined application rendered and inspected. Browser builder/revised downloads found and fictional names extracted successfully.
@@ -19,7 +19,7 @@ Eight code-review lenses and independent validation confirmed five repaired defe
 
 ## Release decision
 
-Free builder, cover-letter template, local checks and exports have a passing local release candidate. A free-tools-only update can be published after reviewing this build and applying safe environment settings. Keep `AI_ENABLED=false`, `PAYMENTS_ENABLED=false`, `CHECKOUT_ENABLED=false`; preserve the database/quota. Do not implicitly apply the pending environment revision: it contains enabled AI/live payment values. Reuse Sites project `appgprj_6abaa69cdd2481918fe51468917d695c`.
+Free builder, cover-letter template, local checks and exports are published. Safe environment revision 8 explicitly sets `AI_ENABLED=false`, `PAYMENTS_ENABLED=false`, `CHECKOUT_ENABLED=false` and preserves database/quota/secrets; the earlier unsafe pending revision was superseded. Reuse Sites project `appgprj_6abaa69cdd2481918fe51468917d695c`.
 
 Paid AI launch is **not ready**. Requirements:
 
@@ -31,7 +31,7 @@ Paid AI launch is **not ready**. Requirements:
 
 ## Publish verification
 
-Save the exact source/build through Sites. Preserve public access/domain/D1. Exclude env files, test databases and test documents. Verify language routes, PDF import/export, safe AI/payment status, assets, migrations and analytics consent after deployment. Roll back if checks fail. This audit did not publish, commit, push, change hosted secrets or launch ads.
+Exact source was pushed to Sites and packaged as 25 build files; public audience/domains/D1 preserved. Secret files, databases and test documents were excluded. Native deployment returned succeeded. Live www root defaults to Macedonian; synthetic consented builder/export showed PDF-ready status without console errors. The browser download-event API timed out, so that particular live file's receipt was not independently verified; earlier local PDFs were downloaded/rendered. GA4 sees the synthetic active visit, PDF generation is a key event, and Clarity shows an active session with Strict masking selected. Fresh replay inspection is still pending. No ads or real charges initiated.
 
 ## Existing integrations
 
