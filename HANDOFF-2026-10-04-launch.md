@@ -1,3 +1,28 @@
+## Presisert hovedmål — Google-søk i Nord-Makedonia, 5. oktober 2026
+
+Eier presiserte at CV Hapi skal oppnå høy synlighet når personer i Nord-Makedonia søker etter CV på Google. Hovedsporet er derfor organisk Google-søk med makedonsk innhold. Microsoft Advertising er et dokumentert alternativ for betalte makedonske søkeannonser, men løser ikke eierens Google-mål og skal ikke erstatte dette uten en egen beslutning. Google Ads og begge engelske annonser forblir pauset.
+
+Fersk URL-inspeksjon i Search Console for https://www.cvhapi.com/mk/ viser «URL is on Google» og «Page is indexed». Siste crawl oppgitt av Google: 5. oktober 2026 kl. 11:40:06, Googlebot smartphone. Fetch successful, crawl/indexing allowed, Google-selected canonical er den inspiserte URL-en og samsvarer med deklarert canonical. Sitemap-feltet i URL-inspeksjonen viser «Temporary processing error»; dette er ikke bevis på at siden er ute av indeksen. Oversiktsrapporten behandler fortsatt indeksdata og viser 0 totale søkeklikk; ingen topp-plassering er dokumentert.
+
+Prioritert videre arbeid:
+1. Gjør makedonsk hovedside tydelig relevant for «CV на македонски», «бесплатно CV» og «CV образец»: presis tittel, synlig innhold om de åtte faktiske malene og gratis PDF, med internlenker. Kontroller publisert HTML før endring; kilde-index.html har noindex for utvikling, mens byggeskriptet skrur på indeksering for offentlig release.
+2. Lag originale makedonske ressurser for CV-eksempel, hvordan skrive CV og CV uten arbeidserfaring. Bruk fullstendige fiktive eksempler, korrekt språk og direkte lenker til verktøyet. Ikke kopier konkurrenter eller lag mange nesten identiske sider.
+3. Mål faktiske Google-visninger, klikk og gjennomsnittsposisjon filtrert på Nord-Makedonia og relevante søkefraser. Skaff relevante redaksjonelle lenker gjennom nyttig innhold; ingen kjøpte lenker, masseutsendelser eller garantert førsteplass.
+
+Denne kontrollen publiserte ingen kode og opprettet ingen ny annonsekampanje. Organisk rangering har ingen garantert plassering eller frist. Budsjettgrensene står uendret.
+
+---
+## Gjeldende eierkrav og utført stopp — 5. oktober 2026
+
+Eier har uttrykkelig bestemt at ALL markedsføring skal være rettet mot Nord-Makedonia og være på makedonsk. Dette erstatter alle eldre anbefalinger nedenfor om engelske annonser, engelske søkeord og engelske kampanjelandingssider. Engelske annonser er ikke en godkjent erstatning ved språkavslag.
+
+Utført og lest tilbake i Google Ads-konto 297-799-3323: kampanje 24318923693 er PAUSET. Begge engelske responsive søkeannonser er også individuelt PAUSET. Den eksisterende makedonske annonsen var allerede pauset og avvist med «Unsupported language». Google viste 0 visninger, 0 klikk og NOK 0,00 kostnad for 4.–5. oktober ved kontrollen; rapportering er ikke sanntid. Budsjettet står fortsatt på NOK 200 totalt, 5.–18. oktober 2026. Absolutt eiergrense er NOK 300 inklusive tillegg; maks CPC NOK 1.
+
+Googles offisielle språkoversikt ble kontrollert på nytt: makedonsk er ikke oppført, og siden sier at annonser på språk uten støtte blir avvist. Kilde: https://support.google.com/google-ads/answer/6333734?hl=en . Ikke omgå avslaget ved å velge et annet språk eller vise engelsk annonsetekst. Kampanjen skal forbli pauset inntil en løsning som oppfyller eierens makedonske språkkrav er dokumentert. Ny kanal/kampanje er ikke opprettet eller finansiert.
+
+Videre arbeid: makedonsk annonsetekst, makedonske søkefraser, eksisterende makedonsk demo og landingsside https://www.cvhapi.com/mk/review/ . Vurder organisk makedonsk innhold og en annonsekanal med bekreftet støtte for makedonsk før eventuell ny publisering. Ingen kodepublisering eller utvidet samtykke/datadeling ble utført. Ads-klikk-til-kjøp er fortsatt ikke bevist av en ekte, korrekt samtykket og attribuert kundetransaksjon.
+
+---
 ---
 
 ## Published pilot and completed GA4 link — latest verified state
