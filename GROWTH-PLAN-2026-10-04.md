@@ -1,3 +1,9 @@
+## Current execution — 6 October 2026
+
+Version 30 is public with eight original Macedonian guides, eleven downloadable PDFs and two TXT worksheets. See marketing/mk-distribution-2026-10-06.md for the verified acquisition baseline, intent-to-page mapping and ten researched local prospects. Four individual university outreach emails and three social posts are ready in marketing/mk-outreach-drafts.md; not sent, sender/owner authorisation pending. Search Console accepted the updated 12-URL sitemap; individual new-page requests are recorded in the current handoff. No ranking increase or acquired customer is claimed. Google Ads remains paused with an unsupported-Macedonian-language disapproval; do not resume English ads or increase spending.
+
+Use Search Console for organic guide discovery. Static guides currently load no analytics scripts, so GA4 cannot count guide-only visits or downloads; consented builder/review activity is measured by the existing application. Do not treat a zero GA4 guide count as proof of no traffic. Measure real local impressions/clicks and actual accepted partner listings before judging this release.
+
 ## Publisert Google-arbeid — 5. oktober 2026
 
 Sites versjon 29 er publisert med status succeeded. Kilde: 25c74e64e1b3419b7ff342ea9e726626bf0c72c1. Deployment: appgdep_6ac40c684cd48191ac04ab62ca61093f. Miljørevisjon 9, eksisterende offentlig tilgang og betalings-/AI-drift beholdt.
