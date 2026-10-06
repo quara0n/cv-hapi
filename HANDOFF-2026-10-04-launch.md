@@ -1,3 +1,14 @@
+## Publisert Google-arbeid — 5. oktober 2026
+
+Sites versjon 29 er publisert med status succeeded. Kilde: 25c74e64e1b3419b7ff342ea9e726626bf0c72c1. Deployment: appgdep_6ac40c684cd48191ac04ab62ca61093f. Miljørevisjon 9, eksisterende offentlig tilgang og betalings-/AI-drift beholdt.
+
+Den makedonske forsiden har nå tydelig overskrift og sidetittel om gratis CV på makedonsk og PDF, åtte gratis maler og interne lenker til tre nye makedonske veiledninger: /mk/cv-obrazec/, /mk/kako-da-napisam-cv/ og /mk/cv-bez-rabotno-iskustvo/. Originalt innhold, tydelig fiktive eksempler, gratis/valgfri betalt funksjon korrekt skilt. Artiklene leveres som statisk HTML uten nye sporingsskript. Ingen betalte AI-kall eller kjøp ble gjort.
+
+Verifisert: bygg vellykket; 42 eksisterende brukerflytstester bestått; tre artikler med makedonsk språk, én H1, self-canonical, index/follow, gyldige strukturerte data og fungerende interne lenker. Nettkartet har sju URL-er. Mobilvisning av eksempelartikkelen hadde ingen horisontal overflow; desktopforsiden er visuelt kontrollert.
+
+Google Search Console bekrefter «Sitemap submitted successfully». Tabellen viser fortsatt fire oppdagede sider ved innsending; dette betyr ikke at de tre nye artiklene er indeksert. Forsiden /mk/ var allerede indeksert. Ingen høyere Google-plassering eller økt kundetrafikk er målt eller lovet. Google Ads-kampanjen og engelske annonser forblir pauset. Budsjettgrenser er uendret.
+
+---
 ## Presisert hovedmål — Google-søk i Nord-Makedonia, 5. oktober 2026
 
 Eier presiserte at CV Hapi skal oppnå høy synlighet når personer i Nord-Makedonia søker etter CV på Google. Hovedsporet er derfor organisk Google-søk med makedonsk innhold. Microsoft Advertising er et dokumentert alternativ for betalte makedonske søkeannonser, men løser ikke eierens Google-mål og skal ikke erstatte dette uten en egen beslutning. Google Ads og begge engelske annonser forblir pauset.

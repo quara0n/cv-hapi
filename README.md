@@ -11,6 +11,8 @@ The user explicitly authorized fixing and reopening the EUR 2 AI review on www.c
 
 # CV Hapi
 
+6 October search/distribution update: eight original Macedonian resource pages, eleven fictional-example/checklist PDFs and two blank TXT worksheets. Start with [the visibility evidence and target list](marketing/mk-distribution-2026-10-06.md) and [the unsent outreach drafts](marketing/mk-outreach-drafts.md). Validate generated search output with `node scripts/check-search-output.mjs` after building. Current offer: free builder/PDF; optional three AI reviews for 150 MKD once. Google Ads is paused and the Macedonian ad is disapproved for Unsupported language. The older release notes below are historical; the current handoff takes precedence.
+
 4 October release: shorter copy, guided section editing, Macedonian default, 111 passing tests and successful production build. Free tools are live in Sites version 15. Paid AI remains paused pending delivery/processing recovery and provider/commercial disclosures. Start with [CLAUDE.md](CLAUDE.md), [current handoff](HANDOFF-2026-10-04-launch.md) and [LAUNCH-STATUS.md](LAUNCH-STATUS.md).
 
 English/Macedonian CV product for North Macedonia. Live: https://www.cvhapi.com/ (also /mk/ and /en/). GitHub: https://github.com/quara0n/cv-hapi.

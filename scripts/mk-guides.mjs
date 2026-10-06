@@ -1,4 +1,5 @@
 import {mkdir,writeFile} from 'node:fs/promises';
+import {resourceGuides} from './mk-resources.mjs';
 
 export const guides=[
  {slug:'cv-obrazec',title:'CV образец на македонски: пример и бесплатен PDF',description:'Погледни целосен измислен пример за CV на македонски. Избери еден од 8 шаблони, внеси свои податоци и преземи PDF бесплатно.',body:`
@@ -24,14 +25,32 @@ export const guides=[
 <h2>Ако немаш проект или практика</h2><p>Фокусирај се на образованието и вештините што можеш да ги покажеш. Не ги препишувај проектите од примерот. Можеш да подготвиш мал сопствен проект релевантен за улогата, а потоа да го наведеш како личен проект со вистински датум и опис.</p>
 <h2>Пред да го испратиш CV-то</h2><p>Провери ги контактите, датумите и правописот. Прочитај го огласот повторно и отстрани нерелевантни детали. Не ветувај ниво на вештина што сè уште го немаш. Бесплатниот уредувач во CV Hapi ти овозможува да направиш PDF; AI-проверката е незадолжителна и не гарантира вработување.</p>`}
 ];
+guides.push(...resourceGuides);
+for(const guide of guides){
+ guide.published=resourceGuides.includes(guide)?'2026-10-06':'2026-10-05';
+ guide.modified='2026-10-06';
+ guide.kind ||= 'Article';
+}
+guides.find(g=>g.slug==='cv-obrazec').body+=`<h2>Преземи го примерот или празна структура</h2><p><a href="/downloads/cv-primer-classic-mk.pdf" download>Измисленото CV на Марија во PDF</a> · <a href="/downloads/cv-obrazec-mk.txt" download>Празен образец во TXT</a>. За споредба на дизајни, отвори ги <a href="/mk/cv-sabloni/">осумте шаблони со PDF примери</a>. Примерот не е лична пријава: замени ги сите факти со свои.</p>`;
+guides.find(g=>g.slug==='cv-bez-rabotno-iskustvo').body+=`<h2>Пример во PDF и следниот чекор</h2><p><a href="/downloads/cv-prva-rabota-mk.pdf" download>Преземи го измисленото CV на Давид во PDF</a>. Пред да ја испратиш сопствената пријава, помини ја <a href="/mk/proverka-na-cv/">бесплатната листа за проверка</a>. Ако се бара писмо, погледни го <a href="/mk/motivacisko-pismo/">образецот за мотивациско писмо</a>.</p>`;
+guides.find(g=>g.slug==='kako-da-napisam-cv').body+=`<h2>Подготви го документот за испраќање</h2><p>Избери <a href="/mk/cv-sabloni/">читлив CV шаблон</a> и отвори го преземениот PDF. Користи ја <a href="/mk/proverka-na-cv/">листата за проверка</a> за да ги провериш контактите, фактите и форматот. Ако огласот бара писмо, подготви <a href="/mk/motivacisko-pismo/">мотивациско писмо за конкретната позиција</a>.</p><h2>Официјални дополнителни насоки</h2><p><a href="https://av.gov.mk/makedonski-ns_article-rabotna-biografija-cv.nspx">Агенција за вработување: работна биографија</a> · <a href="https://europass.europa.eu/mk/create-europass-cv">Europass: креирање CV</a>. CV Hapi не е поврзан со овие институции.</p>`;
 
 const escape=value=>value.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export async function writeGuides(origin,live){
  for(const guide of guides){
   const route=`mk/${guide.slug}/`,url=origin+'/'+route,title=guide.title+' | CV Hapi';
-  const related=guides.filter(x=>x!==guide).map(x=>`<li><a href="/mk/${x.slug}/">${escape(x.title)}</a></li>`).join('');
-  const structured={'@context':'https://schema.org','@type':'Article',headline:guide.title,description:guide.description,inLanguage:'mk',mainEntityOfPage:url,author:{'@type':'Organization',name:'CV Hapi',url:origin+'/mk/'}};
+  const related=guides.filter(x=>x!==guide&&x.slug!=='soveti-za-cv').map(x=>`<li><a href="/mk/${x.slug}/">${escape(x.title)}</a></li>`).join('');
+  const image=origin+'/images/cv-career-hero-1000.webp';
+  const page={'@type':guide.kind,'@id':url+'#page',url,name:guide.title,headline:guide.title,description:guide.description,inLanguage:'mk',mainEntityOfPage:url,datePublished:guide.published,dateModified:guide.modified,author:{'@type':'Organization',name:'CV Hapi',url:origin+'/mk/'},image};
+  const structured={'@context':'https://schema.org','@graph':[page,{'@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'CV Hapi',item:origin+'/mk/'},{'@type':'ListItem',position:2,name:'Совети за CV',item:origin+'/mk/soveti-za-cv/'},...(guide.slug==='soveti-za-cv'?[]:[{'@type':'ListItem',position:3,name:guide.title,item:url}])]}]};
   const html=`<!doctype html><html lang="mk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(title)}</title><meta name="description" content="${escape(guide.description)}"><meta name="robots" content="${live?'index,follow':'noindex,nofollow'}"><link rel="canonical" href="${url}"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/guides.css"><meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(guide.description)}"><meta property="og:url" content="${url}"><meta property="og:type" content="article"><meta property="og:locale" content="mk_MK"><script type="application/ld+json">${JSON.stringify(structured)}</script></head><body><a class="skip" href="#article">До содржината</a><header><a class="brand" href="/mk/" aria-label="CV Hapi">CV<span>hapi</span></a><nav aria-label="Главна навигација"><a href="/mk/">Бесплатен уредувач за CV</a><a href="/mk/review/">Проверка на CV</a></nav></header><main id="article"><nav class="breadcrumb" aria-label="Патека"><a href="/mk/">CV Hapi</a><span>Совети за CV</span></nav><article><p class="eyebrow">СОВЕТИ ЗА CV</p><h1>${escape(guide.title)}</h1>${guide.body}</article><aside class="cta"><h2>Направи го твоето CV</h2><p>8 шаблони. Бесплатно уредување и PDF. Без регистрација.</p><a class="button" href="/mk/">Започни со бесплатно CV</a><p class="paid-note">AI-проверката е по избор: 3 проверки за 150 денари еднократно. Без претплата.</p></aside><nav class="related" aria-label="Поврзани совети"><h2>Прочитај и</h2><ul>${related}</ul></nav></main><footer><p>CV Hapi · <a href="/mk/">CV на македонски</a> · <a href="mailto:support@cvhapi.com">support@cvhapi.com</a></p></footer></body></html>`;
-  await mkdir('dist/client/'+route,{recursive:true});await writeFile('dist/client/'+route+'index.html',html);
+  const shareText=encodeURIComponent(`${guide.title} — CV Hapi\n${url}`);
+  const sharing=`<section class="sharing" aria-label="Споделување"><h2>Сподели корисен водич</h2><p>Сподели ја оваа страница со некој што подготвува пријава. Линкот не содржи твои лични податоци.</p><div><a href="https://wa.me/?text=${shareText}" rel="noopener noreferrer" target="_blank">WhatsApp</a><a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" rel="noopener noreferrer" target="_blank">Facebook</a><a href="mailto:?subject=${encodeURIComponent(guide.title)}&body=${shareText}">Е-пошта</a></div></section>`;
+  const output=html.replace('</head>',`<meta property="og:site_name" content="CV Hapi"><meta property="og:image" content="${image}"><meta property="og:image:alt" content="CV Hapi — бесплатен уредувач за CV"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escape(title)}"><meta name="twitter:description" content="${escape(guide.description)}"><meta name="twitter:image" content="${image}"></head>`)
+   .replace('<span>Совети за CV</span>','<a href="/mk/soveti-za-cv/">Совети за CV</a>')
+   .replace('<a href="/mk/review/">Проверка на CV</a>','<a href="/mk/soveti-za-cv/">Примери и совети</a><a href="/mk/review/">Увези CV</a>')
+   .replace('</h1>',`</h1><p class="byline">Подготвено од CV Hapi · Ажурирано на <time datetime="${guide.modified}">6 октомври 2026</time></p>`)
+   .replace('</main>',sharing+'</main>');
+  await mkdir('dist/client/'+route,{recursive:true});await writeFile('dist/client/'+route+'index.html',output);
  }
 }
