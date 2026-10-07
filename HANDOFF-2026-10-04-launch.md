@@ -1,4 +1,14 @@
-## Current visibility work — 6 October 2026
+## Current search-entry release — 7 October 2026
+
+Sites version 31 is successfully public as of 20:03 UTC (22:03 Europe/Oslo). Source ffced4ab30928569c957e8db4f77952816df8437; deployment appgdep_6ac6a56090f08191b662e69fb397f233; runtime revision 9 unchanged. Native URL https://cv-hapi.quara0n.chatgpt.site. Read docs/releases/2026-10-07-search-entry.md first. This supersedes v30 below.
+
+Macedonian homepage search description and visible copy now explicitly cover free CV creation, eight templates, working biography and PDF without registration/watermark. Completed existing local guide-entry changes: every guide CTA opens the free editor; eight template choices select the actual template. Removed the duplicate local template CTA. All 151 tests, production build and generated-output checks pass: twelve canonical URLs, eight guides, 179 internal links/images, eleven PDFs and two worksheets. Browser checks confirm Macedonian editor, Classic template, focused first heading and homepage metadata. No customer impressions or clicks from this release have yet been measured.
+
+Google Ads is still blocked, NOT fixed: official language list and Unsupported language policy read again on 7 October prohibit unsupported-language ad or destination content; Macedonian absent from list. Campaign and English ads remain paused. NOK 200 campaign total, NOK 1 CPC cap, end date 18 October and NOK 300 all-in owner ceiling preserved. No spend, new campaign, paid AI call or consent expansion. Do not bypass the policy with another language label, an English ad or a misleading appeal. Outreach and Facebook drafts remain unsent/unpublished. Static guide pages still deliberately contain no analytics scripts.
+
+Google manual search observations are recorded in marketing/mk-distribution-2026-10-06.md: first page for CV образец, second page for CV на македонски, absent from five inspected pages for CV. These used country/language parameters and an unknown physical location, NOT a North Macedonia VPN or verified national rank. Search Console has not yet established Macedonian impressions; missing country data is not zero. Do not duplicate the five accepted 6 October indexing requests.
+
+## Previous visibility work — 6 October 2026
 
 Sites version 30 is successfully public. Source e40396a51d946cb401f02e91fb0fffb93d39fa03; deployment appgdep_6ac5541c40f48191b735d5e182ca7f43; runtime revision 9 unchanged. Production deployment URL https://cv-hapi.quara0n.chatgpt.site; custom-domain library https://www.cvhapi.com/mk/soveti-za-cv/. This supersedes v29 below.
 
