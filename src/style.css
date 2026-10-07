@@ -110,3 +110,12 @@ main.builder-started .review-intro .review-price{display:block}
  header .header-build{display:none}
  body:has(main.builder-started) header .header-build{display:block}
 }
+/* Optional introduction alongside the working surface. */
+.career-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,320px);align-items:center;gap:48px}
+.intro-video{margin:0;padding:12px;border:1px solid var(--line);border-radius:16px;background:white}
+.intro-video figcaption{font-size:14px;font-weight:600;color:var(--blue);margin:0 0 10px}
+.intro-video video{display:block;width:100%;height:auto;border-radius:10px;background:#f5f6f2}
+.video-transcript{margin-top:10px;font-size:14px;color:var(--muted)}
+.video-transcript summary{cursor:pointer;width:fit-content}
+.video-transcript p{font-size:14px;line-height:1.6;margin:10px 0 0}
+@media(max-width:760px){.career-hero{grid-template-columns:1fr;gap:20px}.intro-video{width:min(100%,320px);box-sizing:border-box;justify-self:center}}

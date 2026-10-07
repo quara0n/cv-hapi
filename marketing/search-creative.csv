@@ -1,0 +1,22 @@
+Type,Text,Match type,Status
+Headline,3 AI Reviews · 150 MKD,,Draft entered; launch blocked
+Headline,Review Your Existing CV,,Draft entered; launch blocked
+Headline,CV Hapi,,Draft entered; launch blocked
+Headline,No Subscription. Pay Once.,,Draft entered; launch blocked
+Headline,Make Your CV Clearer,,Draft entered; launch blocked
+Headline,Choose Your Own Improvements,,Draft entered; launch blocked
+Headline,Free Editing & PDF Downloads,,Draft entered; launch blocked
+Description,Import your CV. Get 3 AI reviews for 150 MKD once. No subscription.,,Draft entered; launch blocked
+Description,Compare AI suggestions and choose your edits. Keep control of your CV.,,Draft entered; launch blocked
+Description,Build or edit your CV and download PDFs for free. AI review is optional.,,Draft entered; launch blocked
+Description,Bring your existing CV. Improve the wording while keeping your facts.,,Draft entered; launch blocked
+Keyword,cv review,Exact,Draft entered; demand unproven
+Keyword,cv review,Phrase,Draft entered; demand unproven
+Keyword,ai cv review,Exact,Draft entered; demand unproven
+Keyword,ai cv review,Phrase,Draft entered; demand unproven
+Keyword,cv checker,Exact,Draft entered; demand unproven
+Keyword,cv checker,Phrase,Draft entered; demand unproven
+Keyword,resume review,Exact,Draft entered; demand unproven
+Negative,job vacancies,Phrase,Proposed; not applied
+Negative,job listings,Phrase,Proposed; not applied
+Negative,recruiter jobs,Phrase,Proposed; not applied

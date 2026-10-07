@@ -1,5 +1,9 @@
 # CV Hapi measurement — 2026-09-28
 
+## Current status — 4 October 2026
+
+The £2 GBP paid AI review and compact purchase modal are published; the free-pilot/paused-service statements below are historical. Sites version 20 also includes consented server-receipt-based purchase/refund measurement and distinct review routes. All 129 tests passed. A live delivered purchase has not yet been observed in GA4 or imported into Google Ads. The misleading page-view primary goal was changed to secondary; Ads linking/import remains incomplete. See [marketing/READINESS.md](marketing/READINESS.md) for exact evidence and limits, [GROWTH-PLAN-2026-10-04.md](GROWTH-PLAN-2026-10-04.md) for research, and [VIDEO-AD-BRIEF.md](VIDEO-AD-BRIEF.md) for the Macedonian video. No ad campaign or advertising personalization was activated. NOK 300 remains a total pilot ceiling.
+
 ## Connected services
 
 GA4 property 556316817, stream 15861416022, measurement G-JYTW6J3BRZ.

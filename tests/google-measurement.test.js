@@ -16,3 +16,10 @@ test('www root visits use the selected Macedonian interface in sanitized analyti
  w.eval(code.outputFiles[0].text);w.telemetry.setConsent(true);w.telemetry.track('page_view');
  const event=w.dataLayer.find(x=>x[0]==='event');assert.equal(event[2].page_location,'https://www.cvhapi.com/mk/');assert.equal(event[2].ui_language,'mk');assert.ok(!JSON.stringify(w.dataLayer).includes('private@example.com'));dom.window.close();
 });
+
+test('review landing attribution keeps its route and removes private query and fragment data',async()=>{
+ const code=await build({entryPoints:['src/telemetry.js'],bundle:true,write:false,format:'iife',globalName:'telemetry',define:{'import.meta.env.VITE_POSTHOG_KEY':'""','import.meta.env.VITE_POSTHOG_HOST':'"https://eu.i.posthog.com"'},logLevel:'silent'});
+ const dom=new JSDOM('<html lang="en"></html>',{url:'https://www.cvhapi.com/en/review/?email=private@example.com#document',runScripts:'outside-only'}),w=dom.window;
+ w.eval(code.outputFiles[0].text);w.telemetry.setConsent(true);w.telemetry.track('page_view');
+ const event=w.dataLayer.find(x=>x[0]==='event');assert.equal(event[2].page_location,'https://www.cvhapi.com/en/review/');assert.ok(!JSON.stringify(w.dataLayer).includes('private@example.com'));assert.ok(!JSON.stringify(w.dataLayer).includes('#document'));dom.window.close();
+});

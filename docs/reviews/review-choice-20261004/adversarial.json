@@ -1,0 +1,27 @@
+{
+  "reviewer": "adversarial",
+  "findings": [
+    {
+      "title": "Back during PDF loading exports an empty document",
+      "severity": "P2",
+      "file": "src/review-ui.js",
+      "line": 74,
+      "why_it_matters": "On the free editing path, a user can click Back while Download PDF is awaiting its dynamic module import. Back invalidates the editable state before the export constructs its document, so the resulting PDF contains no CV text even though the preserved text remains on the choice screen.",
+      "autofix_class": "manual",
+      "owner": "downstream-resolver",
+      "requires_verification": true,
+      "confidence": 100,
+      "evidence": [
+        "src/review-ui.js:74:  if(q('#review-choice-back'))q('#review-choice-back').onclick=()=>{const text=s.edited,letter=s.editedLetter;invalidate();s.text=text;s.letter=letter;repaint();q('#review-source').focus()};",
+        "src/review-ui.js:55: invalidate() sets s.original='';s.edited='';s.originalLetter='';s.editedLetter=''. The Back handler restores only s.text and s.letter.",
+        "src/review-ui.js:78: PDF export sets s.busy=true, repaints, then awaits import('./pdf.js') before calling downloadDocument(reviewedDocument(s.edited,s.editedLetter),'CV-Hapi-reviewed.pdf').",
+        "Constructed sequence: import a 587-character example CV, Continue without AI, check facts, click Download PDF, click the still-enabled Back button before the asynchronous import resolves.",
+        "Read-only esbuild/JSDOM reproduction replaced only pdf.js downloadDocument with an argument recorder, preserving the dynamic-import boundary. It printed 'Back during export disabled: false' and captured a PDF definition with content:[] instead of the 587-character CV. No source files were changed."
+      ],
+      "pre_existing": false,
+      "suggested_fix": "Disable #review-choice-back when s.busy and return immediately from its click handler when s.busy, matching other actions that can replace review state. Verify that Back cannot clear edited text while PDF export is awaiting the import."
+    }
+  ],
+  "residual_risks": [],
+  "testing_gaps": []
+}

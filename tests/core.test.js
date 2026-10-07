@@ -2,6 +2,17 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {normalize,blank,escapeHtml,documentDefinition,example,cvWarnings} from '../src/model.js';
 import {safeProperties,attribution} from '../src/telemetry-core.js';
+import {templates} from '../src/templates.js';
+test('every template restores and exports the same facts with distinct document layouts',()=>{
+ const signatures=new Set();
+ for(const {id} of templates){
+  const cv=normalize({...blank(),...example,template:id});assert.equal(cv.template,id);
+  const doc=documentDefinition(cv),output=JSON.stringify(doc.content);
+  for(const fact of [example.name,example.email,example.summary,example.skills,example.languages,example.experience[0].title])assert.ok(output.includes(fact.replaceAll('\n','\\n')),`${id} lost ${fact}`);
+  signatures.add(JSON.stringify(doc));assert.equal(doc.pageSize,'A4');assert.ok(doc.footer(2,3).text.includes('2 / 3'));
+ }
+ assert.equal(signatures.size,templates.length);
+});
 test('restored drafts reject malformed records and bound content',()=>{const d=normalize({name:'a'.repeat(400),experience:[null,42,{title:'Real',description:100}],template:'<script>',accent:'url(evil)',language:'bad'});assert.equal(d.name.length,100);assert.equal(d.experience.length,1);assert.equal(d.experience[0].title,'Real');assert.equal(d.experience[0].description,'');assert.equal(d.template,'modern');assert.equal(d.accent,'#234bff');assert.deepEqual(normalize(null),blank())});
 test('preview escapes untrusted HTML',()=>assert.equal(escapeHtml('<img src=x onerror="x">'), '&lt;img src=x onerror=&quot;x&quot;&gt;'));
 test('CV warnings flag malformed emails and reversed comparable dates without rejecting free-text dates',()=>{

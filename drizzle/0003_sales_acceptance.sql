@@ -1,0 +1,1 @@
+ALTER TABLE `payments` ADD `terms_version` text;

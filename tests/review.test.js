@@ -173,3 +173,22 @@ test('letter suggestions are anchored to their own document and exported togethe
  for(const invalid of [42,null,'x'.repeat(10001)])assert.equal((await handleAPI(request({letter:invalid}),env,provider)).status,400);
  const result=await handleAPI(request({letter}),env,provider);assert.equal(result.status,200);assert.equal((await result.json()).suggestions.length,1);assert.equal(calls,2);assert.equal(db.prepare('SELECT used FROM ai_budget').get().used,1);db.close();
 });
+
+test('a truncated provider review is regenerated completely before validation',async()=>{
+ const {db,binding}=database();let calls=0;
+ const provider=async(url,options)=>{
+  const body=JSON.parse(options.body);calls++;
+  assert.equal(body.max_tokens,calls===1?8000:16000);
+  return Response.json({choices:[{finish_reason:calls===1?'length':'stop',message:{content:calls===1?'{"overview":"cut':JSON.stringify({overview:'Complete regenerated review',suggestions:[]})}}]});
+ };
+ const response=await handleAPI(request(),{AI_PRIVACY_APPROVED:'true',AI_ENABLED:'true',AI_MAX_REVIEWS:'1',DEEPSEEK_API_KEY:'test',DB:binding},provider);
+ assert.equal(response.status,200);assert.equal((await response.json()).overview,'Complete regenerated review');assert.equal(calls,2);assert.equal(db.prepare('SELECT used FROM ai_budget').get().used,1);db.close();
+});
+
+test('truncation recovery is bounded and does not accept malformed complete output',async()=>{
+ for(const finish of ['length','stop']){
+  const {db,binding}=database();let calls=0;
+  const response=await handleAPI(request(),{AI_PRIVACY_APPROVED:'true',AI_ENABLED:'true',AI_MAX_REVIEWS:'1',DEEPSEEK_API_KEY:'test',DB:binding},async()=>{calls++;return Response.json({choices:[{finish_reason:finish,message:{content:'{"overview":"cut'}}]})});
+  assert.equal(response.status,502);assert.equal(calls,finish==='length'?2:1);db.close();
+ }
+});

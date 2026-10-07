@@ -6,6 +6,18 @@ import {join} from 'node:path';
 import {createLocalDatabase,localTestEnvironment} from '../scripts/local-test-runtime.mjs';
 import {handleAPI} from '../worker/index.js';
 import {reviewLimit} from '../worker/ai-config.js';
+
+test('upgrading an existing owner database preserves purchased review credits',()=>{
+ const dir=mkdtempSync(join(tmpdir(),'cvhapi-campaign-upgrade-')),path=join(dir,'test.sqlite');
+ try{
+  let db=createLocalDatabase(path);
+  db.prepare("INSERT INTO payments(id,owner,state,currency,amount,review_count,reviews_delivered) VALUES ('existing','owner','paid','mkd',15000,3,1)").run();
+  db.exec('ALTER TABLE payments DROP COLUMN campaign');db.close();
+  db=createLocalDatabase(path);
+  assert.deepEqual({...db.prepare('SELECT campaign,state,amount,review_count,reviews_delivered FROM payments').get()},{campaign:'none',state:'paid',amount:15000,review_count:3,reviews_delivered:1});
+  db.close();db=createLocalDatabase(path);assert.equal(db.prepare('SELECT campaign FROM payments').get().campaign,'none');db.close();
+ }finally{rmSync(dir,{recursive:true,force:true})}
+});
 test('unlimited local owner reviews keep counting attempts and never unlock hosted or live usage',async()=>{
  const dir=mkdtempSync(join(tmpdir(),'cvhapi-unlimited-'));
  try{

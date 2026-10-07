@@ -1,0 +1,58 @@
+{
+  "branch": "codex/review-reliability-eur2",
+  "completed_at": "2026-10-04T17:41:16.801208+00:00",
+  "cost": {
+    "host": "codex",
+    "scope": {
+      "changed_lines": 88,
+      "depth": "focused",
+      "exec_nontest_lines": 50,
+      "size_band": "small",
+      "unclassified_lines": {
+        ".css": 9
+      }
+    },
+    "stages": [
+      {
+        "elapsed_seconds": 0.137,
+        "ended_at": "2026-10-04T17:41:17.108211+00:00",
+        "facts": {
+          "changed_lines": 88,
+          "depth": "focused",
+          "exec_nontest_lines": 50,
+          "size_band": "small",
+          "unclassified_lines": {
+            ".css": 9
+          }
+        },
+        "stage": "scope",
+        "started_at": "2026-10-04T17:41:16.971404+00:00"
+      },
+      {
+        "candidates": 0,
+        "elapsed_seconds": 0.138,
+        "ended_at": "2026-10-04T17:41:17.246128+00:00",
+        "reviewers": 2,
+        "stage": "review",
+        "started_at": "2026-10-04T17:41:17.108211+00:00"
+      },
+      {
+        "elapsed_seconds": 0.137,
+        "ended_at": "2026-10-04T17:41:17.383040+00:00",
+        "stage": "receipt",
+        "started_at": "2026-10-04T17:41:17.246128+00:00"
+      }
+    ],
+    "status": "complete",
+    "totals": {
+      "artifact_bytes": 3476,
+      "candidates": 0,
+      "elapsed_seconds": 0.412,
+      "reviewers": 2
+    },
+    "truncated_events": 0
+  },
+  "head_sha": "cbc8d70abaed79efca6639259b330c9a06705b97",
+  "run_id": "onboarding-20261004",
+  "verdict": "Ready to merge"
+}

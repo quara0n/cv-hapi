@@ -1,3 +1,14 @@
+## Import-first onboarding — 4 October update
+
+Start your CV Hapi now opens two choices: recommended local document import and scratch/continue builder. Files are staged until explicit Import; source switches clear pending files. A real reading animation and three-step review journey guide the import path. Desktop editing uses a navy step sidebar with completion marks based on entered data. The 150 MKD / three-review offer and eight templates remain. A separate CV-language picker changes section headings only. Initial UI language follows supported browser preferences, then saved choice and explicit route, with Macedonian fallback. See docs/releases/2026-10-04-onboarding.md and the latest LAUNCH-STATUS.md for verification and publication.
+## Purchase modal — 4 October update
+
+The latest owner instruction is 150 MKD once for three AI reviews, with unlimited downloads. The builder and ordinary PDF remain free. Migration 0007 preserves legacy EUR/GBP single-review orders and records new bundle deliveries and partial refunds. Existing credits require an explicit Use a review action; only a checkout initiated in the current flow starts the first review on verified return. Eight PDF templates and the redesigned six-step editor are implemented. Read docs/releases/2026-10-04-redesign.md and the newest LAUNCH-STATUS.md entry for current validation/publication state. Earlier pricing and pause notes below are historical and superseded by the owner's explicit live-service authorization.
+
+## 4 October paid-service repair
+
+The user explicitly authorized fixing and reopening the EUR 2 AI review on www.cvhapi.com, superseding the earlier agent-selected pause. See [PAID-REPAIR.md](PAID-REPAIR.md) for checkout reservations, delivery acknowledgement, unattended refunds, sales acceptance and verification boundaries. Sites version 16 successfully deployed runtime revision 9 on 4 October: AI, live payments and checkout enabled, preserved lifetime allowance 100. Both public domains report availability. Live EUR 2 checkout creation, unpaid cancellation/capacity release, invalid webhook rejection and reconciliation were verified without a charge. Historical pause statements below describe version 15. See PAID-REPAIR.md for the sandbox delivery evidence and remaining verification limits.
+
 # CV Hapi project context
 
 ## Start here

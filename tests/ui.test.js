@@ -1,5 +1,26 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {JSDOM} from 'jsdom';import {build} from 'esbuild';
 const bundle=await build({entryPoints:['src/main.js'],bundle:true,write:false,format:'iife',loader:{'.css':'empty'},define:{'import.meta.env.VITE_POSTHOG_KEY':'""','import.meta.env.VITE_POSTHOG_HOST':'"https://eu.i.posthog.com"'},logLevel:'silent'});
+
+test('Macedonian guide entry opens the free editor with a selected template and preserves saved content',()=>{
+ const dom=boot(JSON.stringify({name:'Saved Person',summary:'Existing profile',template:'horizon',language:'en'}),'https://cv.test/mk/?start=builder&template=classic'),d=dom.window.document;
+ assert.equal(d.documentElement.lang,'mk');assert.ok(d.querySelector('main').classList.contains('builder-started'));
+ assert.equal(d.querySelector('#name').value,'Saved Person');assert.ok(d.querySelector('.paper.classic'));
+ assert.equal(d.querySelector('#review-toggle').getAttribute('aria-expanded'),'false');assert.equal(d.activeElement.id,'step-heading');
+ assert.equal(JSON.parse(dom.window.localStorage.getItem('cekor.cv.v1')).template,'horizon');dom.window.close();
+});
+test('invalid templates are ignored and builder entry cannot override the review route',()=>{
+ const dom=boot(null,'https://cv.test/mk/?start=builder&template=unknown');assert.ok(dom.window.document.querySelector('.paper'));assert.ok(!dom.window.document.querySelector('.paper.unknown'));dom.window.close();
+ const review=boot(null,'https://cv.test/mk/review/?start=builder');assert.equal(review.window.document.querySelector('#review-toggle').getAttribute('aria-expanded'),'true');review.window.close();
+});
+
+test('review landing URLs open the matching language and disclose the one-time price',()=>{
+ for(const language of ['mk','en']){
+  const dom=boot(null,`https://cv.test/${language}/review/`),d=dom.window.document;
+  assert.equal(d.documentElement.lang,language);assert.equal(d.querySelector('#review-toggle').getAttribute('aria-expanded'),'true');
+  assert.match(d.title,/150 MKD/);assert.match(d.querySelector('.review-price').textContent,/150 (MKD|денари)/);assert.ok(d.querySelector('#review-source'));
+  dom.window.close();
+ }
+});
 test('private CV-only backend explains its scope and prevents unsupported letter submissions',async()=>{
  const dom=boot(),w=dom.window,d=w.document;w.fetch=async()=>({ok:true,json:async()=>({available:true,testMode:'private_cv_only'})});
  d.querySelector('[data-action="example"]').click();d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-from').click();
@@ -8,7 +29,61 @@ test('private CV-only backend explains its scope and prevents unsupported letter
  const letter=d.querySelector('#review-letter');letter.value='An optional cover letter';letter.dispatchEvent(new w.Event('input'));assert.equal(d.querySelector('#review-ai').disabled,true);
  letter.value='';letter.dispatchEvent(new w.Event('input'));d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('#review-ai').disabled,false);dom.window.close();
 });
-function boot(saved,url='https://cv.test'){const dom=new JSDOM('<div id="app"></div>',{url,runScripts:'outside-only'});dom.window.structuredClone=structuredClone;dom.window.HTMLElement.prototype.scrollIntoView=function(options){dom.window.lastScroll={id:this.id,options}};dom.window.matchMedia=()=>({matches:false});dom.window.HTMLDialogElement.prototype.showModal=function(){this.open=true};dom.window.HTMLDialogElement.prototype.close=function(){this.open=false};if(saved)dom.window.localStorage.setItem('cekor.cv.v1',saved);dom.window.localStorage.setItem('cekor.ui-language','en');dom.window.eval(bundle.outputFiles[0].text);return dom}
+function boot(saved,url='https://cv.test'){const dom=new JSDOM('<div id="app"></div>',{url,runScripts:'outside-only'});dom.window.structuredClone=structuredClone;dom.window.navigator.locks={request:async(name,callback)=>callback()};dom.window.HTMLElement.prototype.scrollIntoView=function(options){dom.window.lastScroll={id:this.id,options}};dom.window.matchMedia=()=>({matches:false});dom.window.HTMLDialogElement.prototype.showModal=function(){this.open=true};dom.window.HTMLDialogElement.prototype.close=function(){this.open=false};if(saved)dom.window.localStorage.setItem('cekor.cv.v1',saved);dom.window.localStorage.setItem('cekor.ui-language','en');dom.window.eval(bundle.outputFiles[0].text);return dom}
+test('start choices recommend import and preserve a saved CV when continuing the builder',()=>{
+ const saved=JSON.stringify({name:'Alex Example',summary:'My existing profile',template:'horizon'}),dom=boot(saved),d=dom.window.document;
+ d.querySelector('.hero-actions [data-action="start"]').click();assert.equal(d.querySelector('#modal').open,true);assert.ok(d.querySelector('[data-start-import]').classList.contains('recommended'));assert.match(d.querySelector('[data-start-build]').textContent,/Continue my CV/);
+ d.querySelector('[data-start-build]').click();assert.ok(d.querySelector('main').classList.contains('builder-started'));assert.equal(d.querySelector('#name').value,'Alex Example');assert.ok(d.querySelector('.paper.horizon'));
+ d.querySelector('[data-home]').click();d.querySelector('.hero-actions [data-action="start"]').click();d.querySelector('[data-start-import]').click();assert.ok(d.querySelector('.review-panel.import-mode'));assert.equal(d.querySelector('#review-source').value,'');assert.equal(d.querySelector('#review-consent').checked,false);dom.window.close();
+});
+test('dropping a document stages it until import and never submits it to AI',async()=>{
+ const dom=boot(),w=dom.window,d=w.document;const requests=[];w.fetch=async url=>{requests.push(url);return{ok:true,json:async()=>({available:true})}};
+ d.querySelector('.hero-actions [data-action="start"]').click();d.querySelector('[data-start-import]').click();await new Promise(r=>setTimeout(r,0));
+ const text='Alex Example. I help residents with meals and daily activities and communicate with colleagues.';let reads=0;
+ const drop=new w.Event('drop',{cancelable:true});Object.defineProperty(drop,'dataTransfer',{value:{files:[{name:'my-cv.txt',size:100,text:async()=>{reads++;return text}}]}});d.querySelector('#review-dropzone').dispatchEvent(drop);
+ assert.equal(reads,0);assert.match(d.querySelector('#review-file-name').textContent,/my-cv.txt/);assert.equal(d.querySelector('#review-import-submit').disabled,false);
+ d.querySelector('#review-import-submit').click();for(let i=0;i<20&&d.querySelector('#review-source').value!==text;i++)await new Promise(r=>setTimeout(r,0));
+ assert.equal(reads,1);assert.equal(d.querySelector('#review-source').value,text);assert.equal(d.querySelector('.review-panel').classList.contains('import-mode'),false);assert.equal(d.querySelector('#review-consent').checked,false);assert.ok(!requests.includes('/api/review'));dom.window.close();
+});
+test('a staged replacement file can be imported and switching source clears its pending state',async()=>{
+ const dom=boot(),w=dom.window,d=w.document;w.fetch=async()=>({ok:true,json:async()=>({available:true})});
+ d.querySelector('[data-action="example"]').click();d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-from').click();
+ const stage=()=>{const event=new w.Event('drop',{cancelable:true});Object.defineProperty(event,'dataTransfer',{value:{files:[{name:'replacement.txt',size:100,text:async()=> 'Replacement CV text with sufficient experience and qualifications to review its contents safely.'}]}});d.querySelector('#review-dropzone').dispatchEvent(event)};
+ stage();assert.ok(d.querySelector('.review-panel.import-mode'));assert.equal(d.querySelector('#review-import-submit').disabled,false);
+ w.confirm=()=>true;d.querySelector('#review-from').click();assert.equal(d.querySelector('.review-panel').classList.contains('import-mode'),false);assert.equal(d.querySelector('#review-file-name').textContent,'');assert.equal(d.querySelector('#review-import-submit').disabled,true);
+ stage();d.querySelector('#review-paste').click();assert.equal(d.querySelector('.review-panel').classList.contains('import-mode'),false);assert.equal(d.querySelector('#review-import-submit').disabled,true);assert.equal(d.querySelector('#review-consent').checked,false);dom.window.close();
+});
+test('the review choice keeps optional inputs collapsed and continues to free editing without an AI request',async()=>{
+ const dom=boot(),w=dom.window,d=w.document;const requests=[];w.fetch=async url=>{requests.push(url);return{ok:true,json:async()=>({available:true})}};
+ d.querySelector('[data-action="example"]').click();d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-from').click();
+ assert.match(d.querySelector('#review-local').textContent,/Continue without AI/);assert.equal(d.querySelector('.review-extras').open,false);assert.equal(d.querySelector('.review-source-options').open,false);assert.equal(d.querySelector('#review-consent').checked,false);
+ const original=d.querySelector('#review-source').value;d.querySelector('#review-local').click();assert.ok(d.querySelector('.review-panel.free-edit'));assert.equal(d.querySelector('#review-edited').value,original);assert.equal(d.querySelector('#review-consent').checked,false);assert.ok(!requests.includes('/api/review'));assert.equal(d.querySelector('#review-pdf').disabled,true);d.querySelector('#review-checked').click();assert.equal(d.querySelector('#review-pdf').disabled,false);
+ d.querySelector('#review-edited').value=original+' My added detail.';d.querySelector('#review-edited').dispatchEvent(new w.Event('input'));d.querySelector('#review-choice-back').click();assert.equal(d.querySelector('.review-panel').classList.contains('free-edit'),false);assert.equal(d.querySelector('#review-source').value,original+' My added detail.');assert.equal(d.querySelector('#review-consent').checked,false);assert.ok(!requests.includes('/api/review'));dom.window.close();
+});
+test('owned bundle credits require an explicit review action after consent and payment refresh',async()=>{
+ const dom=boot(),w=dom.window,d=w.document;let reviews=0;
+ w.fetch=async url=>{if(url==='/api/review'){reviews++;return{ok:false,status:503,json:async()=>({error:'unavailable'})}}return{ok:true,json:async()=>url==='/api/review/status'?{available:true}:url==='/api/payments/config'?{enabled:true,test:false}:{state:'paid',remainingReviews:3}}};
+ d.querySelector('[data-action="example"]').click();d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-from').click();d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));
+ assert.equal(reviews,0);assert.match(d.querySelector('#review-ai').textContent,/Use a review.*3 remaining/);
+ w.dispatchEvent(new w.Event('focus'));await new Promise(r=>setTimeout(r,0));assert.equal(reviews,0);
+ d.querySelector('#review-ai').click();await new Promise(r=>setTimeout(r,0));assert.equal(reviews,1);dom.window.close();
+});
+test('paid delivery acknowledgement follows a valid review and its failure preserves the result',async()=>{
+ for(const confirmed of [true,false]){
+  const dom=boot(),w=dom.window,d=w.document;w.AbortSignal=AbortSignal;const calls=[];
+  w.fetch=async(url,options)=>{
+   if(url==='/api/review/status')return{ok:true,json:async()=>({available:true})};
+   if(url==='/api/payments/config')return{ok:true,json:async()=>({enabled:false})};
+   calls.push(url);
+   if(url==='/api/payments/delivered'){assert.deepEqual(JSON.parse(options.body),{token:'a'.repeat(64)});return{ok:confirmed,json:async()=>({state:'used'})};}
+   return{ok:true,headers:{get:()=> 'a'.repeat(64)},json:async()=>({overview:'Complete feedback.',sections:[{document:'cv',name:'Profile',assessment:'Clarify your duties.',actions:[]}],priorities:[{title:'Details',why:'Brief',action:'Add real duties.'}],suggestions:[]})};
+  };
+  d.querySelector('[data-action="example"]').click();d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-from').click();d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-ai').click();await new Promise(r=>setTimeout(r,0));
+  assert.deepEqual(calls,['/api/review','/api/payments/delivered']);assert.ok(d.querySelector('#review-results-title'));assert.ok(d.querySelector('#review-edited'));
+  if(!confirmed)assert.match(d.querySelector('#review-message').textContent,/Delivery confirmation failed/);
+  dom.window.close();
+ }
+});
 test('returning to an exhausted review refreshes restored availability without clearing the CV',async()=>{
  const dom=boot(),w=dom.window,d=w.document;let restored=false,posted=0;
  w.fetch=async url=>{if(url==='/api/review')posted++;return{ok:true,json:async()=>url==='/api/review/status'?{available:restored,remaining:restored?1:0}:{enabled:false}}};
@@ -41,6 +116,7 @@ test('review studio navigates sections without losing drafts and previews only t
  w.fetch=async url=>{if(url==='/api/review')calls++;return{ok:true,json:async()=>url==='/api/review/status'?{available:true}:url==='/api/payments/config'?{enabled:false}:{overview:'Reviewed.',sections:[{document:'cv',name:'Profile',assessment:'Clarify your focus.',actions:[]},{document:'cv',name:'Skills',assessment:'List actual skills.',actions:[]}],suggestions:[]}}};
  d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-source').value=source;d.querySelector('#review-source').dispatchEvent(new w.Event('input'));d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-ai').click();await new Promise(r=>setTimeout(r,0));
  assert.equal(d.querySelectorAll('[data-select-section]').length,2);
+ for(const id of ['review-source','review-job','review-letter','review-file'])assert.ok(d.querySelector('.studio-source #'+id));
  assert.equal(d.querySelector('.review-studio').dataset.guided,'welcome');assert.equal(d.querySelector('.guide-full-feedback').open,false);
  d.querySelector('#review-guide-start').click();assert.equal(d.querySelector('.review-studio').dataset.guided,'editing');assert.equal(d.querySelector('.guide-writing-help').open,false);
  const draft=d.querySelector('[data-section-draft]');draft.value='My unsaved wording.';draft.dispatchEvent(new w.Event('input'));assert.doesNotMatch(d.querySelector('.studio-paper').textContent,/My unsaved wording/);
@@ -103,13 +179,15 @@ test('AI checkout appears only after document preparation and consent, then veri
  w.fetch=async(url,options)=>{if(url==='/api/review/status')return{ok:true,json:async()=>({available:true})};if(url==='/api/payments/config'){configCalls++;return{ok:true,json:async()=>({enabled:true,test:true})}}if(url==='/api/payments/status')return{ok:true,json:async()=>({state:paid?'paid':'none'})};assert.equal(url,'/api/review');assert.equal(JSON.parse(options.body).consent,true);posted++;return{ok:true,json:async()=>({overview:'Reviewed',suggestions:[]})}};
  d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));assert.equal(configCalls,0);assert.equal(d.querySelector('.payment-choice'),null);
  assert.match(d.querySelector('.ai-disclosure').textContent,/DeepSeek/);assert.equal(d.querySelector('.ai-disclosure').open,false);assert.doesNotMatch(d.querySelector('.ai-choice h3').textContent,/DeepSeek/);
- d.querySelector('[data-action="example"]').click();d.querySelector('#review-from').click();assert.equal(configCalls,0);d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));assert.equal(configCalls,1);assert.match(d.querySelector('[data-buy]').textContent,/€2/);assert.equal(d.querySelector('#review-ai').disabled,true);
- paid=true;d.querySelector('[data-check]').click();await new Promise(r=>setTimeout(r,0));assert.equal(posted,1);assert.equal(d.querySelector('#review-ai').disabled,true);assert.ok(d.querySelector('.ai-results'));dom.window.close();
+ d.querySelector('[data-action="example"]').click();d.querySelector('#review-from').click();assert.equal(configCalls,0);d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));assert.equal(configCalls,1);assert.match(d.querySelector('[data-buy]').textContent,/150 MKD/);assert.equal(d.querySelector('#review-ai').disabled,false);
+ const modal=d.querySelector('dialog.purchase-modal');assert.equal(modal.open,false);assert.equal(posted,0);d.querySelector('#review-ai').click();assert.equal(modal.open,true);assert.equal(posted,0);d.querySelector('[data-modal-close]').click();assert.equal(modal.open,false);d.querySelector('#review-ai').click();assert.equal(modal.open,true);
+ paid=true;d.querySelector('[data-check]').click();await new Promise(r=>setTimeout(r,0));assert.equal(posted,0);d.querySelector('#review-ai').click();await new Promise(r=>setTimeout(r,0));assert.equal(posted,1);assert.equal(d.querySelector('#review-ai').disabled,true);assert.ok(d.querySelector('.ai-results'));dom.window.close();
 });
 test('returning from paid checkout starts AI automatically and focuses completed feedback',async()=>{
  const dom=boot(),w=dom.window,d=w.document;let paid=false;w.AbortSignal=AbortSignal;
- w.fetch=async url=>({ok:true,json:async()=>url==='/api/review/status'?{available:true}:url==='/api/payments/config'?{enabled:true,test:false}:url==='/api/payments/status'?{state:paid?'paid':'none'}:{overview:'Clearer wording.',suggestions:[{document:'cv',original:'Skilled at cooking',revised:'Cooking skills',reason:'More concise.'}]}});
+ w.fetch=async url=>({ok:true,json:async()=>url==='/api/review/status'?{available:true}:url==='/api/payments/config'?{enabled:true,test:false}:url==='/api/payments/status'?{state:paid?'paid':'none'}:url.startsWith('/api/payments/checkout')?{url:'https://checkout.stripe.com/c/pay/test'}:{overview:'Clearer wording.',suggestions:[{document:'cv',original:'Skilled at cooking',revised:'Cooking skills',reason:'More concise.'}]}});
  d.querySelector('[data-action="example"]').click();d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-from').click();const source=d.querySelector('#review-source');source.value='Skilled at cooking. Communicating clearly with colleagues. Experience preparing meals in a busy kitchen.';source.dispatchEvent(new w.Event('input'));d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));
+ d.querySelector('#review-ai').click();d.querySelector('[data-sales-consent]').click();d.querySelector('[data-buy]').click();await new Promise(r=>setTimeout(r,0));
  paid=true;w.dispatchEvent(new w.Event('focus'));await new Promise(r=>setTimeout(r,0));
  assert.equal(d.querySelector('#review-ai').disabled,true);
  w.dispatchEvent(new w.Event('focus'));await new Promise(r=>setTimeout(r,0));
@@ -152,10 +230,10 @@ test('exhausted reviews still show the refund and never offer another purchase',
 test('a failed paid AI review focuses the error and reports the refund without showing the builder',async()=>{
  const dom=boot(),w=dom.window,d=w.document;w.AbortSignal=AbortSignal;let paid=false;
  let attempted=false;w.fetch=async url=>{if(url==='/api/review'){attempted=true;return{ok:false,status:502,json:async()=>({error:'review_failed',reason:'timeout',payment:'refunded'})}}return{ok:true,json:async()=>url==='/api/review/status'?{available:!attempted,remaining:attempted?0:1}:url==='/api/payments/config'?{enabled:true,test:true}:{state:paid?'paid':'none'}}};
- d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));const source=d.querySelector('#review-source');source.value='I communicate clearly with colleagues and help people understand their treatment and exercises.';source.dispatchEvent(new w.Event('input'));d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));paid=true;d.querySelector('[data-check]').click();await new Promise(r=>setTimeout(r,0));
+ d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));const source=d.querySelector('#review-source');source.value='I communicate clearly with colleagues and help people understand their treatment and exercises.';source.dispatchEvent(new w.Event('input'));d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));paid=true;d.querySelector('[data-check]').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-ai').click();await new Promise(r=>setTimeout(r,0));
  assert.equal(d.activeElement.id,'review-message');assert.equal(w.lastScroll.id,'review-message');assert.match(d.querySelector('#review-message').textContent,/timed out/i);assert.match(d.querySelector('#review-message').textContent,/refund/i);assert.equal(d.querySelector('.workspace').hidden,true);assert.equal(d.querySelector('#review-source').value,source.value);assert.match(d.querySelector('#ai-availability').textContent,/allowance has been used/);assert.equal(d.querySelector('[data-buy]').hidden,true);assert.equal(d.querySelector('#review-ai').disabled,true);dom.window.close();
 });
-test('CV flow edits, reorders, deletes, changes template and restores saved draft',()=>{const dom=boot(),w=dom.window,d=w.document;const click=s=>d.querySelector(s).click(),fill=(s,v)=>{const x=d.querySelector(s);x.value=v;x.dispatchEvent(new w.Event('input',{bubbles:true}))};fill('#name','Ѓорѓи Тест');fill('#summary','<img src=x onerror=alert(1)>');assert.equal(d.querySelector('.paper h2').textContent,'Ѓорѓи Тест');assert.equal(d.querySelector('.paper img'),null);click('[data-step="1"]');click('[data-add="experience"]');fill('#experience-0-title','First');click('[data-add="experience"]');fill('#experience-1-title','Second');click('[data-move="experience:1:-1"]');assert.equal(d.querySelector('#experience-0-title').value,'Second');click('[data-remove="experience:0"]');click('#modal-action');assert.equal(d.querySelector('#experience-0-title').value,'First');click('[data-step="4"]');click('input[value="compact"]');assert.ok(d.querySelector('.paper.compact'));const r=d.querySelector('#remember');r.checked=true;r.dispatchEvent(new w.Event('change'));const saved=w.localStorage.getItem('cekor.cv.v1');const restored=boot(saved);assert.equal(restored.window.document.querySelector('#name').value,'Ѓорѓи Тест');restored.window.close();dom.window.close()});
+test('CV flow edits, reorders, deletes, changes template and restores saved draft',()=>{const dom=boot(),w=dom.window,d=w.document;const click=s=>d.querySelector(s).click(),fill=(s,v)=>{const x=d.querySelector(s);x.value=v;x.dispatchEvent(new w.Event('input',{bubbles:true}))};fill('#name','Ѓорѓи Тест');click('[data-step="4"]');fill('#summary','<img src=x onerror=alert(1)>');assert.equal(d.querySelector('.paper h2').textContent,'Ѓорѓи Тест');assert.equal(d.querySelector('.paper img'),null);click('[data-step="1"]');click('[data-add="experience"]');fill('#experience-0-title','First');click('[data-add="experience"]');fill('#experience-1-title','Second');click('[data-move="experience:1:-1"]');assert.equal(d.querySelector('#experience-0-title').value,'Second');click('[data-remove="experience:0"]');click('#modal-action');assert.equal(d.querySelector('#experience-0-title').value,'First');click('[data-step="5"]');click('input[value="compact"]');assert.ok(d.querySelector('.paper.compact'));const r=d.querySelector('#remember');r.checked=true;r.dispatchEvent(new w.Event('change'));const saved=w.localStorage.getItem('cekor.cv.v1');const restored=boot(saved);assert.equal(restored.window.document.querySelector('#name').value,'Ѓорѓи Тест');restored.window.close();dom.window.close()});
 test('export validates name without downloading fictional example; reset removes saved data',()=>{const dom=boot(),d=dom.window.document;d.querySelector('[data-action="export"]').click();assert.equal(d.querySelector('#name').getAttribute('aria-invalid'),'true');assert.ok(!d.querySelector('#modal').open);d.querySelector('[data-action="example"]').click();assert.equal(d.querySelector('#name').value,'Ana Stojanovska');d.querySelector('[data-action="reset"]').click();d.querySelector('#modal-action').click();assert.equal(d.querySelector('#name').value,'');assert.equal(dom.window.localStorage.getItem('cekor.cv.v1'),null);dom.window.close()});
 test('application flow validates, preserves text through language switch and blocks stale drafts',()=>{const dom=boot(),w=dom.window,d=w.document;const click=s=>d.querySelector(s).click(),fill=(s,v)=>{const el=d.querySelector(s);el.value=v;el.dispatchEvent(new w.Event('input',{bubbles:true}))};click('#pack-open');click('#pack-create');assert.match(d.querySelector('#pack-message').textContent,/Enter your name/);click('[data-action="example"]');fill('#pack-role','Sales assistant');fill('#pack-why','I help customers choose products.');fill('#pack-own','I worked on the till.');fill('#pack-ad','<img src=x onerror=alert(1)>');click('#pack-create');assert.match(d.querySelector('#pack-letter').value,/I worked on the till/);assert.equal(d.querySelector('#application img'),null);fill('#pack-letter','My reviewed custom letter');click('[data-ui-language="mk"]');assert.equal(d.querySelector('#pack-letter').value,'My reviewed custom letter');assert.match(d.querySelector('#pack-ad').value,/onerror/);click('#pack-reviewed');assert.equal(d.querySelector('#pack-download').disabled,false);fill('#pack-role','New role');click('#pack-reviewed');assert.equal(d.querySelector('#pack-download').disabled,true);click('[data-action="reset"]');click('#modal-action');click('#pack-open');assert.equal(d.querySelector('#pack-role').value,'');assert.equal(d.querySelector('#pack-letter'),null);dom.window.close()});
 test('review requires consent, escapes AI text and applies only approved wording',async()=>{const dom=boot(),w=dom.window,d=w.document;let posted=0;w.AbortSignal=AbortSignal;w.fetch=async(url,options)=>{if(!options?.body)return{ok:true,json:async()=>({available:true})};posted++;assert.equal(JSON.parse(options.body).consent,true);return{ok:true,json:async()=>({overview:'<img src=x onerror=alert(1)>',strengths:[],questions:[],suggestions:[{original:'Plan and deliver digital marketing campaigns.',revised:'Plan digital campaigns and coordinate delivery.',reason:'Clear action.'}]})}};d.querySelector('[data-action="example"]').click();d.querySelector('#review-toggle').click();await new Promise(resolve=>setTimeout(resolve,0));d.querySelector('#review-from').click();assert.equal(d.querySelector('#review-ai').disabled,true);d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-ai').click();await new Promise(resolve=>setTimeout(resolve,0));assert.equal(posted,1);assert.equal(d.querySelector('.ai-results img'),null);assert.match(d.querySelector('#review-edited').value,/Plan and deliver/);d.querySelector('[data-accept="0"]').click();assert.match(d.querySelector('#review-edited').value,/Plan digital campaigns/);assert.match(d.querySelector('#review-source').value,/Plan and deliver/);assert.equal(d.querySelector('#review-pdf').disabled,true);d.querySelector('#review-checked').click();assert.equal(d.querySelector('#review-pdf').disabled,false);const field=d.querySelector('#review-job');const revised=d.querySelector('#review-edited').value;w.confirm=()=>false;const sourceField=d.querySelector('#review-source'),originalSource=sourceField.value;sourceField.value+=' ';sourceField.dispatchEvent(new w.Event('input'));assert.equal(sourceField.value,originalSource);assert.equal(d.querySelector('#review-edited').value,revised);field.value='Another job';field.dispatchEvent(new w.Event('input'));assert.ok(d.querySelector('.ai-results'));assert.equal(field.value,'');assert.equal(d.querySelector('#review-edited').value,revised);w.confirm=()=>true;field.value='Another job';field.dispatchEvent(new w.Event('input'));assert.equal(d.querySelector('.ai-results'),null);assert.equal(d.querySelector('#review-consent').checked,false);dom.window.close()});
@@ -187,7 +265,7 @@ test('shared vacancy syncs both ways and prevents overwriting a finished or in-f
  d.querySelector('#pack-open').click();fill('pack-ad','Friendly service');d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));assert.equal(d.getElementById('review-job').value,'Friendly service');assert.equal(d.getElementById('review-consent').disabled,true);
  fill('review-job','Accurate cash handling');assert.equal(d.getElementById('pack-ad').value,'Accurate cash handling');
  fill('review-source','Customer service assistant with experience helping customers choose products and handling checkout transactions.');d.querySelector('#review-local').click();w.confirm=()=>false;fill('pack-ad','Replacement');assert.equal(d.getElementById('pack-ad').value,'Accurate cash handling');assert.ok(d.getElementById('review-edited'));
- w.confirm=()=>true;fill('pack-ad','New vacancy');assert.equal(d.getElementById('review-job').value,'New vacancy');assert.equal(d.getElementById('review-edited'),null);dom.window.close();
+ w.confirm=()=>true;fill('pack-ad','New vacancy');assert.equal(d.getElementById('review-job').value,'New vacancy');assert.equal(d.getElementById('review-edited'),null);assert.equal(d.querySelector('.review-panel.free-edit'),null);dom.window.close();
 });
 test('sample is marked on the paper and requirement changes invalidate a reviewed letter',()=>{
  const dom=boot(),w=dom.window,d=w.document;const fill=(id,value)=>{const el=d.getElementById(id);el.value=value;el.dispatchEvent(new w.Event('input'))};assert.match(d.querySelector('.paper .sample-badge').textContent,/Example/);
@@ -195,9 +273,9 @@ test('sample is marked on the paper and requirement changes invalidate a reviewe
  assert.ok(d.querySelector('#pack-reviewed').labels.length);assert.ok(d.querySelector('[data-evidence]').labels.length);d.querySelector('#pack-reviewed').click();assert.equal(d.getElementById('pack-download').disabled,false);fill('pack-requirement','Cash handling');d.querySelector('#pack-reviewed').click();assert.equal(d.getElementById('pack-download').disabled,true);dom.window.close();
 });
 
-test('footer keeps support and removes seller details and stale pilot payment claims',()=>{const dom=boot(),d=dom.window.document;assert.match(d.querySelector('footer').textContent,/support@cvhapi.com/);assert.doesNotMatch(d.querySelector('footer').textContent,/RUNE FINNE|915553346|Test version|Free pilot|Payments are not active/);d.querySelector('[data-step="4"]').click();assert.doesNotMatch(d.querySelector('.export-card').textContent,/Test version|Free pilot|Payments are not active/);dom.window.close()});
+test('footer keeps support and removes seller details and stale pilot payment claims',()=>{const dom=boot(),d=dom.window.document;assert.match(d.querySelector('footer').textContent,/support@cvhapi.com/);assert.doesNotMatch(d.querySelector('footer').textContent,/RUNE FINNE|915553346|Test version|Free pilot|Payments are not active/);d.querySelector('[data-step="5"]').click();assert.doesNotMatch(d.querySelector('.export-card').textContent,/Test version|Free pilot|Payments are not active/);dom.window.close()});
 
-test('production custom domain offers analytics consent and shows AI price before consent',()=>{for(const host of ['cvhapi.com','www.cvhapi.com']){const dom=boot(undefined,'https://'+host),d=dom.window.document;assert.ok(d.querySelector('#consent').textContent.trim());assert.equal(d.querySelector('.hero-actions [data-action="review"]').textContent,'Review my CV');assert.match(d.querySelector('.review-price').textContent,/€2 one-time/);assert.equal(d.querySelector('header .header-build').dataset.action,'build');assert.equal(d.querySelectorAll('script[src]').length,0);dom.window.close()}});
+test('production custom domain offers analytics consent and shows AI price before consent',()=>{for(const host of ['cvhapi.com','www.cvhapi.com']){const dom=boot(undefined,'https://'+host),d=dom.window.document;assert.ok(d.querySelector('#consent').textContent.trim());assert.match(d.querySelector('.hero-actions [data-action="review"]').textContent,/import it/);assert.match(d.querySelector('.review-price').textContent,/150 MKD one-time/);assert.equal(d.querySelector('header .header-build').dataset.action,'start');assert.equal(d.querySelectorAll('script[src]').length,0);dom.window.close()}});
 
 test('checkout stays single-flight when focus refreshes payment status',async()=>{
  const dom=boot(),w=dom.window,d=w.document;w.AbortSignal=AbortSignal;
@@ -210,31 +288,52 @@ test('checkout stays single-flight when focus refreshes payment status',async()=
   return new Promise(resolve=>{finish=()=>resolve({ok:false,json:async()=>({error:'unavailable'})})});
  };
  d.querySelector('[data-action="example"]').click();d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));d.querySelector('#review-from').click();d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));
+ assert.equal(d.querySelector('[data-buy]').disabled,true);d.querySelector('[data-sales-consent]').click();
  d.querySelector('[data-buy]').click();assert.equal(checkouts,1);
  w.dispatchEvent(new w.Event('focus'));await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('[data-buy]').disabled,true);
  d.querySelector('[data-buy]').click();assert.equal(checkouts,1);finish();await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('[data-buy]').disabled,false);dom.window.close();
+});
+
+test('checkout attribution survives URL cleanup and honors analytics privacy choices',async()=>{
+ for(const [allow,privacySignal,expected] of [[true,false,'mk-search-cv'],[false,false,undefined],[true,'gpc',undefined],[true,'dnt',undefined]]){
+  const dom=boot(null,'https://www.cvhapi.com/en/?utm_campaign=mk-search-cv&gclid=private-click'),w=dom.window,d=w.document;
+  let submitted;
+  w.fetch=async(url,options)=>{
+   if(url==='/api/review/status')return{ok:true,json:async()=>({available:true})};
+   if(url==='/api/payments/config')return{ok:true,json:async()=>({enabled:true,test:true})};
+   if(url==='/api/payments/status')return{ok:true,json:async()=>({state:'none'})};
+   submitted=JSON.parse(options.body);return{ok:false,json:async()=>({error:'unavailable'})};
+  };
+  if(allow)d.querySelector('#allow').click();
+  if(privacySignal==='gpc')Object.defineProperty(w.navigator,'globalPrivacyControl',{value:true});
+  if(privacySignal==='dnt')Object.defineProperty(w.navigator,'doNotTrack',{value:'1'});
+  w.history.replaceState(null,'','/en/');
+  d.querySelector('[data-action="example"]').click();d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));
+  d.querySelector('#review-from').click();d.querySelector('#review-consent').click();await new Promise(r=>setTimeout(r,0));d.querySelector('[data-sales-consent]').click();d.querySelector('[data-buy]').click();await new Promise(r=>setTimeout(r,0));
+  assert.equal(submitted.campaign,expected);assert.equal(submitted.analyticsConsent,expected?true:undefined);assert.ok(!JSON.stringify(submitted).includes('private-click'));dom.window.close();
+ }
 });
 
 test('local file reading never advertises an AI request before consent',async()=>{
  const dom=boot(),w=dom.window,d=w.document;let finish;
  w.fetch=async()=>({ok:true,json:async()=>({available:true})});
  d.querySelector('#review-toggle').click();await new Promise(r=>setTimeout(r,0));
- const input=d.querySelector('#review-file');Object.defineProperty(input,'files',{value:[{name:'cv.txt',size:100,text:()=>new Promise(resolve=>finish=resolve)}]});input.dispatchEvent(new w.Event('change'));
+ const input=d.querySelector('#review-file');Object.defineProperty(input,'files',{value:[{name:'cv.txt',size:100,text:()=>new Promise(resolve=>finish=resolve)}]});input.dispatchEvent(new w.Event('change'));assert.equal(d.querySelector('.import-reading'),null);d.querySelector('#review-import-submit').click();
  assert.equal(d.querySelector('#review-progress'),null);assert.match(d.querySelector('#review-ai').textContent,/Reading the document/);assert.equal(d.querySelector('#review-consent').checked,false);
  for(let i=0;i<20&&!finish;i++)await new Promise(r=>setTimeout(r,0));assert.ok(finish);finish('Alex Example. I help residents with meals and daily activities and communicate with colleagues.');await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('#review-source').disabled,false);assert.equal(d.querySelector('#review-consent').checked,false);dom.window.close();
 });
 
 test('landing page leads into the builder with one price disclosure and honest saving state',()=>{
  const dom=boot(),w=dom.window,d=w.document;
- assert.equal(d.querySelectorAll('.hero-art,.career-steps,.hero-description').length,0);
+ assert.equal(d.querySelectorAll('.hero-art,.career-steps').length,0);assert.ok(d.querySelector('.hero-description'));assert.equal(d.querySelectorAll('[data-template-start]').length,8);
  assert.equal(d.querySelector('.hero-copy .eyebrow'),null);assert.equal(d.querySelector('.review-intro .eyebrow'),null);assert.equal(d.querySelector('.offer .eyebrow'),null);
  assert.equal(d.querySelector('.preview-toolbar').textContent.trim(),'Your CV');assert.doesNotMatch(d.querySelector('#preview-caption').textContent,/Fictional example/);
  assert.ok(d.querySelector('.workspace').compareDocumentPosition(d.querySelector('#application'))&w.Node.DOCUMENT_POSITION_FOLLOWING);
  assert.ok(d.querySelector('.workspace').compareDocumentPosition(d.querySelector('#review-workspace'))&w.Node.DOCUMENT_POSITION_FOLLOWING);
- assert.equal(d.querySelectorAll('#how-it-works').length,1);d.querySelector('#review-toggle').click();assert.equal(d.querySelector('#how-it-works').hidden,true);d.querySelector('header a[href="#how-it-works"]').click();assert.equal(d.querySelector('#how-it-works').hidden,false);assert.equal(d.querySelector('#review-toggle').getAttribute('aria-expanded'),'false');assert.equal(d.querySelector('#builder-title').textContent,'CV builder');
+ assert.equal(d.querySelectorAll('#how-it-works').length,1);d.querySelector('#review-toggle').click();assert.equal(d.querySelector('.builder-heading').hidden,true);d.querySelector('header a[href="#how-it-works"]').click();assert.equal(d.querySelector('#how-it-works').hidden,false);assert.equal(d.querySelector('#review-toggle').getAttribute('aria-expanded'),'false');assert.equal(d.querySelector('#builder-title').textContent,'Your CV, taking shape.');
  assert.equal(d.querySelector('.header-download').hidden,true);assert.equal(d.querySelector('#mobile-preview').hidden,false);
- for(const button of d.querySelectorAll('header button,.hero-actions button,#review-toggle'))assert.doesNotMatch(button.textContent,/€2/);
- assert.equal(d.querySelectorAll('.review-price').length,1);assert.match(d.querySelector('.review-price').textContent,/€2 one-time/);
+ for(const button of d.querySelectorAll('header button,.hero-actions button,#review-toggle'))assert.doesNotMatch(button.textContent,/150 MKD/);
+ assert.equal(d.querySelectorAll('.review-price').length,1);assert.match(d.querySelector('.review-price').textContent,/150 MKD one-time/);
  const name=d.querySelector('#name');name.value='Alex Example';name.dispatchEvent(new w.Event('input'));assert.equal(d.querySelector('.header-download').hidden,false);
  assert.equal(d.querySelector('#save-status').textContent,'Not saved');d.querySelector('#remember').click();assert.equal(d.querySelector('#save-status').textContent,'Saved in this browser');
  d.querySelector('#remember').click();assert.equal(d.querySelector('#save-status').textContent,'Not saved');assert.equal(w.localStorage.getItem('cekor.cv.v1'),null);dom.window.close();
@@ -256,10 +355,15 @@ test('switching review language translates commentary once and preserves documen
  d.querySelector('[data-ui-language="en"]').click();assert.match(d.querySelector('.guide-copy h4').textContent,/Profile/);d.querySelector('[data-ui-language="mk"]').click();assert.match(d.querySelector('.guide-copy h4').textContent,/Профил/);assert.equal(reviews,1);assert.equal(translations,1);dom.window.close();
 });
 
- test('first visit defaults to Macedonian while explicit English routes and saved preferences still work',()=>{
- const bootLanguage=(url,preferred)=>{const dom=new JSDOM('<div id="app"></div>',{url,runScripts:'outside-only'});dom.window.structuredClone=structuredClone;dom.window.matchMedia=()=>({matches:false});if(preferred)dom.window.localStorage.setItem('cekor.ui-language',preferred);dom.window.eval(bundle.outputFiles[0].text);return dom};
- for(const [url,preferred,expected] of [['https://cv.test/',null,'mk'],['https://cv.test/en/',null,'en'],['https://cv.test/mk/',null,'mk'],['https://cv.test/','en','en']]){const dom=bootLanguage(url,preferred);assert.equal(dom.window.document.documentElement.lang,expected);assert.equal(dom.window.document.querySelector('#cv-language')?.value??dom.window.document.querySelector('[data-ui-language="'+expected+'"]').getAttribute('aria-pressed'),'true');dom.window.close()}
+ test('first visit follows supported browser language with route and saved-choice overrides',()=>{
+ const bootLanguage=(url,preferred,languages)=>{const dom=new JSDOM('<div id="app"></div>',{url,runScripts:'outside-only'});dom.window.structuredClone=structuredClone;dom.window.matchMedia=()=>({matches:false});Object.defineProperty(dom.window.navigator,'languages',{value:languages});if(preferred)dom.window.localStorage.setItem('cekor.ui-language',preferred);dom.window.eval(bundle.outputFiles[0].text);return dom};
+ for(const [url,preferred,languages,expected] of [['https://cv.test/',null,['mk-MK','en'],'mk'],['https://cv.test/',null,['en-GB'],'en'],['https://cv.test/',null,['nb-NO'],'mk'],['https://cv.test/en/',null,['mk'],'en'],['https://cv.test/mk/',null,['en'],'mk'],['https://cv.test/','en',['mk'],'en']]){const dom=bootLanguage(url,preferred,languages);assert.equal(dom.window.document.documentElement.lang,expected);assert.equal(dom.window.document.querySelector('#cv-language')?.value??dom.window.document.querySelector('[data-ui-language="'+expected+'"]').getAttribute('aria-pressed'),'true');dom.window.close()}
  });
+test('CV language picker changes headings without translating writing or the interface',()=>{
+ const dom=boot(JSON.stringify({name:'Alex Example',summary:'My original English profile',language:'en'})),d=dom.window.document;
+ d.querySelector('[data-action="build"]').click();d.querySelector('[data-action="cv-language"]').click();assert.equal(d.querySelector('#modal').open,true);d.querySelector('#dialog-cv-language').value='mk';d.querySelector('[data-language-cancel]').click();assert.match(d.querySelector('.cv-language-trigger').textContent,/English/);
+ d.querySelector('[data-action="cv-language"]').click();d.querySelector('#dialog-cv-language').value='mk';d.querySelector('[data-language-save]').click();assert.equal(d.documentElement.lang,'en');assert.match(d.querySelector('.cv-language-trigger').textContent,/Македонски/);assert.match(d.querySelector('#preview').textContent,/ПРОФИЛ/);assert.match(d.querySelector('#preview').textContent,/My original English profile/);assert.equal(d.querySelector('#name').value,'Alex Example');assert.equal(JSON.parse(dom.window.localStorage.getItem('cekor.cv.v1')).language,'mk');dom.window.close();
+});
 
 test('Macedonian review guidance and field-help labels stay localized after applying a section',async()=>{
  const dom=boot(),w=dom.window,d=w.document;w.AbortSignal=AbortSignal;

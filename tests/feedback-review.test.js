@@ -34,3 +34,18 @@ test('feedback replaces ungrounded quantity examples while preserving real quant
  assert.equal(result.overview,'Use 2-3 sentences.');assert.equal(result.jobMatches[0].requirement,'50 pallets');assert.equal(result.jobMatches[0].evidence,'4 clients');assert.deepEqual(result.suggestions,suggestions);assert.equal(report.sections[0].actions[0],'примам во просек 50 палети месечно (доколку е точно).');
  const english=removeInventedMetrics(report,{text:'',language:'en'});assert.match(english.jobMatches[0].advice,/\[your actual number\] pallets/);
 });
+
+test('editorial audit regenerates a truncated report once using the same deadline',async()=>{
+ let calls=0;const signal=AbortSignal.timeout(1000);
+ const result=await auditFeedback(review,input,{DEEPSEEK_API_KEY:'test'},async(url,options)=>{
+  calls++;assert.equal(options.signal,signal);assert.equal(JSON.parse(options.body).max_tokens,calls===1?8000:16000);
+  return calls===1?Response.json({choices:[{finish_reason:'length',message:{content:'{'}}]}):response({feedback});
+ },limitedJSON,signal);
+ assert.equal(calls,2);assert.equal(result.overview,feedback.overview);
+});
+
+test('a truncated response cannot restart provider work after the shared deadline expires',async()=>{
+ const {completeResponse}=await import('../worker/provider-response.js');const controller=new AbortController();let calls=0;
+ const output=await completeResponse(async()=>{calls++;controller.abort();return Response.json({choices:[{finish_reason:'length',message:{content:'{'}}]})},'https://api.deepseek.com/chat/completions',{body:JSON.stringify({max_tokens:8000}),signal:controller.signal},limitedJSON,160000);
+ assert.equal(calls,1);assert.equal(output.result.choices[0].finish_reason,'length');
+});

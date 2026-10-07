@@ -1,16 +1,99 @@
+## Current search-entry release — 7 October 2026
+
+Sites version 31 is successfully public as of 20:03 UTC (22:03 Europe/Oslo). Source ffced4ab30928569c957e8db4f77952816df8437; deployment appgdep_6ac6a56090f08191b662e69fb397f233; runtime revision 9 unchanged. Native URL https://cv-hapi.quara0n.chatgpt.site. Read docs/releases/2026-10-07-search-entry.md first. This supersedes v30 below.
+
+Macedonian homepage search description and visible copy now explicitly cover free CV creation, eight templates, working biography and PDF without registration/watermark. Completed existing local guide-entry changes: every guide CTA opens the free editor; eight template choices select the actual template. Removed the duplicate local template CTA. All 151 tests, production build and generated-output checks pass: twelve canonical URLs, eight guides, 179 internal links/images, eleven PDFs and two worksheets. Browser checks confirm Macedonian editor, Classic template, focused first heading and homepage metadata. No customer impressions or clicks from this release have yet been measured.
+
+Google Ads is still blocked, NOT fixed: official language list and Unsupported language policy read again on 7 October prohibit unsupported-language ad or destination content; Macedonian absent from list. Campaign and English ads remain paused. NOK 200 campaign total, NOK 1 CPC cap, end date 18 October and NOK 300 all-in owner ceiling preserved. No spend, new campaign, paid AI call or consent expansion. Do not bypass the policy with another language label, an English ad or a misleading appeal. Outreach and Facebook drafts remain unsent/unpublished. Static guide pages still deliberately contain no analytics scripts.
+
+Google manual search observations are recorded in marketing/mk-distribution-2026-10-06.md: first page for CV образец, second page for CV на македонски, absent from five inspected pages for CV. These used country/language parameters and an unknown physical location, NOT a North Macedonia VPN or verified national rank. Search Console has not yet established Macedonian impressions; missing country data is not zero. Do not duplicate the five accepted 6 October indexing requests.
+
+## Previous visibility work — 6 October 2026
+
+Sites version 30 is successfully public. Source e40396a51d946cb401f02e91fb0fffb93d39fa03; deployment appgdep_6ac5541c40f48191b735d5e182ca7f43; runtime revision 9 unchanged. Production deployment URL https://cv-hapi.quara0n.chatgpt.site; custom-domain library https://www.cvhapi.com/mk/soveti-za-cv/. This supersedes v29 below.
+
+Read docs/releases/2026-10-06-macedonian-visibility.md for implementation and verification; marketing/mk-distribution-2026-10-06.md for measured baseline, search-intent mapping, primary-source research and ten distribution prospects; marketing/mk-outreach-drafts.md for four individual Macedonian university emails and three social posts. These drafts have NOT been sent. Owner sender/account and explicit outreach authorisation are pending. Do not treat a broad request to improve visibility as permission to send them.
+
+Eight original Macedonian guides now include five new pages, eleven freely downloadable PDFs and two TXT worksheets. All 149 tests and production build pass. Generated-output validation: 12 canonical sitemap URLs, eight guide metadata/structured-data checks and 171 valid internal links/images. All eleven PDFs are one page each with readable extracted text and were rendered and visually inspected. Desktop guide layout inspected. The browser viewport override did not take effect; no new mobile rendering verification is claimed.
+
+Search Console accepted the updated sitemap on 6 October, table still seven discovered pages at submission. Individual live eligibility tests and **Indexing requested** confirmations completed for all five new pages: `/mk/soveti-za-cv/`, `/mk/cv-sabloni/`, `/mk/motivacisko-pismo/`, `/mk/proverka-na-cv/` and `/mk/za-karierni-centri/`. All initially unknown to Google. Request acceptance is not actual indexing or ranking. The existing `/mk/cv-obrazec/` is indexed. Machine-local proof: test-output/google-indexing-requested-2026-10-06.jpg (ignored, not durable source).
+
+Measured baseline: Search Console two impressions, zero clicks, both Norway; GA4 17 active users, nine Norway/eight unknown, no North Macedonia attributed (8 September–5 October). Consent/location gaps preclude a claim of no visits ever. Ads remains paused: zero impressions/clicks/spend; Macedonian ad disapproved for Unsupported language. Official Ads language list and policy rechecked on 6 October: Macedonian unsupported, including destination language. Do not resume the English ads, disguise language, increase budget, or buy another channel. ALL marketing remains Macedonian and North Macedonia only. No independent native-language editor has reviewed the new copy. No higher organic rank or customer acquisition has yet been demonstrated.
+
+The implementation commit is pushed to the Sites source main branch. GitHub mirror publication is recorded by the final task output. The local preview server started for this task was stopped after verification. Existing browser drafts and paid runtime configuration were untouched. Static guides deliberately load no analytics scripts: Search Console measures organic discovery, while GA4 covers consented builder/review activity rather than guide-only visitors or download counts. The next chat should read these files and assess observed Macedonian acquisition and outreach authorisation; do not repeat the already published release or duplicate indexing requests. Owner asked what the four university abbreviations mean and received an explanation; this was not authorisation to send.
+
+## Publisert Google-arbeid — 5. oktober 2026
+
+Sites versjon 29 er publisert med status succeeded. Kilde: 25c74e64e1b3419b7ff342ea9e726626bf0c72c1. Deployment: appgdep_6ac40c684cd48191ac04ab62ca61093f. Miljørevisjon 9, eksisterende offentlig tilgang og betalings-/AI-drift beholdt.
+
+Den makedonske forsiden har nå tydelig overskrift og sidetittel om gratis CV på makedonsk og PDF, åtte gratis maler og interne lenker til tre nye makedonske veiledninger: /mk/cv-obrazec/, /mk/kako-da-napisam-cv/ og /mk/cv-bez-rabotno-iskustvo/. Originalt innhold, tydelig fiktive eksempler, gratis/valgfri betalt funksjon korrekt skilt. Artiklene leveres som statisk HTML uten nye sporingsskript. Ingen betalte AI-kall eller kjøp ble gjort.
+
+Verifisert: bygg vellykket; 42 eksisterende brukerflytstester bestått; tre artikler med makedonsk språk, én H1, self-canonical, index/follow, gyldige strukturerte data og fungerende interne lenker. Nettkartet har sju URL-er. Mobilvisning av eksempelartikkelen hadde ingen horisontal overflow; desktopforsiden er visuelt kontrollert.
+
+Google Search Console bekrefter «Sitemap submitted successfully». Tabellen viser fortsatt fire oppdagede sider ved innsending; dette betyr ikke at de tre nye artiklene er indeksert. Forsiden /mk/ var allerede indeksert. Ingen høyere Google-plassering eller økt kundetrafikk er målt eller lovet. Google Ads-kampanjen og engelske annonser forblir pauset. Budsjettgrenser er uendret.
+
 ---
+## Presisert hovedmål — Google-søk i Nord-Makedonia, 5. oktober 2026
+
+Eier presiserte at CV Hapi skal oppnå høy synlighet når personer i Nord-Makedonia søker etter CV på Google. Hovedsporet er derfor organisk Google-søk med makedonsk innhold. Microsoft Advertising er et dokumentert alternativ for betalte makedonske søkeannonser, men løser ikke eierens Google-mål og skal ikke erstatte dette uten en egen beslutning. Google Ads og begge engelske annonser forblir pauset.
+
+Fersk URL-inspeksjon i Search Console for https://www.cvhapi.com/mk/ viser «URL is on Google» og «Page is indexed». Siste crawl oppgitt av Google: 5. oktober 2026 kl. 11:40:06, Googlebot smartphone. Fetch successful, crawl/indexing allowed, Google-selected canonical er den inspiserte URL-en og samsvarer med deklarert canonical. Sitemap-feltet i URL-inspeksjonen viser «Temporary processing error»; dette er ikke bevis på at siden er ute av indeksen. Oversiktsrapporten behandler fortsatt indeksdata og viser 0 totale søkeklikk; ingen topp-plassering er dokumentert.
+
+Prioritert videre arbeid:
+1. Gjør makedonsk hovedside tydelig relevant for «CV на македонски», «бесплатно CV» og «CV образец»: presis tittel, synlig innhold om de åtte faktiske malene og gratis PDF, med internlenker. Kontroller publisert HTML før endring; kilde-index.html har noindex for utvikling, mens byggeskriptet skrur på indeksering for offentlig release.
+2. Lag originale makedonske ressurser for CV-eksempel, hvordan skrive CV og CV uten arbeidserfaring. Bruk fullstendige fiktive eksempler, korrekt språk og direkte lenker til verktøyet. Ikke kopier konkurrenter eller lag mange nesten identiske sider.
+3. Mål faktiske Google-visninger, klikk og gjennomsnittsposisjon filtrert på Nord-Makedonia og relevante søkefraser. Skaff relevante redaksjonelle lenker gjennom nyttig innhold; ingen kjøpte lenker, masseutsendelser eller garantert førsteplass.
+
+Denne kontrollen publiserte ingen kode og opprettet ingen ny annonsekampanje. Organisk rangering har ingen garantert plassering eller frist. Budsjettgrensene står uendret.
+
+---
+## Gjeldende eierkrav og utført stopp — 5. oktober 2026
+
+Eier har uttrykkelig bestemt at ALL markedsføring skal være rettet mot Nord-Makedonia og være på makedonsk. Dette erstatter alle eldre anbefalinger nedenfor om engelske annonser, engelske søkeord og engelske kampanjelandingssider. Engelske annonser er ikke en godkjent erstatning ved språkavslag.
+
+Utført og lest tilbake i Google Ads-konto 297-799-3323: kampanje 24318923693 er PAUSET. Begge engelske responsive søkeannonser er også individuelt PAUSET. Den eksisterende makedonske annonsen var allerede pauset og avvist med «Unsupported language». Google viste 0 visninger, 0 klikk og NOK 0,00 kostnad for 4.–5. oktober ved kontrollen; rapportering er ikke sanntid. Budsjettet står fortsatt på NOK 200 totalt, 5.–18. oktober 2026. Absolutt eiergrense er NOK 300 inklusive tillegg; maks CPC NOK 1.
+
+Googles offisielle språkoversikt ble kontrollert på nytt: makedonsk er ikke oppført, og siden sier at annonser på språk uten støtte blir avvist. Kilde: https://support.google.com/google-ads/answer/6333734?hl=en . Ikke omgå avslaget ved å velge et annet språk eller vise engelsk annonsetekst. Kampanjen skal forbli pauset inntil en løsning som oppfyller eierens makedonske språkkrav er dokumentert. Ny kanal/kampanje er ikke opprettet eller finansiert.
+
+Videre arbeid: makedonsk annonsetekst, makedonske søkefraser, eksisterende makedonsk demo og landingsside https://www.cvhapi.com/mk/review/ . Vurder organisk makedonsk innhold og en annonsekanal med bekreftet støtte for makedonsk før eventuell ny publisering. Ingen kodepublisering eller utvidet samtykke/datadeling ble utført. Ads-klikk-til-kjøp er fortsatt ikke bevist av en ekte, korrekt samtykket og attribuert kundetransaksjon.
+
+---
+---
+
+## Published pilot and completed GA4 link — latest verified state
+
+Owner continued the prepared link with “slik”. GA4 request submitted to new Ads 297-799-3323 and approved from that recognized account. UI confirms **Your Google Analytics property is linked successfully**, property **556316817**. Personalized advertising/audience import and access to edit Analytics from Ads are OFF. Auto-tagging is enabled. Screenshot test-output/ga4-ads-linked.png. Imported only **purchase** from GA4 as Primary; free `cekor_pdf_generated` was not imported. Direct website-tag placeholder Purchase (7820372390), created by onboarding but not installed, changed to Secondary and excluded from account-level goals. Imported GA4 purchase shows No recent conversions, Every count, 90-day window, Primary. No attributed paid purchase has been verified. Existing site sends purchase once per server-issued bundle receipt with transaction-ID deduplication and visitor analytics consent; it continues to deny ad_storage/ad_user_data/ad_personalization and sanitizes page URLs. Thus this setup is not proof of complete Ads click-to-purchase attribution. Do not claim conversion optimization or weaken visitor consent to satisfy Google recommendations.
+
+Publish succeeded. **Actual published campaign ID 24318923693**, not the earlier draft IDs. Published overview revealed that the ad still contained Google's old £2-generated copy despite corrected draft inputs. Campaign was immediately paused before its future start, edited directly with Save ad, and read back from the published ad table. Saved seven headlines/four descriptions now describe **150 MKD once / three AI reviews**, with correct EN review URL and campaign UTMs. Original seven exact/phrase keywords did persist. Added three campaign-level phrase negatives: job listings, job vacancies, recruiter jobs. No broad single-word jobs/free exclusions.
+
+Published settings verified: **NOK 200 campaign TOTAL**, **5–18 October 2026**, Norway timezone, **Maximize Clicks** and checked **NOK 1.00 maximum CPC**; Google Search Network only, North Macedonia, AI Max off. After copy correction and exclusions, campaign Enabled again. Overview confirms **Campaign published / Starts Oct 5, 2026**, status **Pending**, ad **Under Review**, cost **NOK 0.00**, zero impressions/clicks at inspection. Final screenshot test-output/ads-pilot-published.png. Approval and actual serving are not yet established. The NOK 300 all-in ceiling remains; NOK 100 reserved for applicable taxes/additional costs. No Meta campaign or recurring monitoring automation created. Keep published overview and conversion tabs for follow-up. No website source changes/deployment this turn.
+
+## Latest verified Ads state — budget recovery and measurement gate
+
+The earlier budget reauthentication/save blocker is resolved. New Norwegian Google Ads account **297-799-3323**, ocid **8584207156**, is the active account. The old AUD account 143-420-6814 is closed and its draft must not launch.
+
+Campaign **281499290296765**, draft **10216892942**, `MK | Search | CV Hapi | NOK300 pilot`, now shows **All changes saved** and **Your campaign is ready to publish**. Budget durably saved as **NOK 200 campaign total**, start **5 October**, end **18 October 2026**, Norway account timezone. Owner cap remains **NOK 300 all-in**; NOK 100 is reserved for applicable additional costs. Search only, North Macedonia presence targeting, English, Search Partners/Display off, Maximize Clicks with NOK 1 CPC cap, AI Max and text/final URL expansion off. Seven exact/phrase review keywords, seven headlines, four descriptions, 150 MKD / three-review offer, EN review landing page with clean campaign UTMs. Enhanced conversions off. Screenshot: test-output/ads-nok-ready.png. **Publish has not been clicked; the campaign is not live.** Negative keywords still pending.
+
+GA4 property **556316817** belongs to the old Google login; the new Ads login has no access to it. This explains the empty owned-account picker. Do not create a duplicate property or grant broad Editor access as a workaround. Prepared a cross-account link request from the existing property to Ads 297-799-3323. Google discloses sharing requester name/email and property ID/name with Ads administrators and data flow under each product's terms. Concrete user confirmation requested before submitting this account connection. Plan: personalization off, no expanded property editing, then import purchase as the commercial conversion. Screenshot: test-output/ga4-ads-link-request.png. No request submitted yet; no linked conversion or real attributed purchase verified. Keep campaign draft and request tab for continuation.
+
 artifact_contract: "ce-handoff/v1"
 created_at: "2026-10-04T12:00:00Z"
-title: "CV Hapi free-tools release and morning analytics"
-summary: "Version 15 is live on www.cvhapi.com; analytics conversion and privacy settings checked, paid AI paused, daily 07:00 reports scheduled."
+title: "CV Hapi redesign, three-review bundle and growth continuation"
+summary: "Version 25 is live: compact AI/free review choice, optional fields collapsed and direct free editing; import-first onboarding, 150 MKD / three reviews and eight templates retained. Ads linking still blocked."
 keywords: ["cvhapi", "launch", "ga4", "clarity", "github", "paid-ai-paused"]
 cwd: "C:/Users/runef/Documents/ChatGPT/CV builder"
 branch: "codex/review-reliability-eur2"
-head: "f1cd8afce436274fe1227b40b49c23a799211a91"
-resume_focus: "Use real usage reports to choose fixes or experiments; finish paid-launch recovery gates before enabling checkout"
+head: "080b42e8ca49965f7aaba05fc04afe5a93feb42e"
+resume_focus: "Read the newest LAUNCH-STATUS and docs/releases/2026-10-04-redesign.md; continue authorized Google Ads setup without exceeding NOK 300 total."
 ---
 
 # Current state
+
+LATEST: Sites v26 live from 22662bedd1de6b992d37cf943434b8ebfd0e312f, deployment appgdep_6ac29925c5a08191b4f59862fe86e12b, environment revision 9. Sidebar alignment reviewed and build passed. GROWTH-PLAN has extensive current research. Google Ads draft campaign 281499301391213 / draft 10217082388 / account 143-420-6814. Proposed 30 AUD total 5–18 October within NOK 300 all-in authorization; identity confirmation prevents durable budget saving, Try again shown. Billing denied; GA4 link empty. NOT LAUNCHED. Owner asked to verify in Chrome/Edge. Preserve Ads/billing tabs. Read marketing/CAMPAIGN-SETUP.md current section before older historical notes below.
+
+Sites version 24 is live from 080b42e8ca49965f7aaba05fc04afe5a93feb42e, deployment appgdep_6ac29157e1ec819192e1570825eeabc9, environment revision 9. Import-first entry, staged local file reading, editor sidebar and CV-language dialog/mobile sheet are published. All 140 tests/build pass; two completed review receipts have no findings. Browser language defaults use Macedonian/English preferences with saved-choice and route overrides; no geolocation. Read docs/releases/2026-10-04-onboarding.md. Earlier version notes below are historical.
+
+The current release is Sites version 23, source `f609349971c12bfe77612198e88630f9aa8b24b7`, deployment `appgdep_6ac285dbf02c8191a7f2233ee5716b8c`, environment revision 9. New purchases are 150 MKD once for three AI reviews. Unlimited free editing/downloads, eight templates, the redesigned homepage/editor and updated video are published. 136 tests/build passed; hosted offer, availability and additive migration verified. Read the latest LAUNCH-STATUS.md entry and docs/releases/2026-10-04-redesign.md before older details. No new real-money charge is claimed. The paragraphs below describe the earlier release and are historical.
 
 The user requested online launch, analytics, repository continuity, a GitHub push and a daily 07:00 morning report with recommendations. Main domain is https://www.cvhapi.com/; apex also works. Free tools published successfully through Sites version 15, deployment `appgdep_6ac23c5cec8c81918f5351c59bde6e6e`, environment revision 8, source SHA above. Native deployment URL: https://cv-hapi.quara0n.chatgpt.site. Public audience preserved. AI/payments/checkout flags explicitly false; secrets and D1 preserved. Paid AI pause is the agent's release decision grounded in the unresolved gates in LAUNCH-STATUS.md, communicated to the user.
 
@@ -43,3 +126,21 @@ User supplied https://github.com/quara0n/cv-hapi. It previously held main `f2004
 # Fragile local state
 
 Machine-local runtime was session 4978/PID 15180 (`npm run dev:test`); verify before use. Local owner unlimited reviews are guarded by sandbox credentials/loopback flags; hosted allowance remains bounded. Never reset hosted quota or expose `.env` values. User CV/review tabs may be memory-only; restarting the local server can trigger reloads. Do not reload user tabs to obtain new code. Test documents/databases and screenshots stay ignored and are not GitHub artifacts.
+
+## Latest review choice update
+
+Version 25 source b9ab779762895af8691087b63638238f10325a9e, deployment appgdep_6ac296eb618881918e4beb14efcf2a8d succeeded with environment revision 9. Review with AI / Continue without AI replaces the cluttered preparation flow. 141 tests and production builds passed. Completed review receipt and resolved PDF export race: docs/reviews/review-choice-20261004. Details: docs/releases/2026-10-04-review-choice.md. No new paid AI call or real-money purchase for this UI update.
+
+## New Norwegian Ads setup — owner-authorized continuation
+
+Owner explicitly approved continuing a new account on runefinne1989@gmail.com after the old account was observed as closed. New setup displays customer ID 297-799-3323, ocid 8584207156. Billing country Norway, Norway timezone (GMT+02 currently), currency NOK confirmed. Used Set up an account only: no campaign created on this account. Correct business description 150 MKD / three reviews entered; irrelevant Electronics category removed; skipped private telephone/YouTube linking. Phone guidance and promotional emails set No.
+
+Payment form now accessible, existing payment profile/card offered. Google states a temporary NOK 100 authorization, typically removed within a week. Submit accepts Google Ads Terms and completes billing; NOT clicked, pending owner's explicit agreement. Promotional offer requires NOK 4000 spend to qualify; this is not a planned spend and never overrides the owner's NOK 300 total cap. Original AUD draft belongs to OLD account; cannot describe it as the new NOK campaign. Preserve new setup tab; evidence test-output/ads-nok-payment-ready.png. No advertising launched.
+
+## Current NOK account and campaign — 4 October evening
+
+Owner completed billing/account submission and advertiser-name step. New account 297-799-3323 (runefinne1989@gmail.com), ocid 8584207156, Norway/NOK/Central European timezone. Overview shows NOK 0.00 balance, a primary payment method and no upcoming payment. This replaces the old closed AUD account as the active setup target. Overview alone does not establish all advertiser-verification checks approved.
+
+Actual new Search draft: campaign 281499290296765, draft 10216892942, MK | Search | CV Hapi | NOK300 pilot. Search only, North Macedonia only, presence rather than interest, English, Display/Search Partners off, AI Max and text/URL expansion off. Maximize Clicks with NOK 1 CPC cap. Enhanced conversions explicitly unchecked. Seven exact/phrase review keywords and seven headlines/four descriptions entered and Done clicked. Correct 150 MKD / three-review bundle copy, import-first EN review destination with allowed UTMs. Negative keywords not yet applied; GA4 linking/purchase import not yet verified for this new account.
+
+BLOCK: selecting Campaign total budget triggers Confirm it's you; Confirm returned Try again in in-app browser. Total budget NOT selected/saved; recommended daily NOK 1.15 remains selected underneath prompt. Do NOT publish using that daily budget. Intended fixed 200 NOK total / 5–18 October, leaving reserve for applicable costs within owner NOK 300 total ceiling. No new-account campaign published and no spend initiated. Owner asked to open the draft in normal Chrome/Edge using runefinne1989@gmail.com and complete reauthentication on Budget. Screenshot test-output/ads-nok-budget-auth.png. Keep new account campaign tab open; old AUD draft is unrelated and must not launch.

@@ -1,0 +1,12 @@
+{
+  "reviewer": "adversarial",
+  "finding": "Back during PDF loading exports an empty document",
+  "status": "resolved",
+  "verification": "Repeated the same read-only esbuild/JSDOM reproduction after the Back disabled markup and busy-handler guard were applied. Only pdf.js was replaced in memory with an argument recorder; the asynchronous import boundary and all reviewed application state transitions remained intact.",
+  "evidence": [
+    "Back during export disabled: true",
+    "Free editor survives both native click and direct onclick attempts: true",
+    "Original text chars: 587; export content nonempty: true; editor text retained: true"
+  ],
+  "limitations": "This confirms the state-race repair and export argument integrity; the PDF renderer was intentionally not exercised. The original finding artifact remains unchanged for history."
+}

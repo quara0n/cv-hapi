@@ -1,0 +1,24 @@
+.review-intro:has(+.review-panel) .review-price{display:block;font-size:13px;line-height:1.7;max-width:580px;margin:12px auto 0}
+.review-panel:not(.import-mode){max-width:780px;margin:auto}
+.review-source-options{border:0;background:transparent;margin:0 0 20px;padding:0}
+.review-source-options>summary{display:flex;justify-content:space-between;gap:16px;padding:12px 0;font-size:14px;overflow-wrap:anywhere;color:var(--muted)}
+.review-source-options>summary span{color:var(--blue);font-weight:600}
+.review-panel.import-mode .review-source-options>summary{display:none}
+.review-panel.import-mode>.review-document,.review-panel.import-mode>.review-extras{display:none}
+.review-document textarea{min-height:160px;height:180px;resize:vertical}
+.review-extras{margin:18px 0 24px;border:1px solid #e0e6f0;border-radius:12px;padding:14px 16px;font-size:14px;background:#fafbff}
+.review-extras summary{cursor:pointer;color:var(--muted)}
+.review-extras .pack-grid{margin-top:18px}
+.ai-choice{display:grid;grid-template-columns:1fr 1fr;gap:14px;border:0;border-top:1px solid #e0e6f0;border-radius:0;background:transparent;margin-top:24px;padding:24px 0 0}
+.ai-choice>h3,.ai-choice>.choice-offer,.ai-choice>.review-check,.ai-choice>#ai-availability,.ai-choice>.ai-disclosure,.ai-choice>.review-progress{grid-column:1/-1;margin:0}
+.ai-choice>h3{font-size:23px;order:1}.choice-offer{font-size:14px;color:var(--muted);order:2}
+.ai-choice>.review-check{font-size:13px;line-height:1.6;order:3}
+.ai-choice>#review-ai,.ai-choice>#review-local{order:4;margin:0;min-height:48px;width:100%}
+.ai-choice>.ai-disclosure{order:5;font-size:12px;padding:0;border:0}
+.ai-choice>.choice-clear{order:6;grid-column:1/-1;justify-self:end;font-size:12px;padding:0}
+#ai-availability{order:2;font-size:13px}#ai-availability[data-ready="true"]{display:none}
+.review-panel.free-edit>.review-document,.review-panel.free-edit>.review-extras,.review-panel.free-edit>.ai-choice,.review-panel.free-edit>.review-source-options,.review-panel.free-edit>.review-report,.review-panel.free-edit>.review-journey{display:none}
+.review-panel.free-edit>.revised-section{margin:0;border:0;padding:0}
+.review-panel.free-edit .revised-section>details:first-of-type{display:none}
+.pdf-format-note{font-size:12px;color:var(--muted);margin:16px 0}
+@media(max-width:600px){.ai-choice{grid-template-columns:1fr}.ai-choice>h3{font-size:21px}.review-panel:not(.import-mode){padding:22px 16px}.review-document textarea{height:150px;min-height:130px}}

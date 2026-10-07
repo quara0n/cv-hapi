@@ -13,5 +13,7 @@ export function reviewLimit(env,request){
   if(env.LOCAL_TEST_FINAL_ATTEMPT==='true')return 12;
   if(env.LOCAL_TEST_EXTRA_ATTEMPT==='true')return 11;
  }
- return Math.min(10,Number(env.AI_MAX_REVIEWS)||0);
+ // The configured lifetime allowance is explicit and bounded; never reset usage.
+ const limit=Number(env.AI_MAX_REVIEWS);
+ return Number.isSafeInteger(limit)&&limit>0?Math.min(1000,limit):0;
 }

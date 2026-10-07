@@ -1,12 +1,25 @@
+## Import-first onboarding — 4 October update
+
+Start your CV Hapi now opens two choices: recommended local document import and scratch/continue builder. Files are staged until explicit Import; source switches clear pending files. A real reading animation and three-step review journey guide the import path. Desktop editing uses a navy step sidebar with completion marks based on entered data. The 150 MKD / three-review offer and eight templates remain. A separate CV-language picker changes section headings only. Initial UI language follows supported browser preferences, then saved choice and explicit route, with Macedonian fallback. See docs/releases/2026-10-04-onboarding.md and the latest LAUNCH-STATUS.md for verification and publication.
+## Purchase modal — 4 October update
+
+New purchases cost 150 MKD once for three AI reviews. Editing and PDF downloads remain unlimited and free. Existing EUR/GBP purchases retain their recorded single-review entitlement. Migration 0007 records the amount, review allowance, confirmed deliveries and refund amount; checkout and recovery validate the recorded order. Customers explicitly choose when to use existing credits. A checkout initiated in the current review flow starts its first review after verified return. The homepage and six-step editor offer eight templates with previews rendered from the actual PDF layouts. The video, narration, subtitles and sales terms use the same three-review offer. Earlier pricing and launch notes below are historical.
+
+## 4 October paid-service repair
+
+The user explicitly authorized fixing and reopening the EUR 2 AI review on www.cvhapi.com, superseding the earlier agent-selected pause. See [PAID-REPAIR.md](PAID-REPAIR.md) for checkout reservations, delivery acknowledgement, unattended refunds, sales acceptance and verification boundaries. Sites version 16 successfully deployed runtime revision 9 on 4 October: AI, live payments and checkout enabled, preserved lifetime allowance 100. Both public domains report availability. Live EUR 2 checkout creation, unpaid cancellation/capacity release, invalid webhook rejection and reconciliation were verified without a charge. Historical pause statements below describe version 15. See PAID-REPAIR.md for the sandbox delivery evidence and remaining verification limits.
+
 # CV Hapi
 
-4 October release: shorter copy, guided section editing, Macedonian default, 111 passing tests and successful production build. Free tools are live in Sites version 15. Paid AI remains paused pending delivery/processing recovery and provider/commercial disclosures. Start with [CLAUDE.md](CLAUDE.md), [current handoff](HANDOFF-2026-10-04-launch.md) and [LAUNCH-STATUS.md](LAUNCH-STATUS.md).
+6 October search/distribution update: eight original Macedonian resource pages, eleven fictional-example/checklist PDFs and two blank TXT worksheets. Start with [the visibility evidence and target list](marketing/mk-distribution-2026-10-06.md) and [the unsent outreach drafts](marketing/mk-outreach-drafts.md). Validate generated search output with `node scripts/check-search-output.mjs` after building. Current offer: free builder/PDF; optional three AI reviews for 150 MKD once. Google Ads is paused and the Macedonian ad is disapproved for Unsupported language. The older release notes below are historical; the current handoff takes precedence.
+
+Current release: Sites version 31, with Macedonian search-entry improvements, direct template/editor links and 151 passing tests. See [release evidence](docs/releases/2026-10-07-search-entry.md). Paid service recovery and the 150 MKD offer supersede the earlier version 15 pause. Start with [CLAUDE.md](CLAUDE.md), [current handoff](HANDOFF-2026-10-04-launch.md) and [LAUNCH-STATUS.md](LAUNCH-STATUS.md).
 
 English/Macedonian CV product for North Macedonia. Live: https://www.cvhapi.com/ (also /mk/ and /en/). GitHub: https://github.com/quara0n/cv-hapi.
 
 ## Current product
 
-- Free CV builder with three designs, live preview and Unicode PDF export.
+- Free CV builder with eight designs, live preview and Unicode PDF export.
 - Editable fixed-template cover letter and combined application PDF.
 - PDF, DOCX and TXT import, read in the browser (5 MB; PDFs up to 12 pages; CV text up to 20,000 characters). Scans need OCR elsewhere.
 - Optional DeepSeek feedback against a job advertisement, exact source quotes and individually accepted wording suggestions.
@@ -14,7 +27,7 @@ English/Macedonian CV product for North Macedonia. Live: https://www.cvhapi.com/
 - Compact section cards show one next step, with full assessments/actions behind an info button. Priorities, vacancy comparison, questions and wording comparisons expand on demand. Field info buttons open on hover, keyboard focus or tap and offer optional writing examples; known chiropractor roles get relevant patient-focus and method examples. Choosing an example fills a field only, never applies it directly to the CV. Examples are local templates, not inferred facts or another AI call.
 - Each supported section also shows a visible wording idea before opening its editor. Inside, two adaptable phrases can be appended to the draft; bracketed facts must be supplied before applying. Verified AI rewrites have their own Suggested wording heading, with the first two comparisons expanded by default.
 - Revised text can be edited and downloaded as a clean text-layout PDF or TXT. Uploaded layout is not preserved.
-- No signup, subscription, OCR or automatic translation. Builder/PDF are free; intended AI price is EUR 2 once. Stripe live payment was verified, then paused because AI capacity was nearly exhausted. See the October handoff for current state and PAYMENTS.md for architecture.
+- No signup, subscription, OCR or automatic translation. Builder/PDF are free; optional AI costs 150 MKD once for three reviews. Existing EUR/GBP purchases retain their recorded entitlement. See the October handoff for current state and PAYMENTS.md for architecture.
 
 ## Run and verify
 

@@ -1,0 +1,12 @@
+const icons={import:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 14h8m-3-3 3 3-3 3"/>',build:'<path d="m15 5 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15z"/>'};
+export const choiceIcon=kind=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[kind]}</svg>`;
+export function showStartChoice(dialog,{ui,hasDraft,onImport,onBuild}){
+ const mk=ui==='mk';
+ dialog.classList.add('start-choice');
+ dialog.innerHTML=`<button type="button" class="choice-close" aria-label="${mk?'Затвори':'Close'}">×</button><p class="eyebrow">${mk?'ТВОЈОТ СЛЕДЕН ЧЕКОР':'YOUR NEXT STEP'}</p><h2 id="modal-title">${mk?'Како сакаш да започнеш?':'How would you like to start?'}</h2><p class="choice-intro">${mk?'Почни со тоа што веќе го имаш. Ќе ти помогнеме со следниот чекор.':'Start with what you have. We’ll help with the next step.'}</p><div class="start-options"><button type="button" class="start-option recommended" data-start-import><span class="choice-badge">✦ ${mk?'Имаш CV? Почни тука':'Have a CV? Start here'}</span><span class="choice-icon">${choiceIcon('import')}</span><span><strong>${mk?'Увези го моето CV':'Import my CV'}</strong><small>${mk?'PDF или Word. Провери го текстот и избери ги подобрувањата.':'PDF or Word. Review your wording and choose improvements.'}</small></span><span class="choice-arrow" aria-hidden="true">→</span></button><button type="button" class="start-option" data-start-build><span class="choice-icon">${choiceIcon('build')}</span><span><strong>${hasDraft?(mk?'Продолжи со моето CV':'Continue my CV'):(mk?'Почни од почеток':'Start from scratch')}</strong><small>${mk?'Една секција одеднаш. Твој стил, бесплатен PDF.':'One section at a time. Your style, a free PDF.'}</small></span><span class="choice-arrow" aria-hidden="true">→</span></button></div><p class="choice-footnote">${mk?'Без регистрација. 3 AI-проверки за 150 денари еднократно.':'No signup. 3 AI reviews for 150 MKD once.'}</p>`;
+ dialog.querySelector('.choice-close').onclick=()=>dialog.close();
+ dialog.querySelector('[data-start-import]').onclick=()=>{dialog.close();onImport()};
+ dialog.querySelector('[data-start-build]').onclick=()=>{dialog.close();onBuild()};
+ dialog.addEventListener('close',()=>dialog.classList.remove('start-choice'),{once:true});
+ dialog.showModal();
+}
