@@ -18,7 +18,7 @@ for(const guide of guides){
  assert(doc.querySelector('meta[property="og:image"]').content.startsWith(origin+'/images/'));
  assert(!titles.has(doc.title));titles.add(doc.title);
  const graph=JSON.parse(doc.querySelector('script[type="application/ld+json"]').textContent)['@graph'];
- assert.equal(graph[0]['@type'],guide.kind);assert.equal(graph[0].dateModified,'2026-10-06');
+ assert.equal(graph[0]['@type'],guide.kind);assert.equal(graph[0].dateModified,guide.modified);
  for(const el of doc.querySelectorAll('a[href],img[src]')){
   const target=new URL(el.href||el.src,url);if(target.origin!==origin)continue;
   const file='dist/client'+decodeURIComponent(target.pathname)+(target.pathname.endsWith('/')?'index.html':'');

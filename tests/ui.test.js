@@ -1,6 +1,18 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {JSDOM} from 'jsdom';import {build} from 'esbuild';
 const bundle=await build({entryPoints:['src/main.js'],bundle:true,write:false,format:'iife',loader:{'.css':'empty'},define:{'import.meta.env.VITE_POSTHOG_KEY':'""','import.meta.env.VITE_POSTHOG_HOST':'"https://eu.i.posthog.com"'},logLevel:'silent'});
 
+test('Macedonian guide entry opens the free editor with a selected template and preserves saved content',()=>{
+ const dom=boot(JSON.stringify({name:'Saved Person',summary:'Existing profile',template:'horizon',language:'en'}),'https://cv.test/mk/?start=builder&template=classic'),d=dom.window.document;
+ assert.equal(d.documentElement.lang,'mk');assert.ok(d.querySelector('main').classList.contains('builder-started'));
+ assert.equal(d.querySelector('#name').value,'Saved Person');assert.ok(d.querySelector('.paper.classic'));
+ assert.equal(d.querySelector('#review-toggle').getAttribute('aria-expanded'),'false');assert.equal(d.activeElement.id,'step-heading');
+ assert.equal(JSON.parse(dom.window.localStorage.getItem('cekor.cv.v1')).template,'horizon');dom.window.close();
+});
+test('invalid templates are ignored and builder entry cannot override the review route',()=>{
+ const dom=boot(null,'https://cv.test/mk/?start=builder&template=unknown');assert.ok(dom.window.document.querySelector('.paper'));assert.ok(!dom.window.document.querySelector('.paper.unknown'));dom.window.close();
+ const review=boot(null,'https://cv.test/mk/review/?start=builder');assert.equal(review.window.document.querySelector('#review-toggle').getAttribute('aria-expanded'),'true');review.window.close();
+});
+
 test('review landing URLs open the matching language and disclose the one-time price',()=>{
  for(const language of ['mk','en']){
   const dom=boot(null,`https://cv.test/${language}/review/`),d=dom.window.document;

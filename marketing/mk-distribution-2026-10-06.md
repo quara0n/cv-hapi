@@ -1,5 +1,21 @@
 # North Macedonia visibility and distribution — 6 October 2026
 
+## Google visibility diagnosis — 7 October 2026, approximately 21:39–21:44 Europe/Oslo
+
+Read-only manual Google checks used `gl=mk`, `hl=mk`, `pws=0`. Google displayed North Macedonia and “results are not personalised”, but also “location unknown”. The browser remained signed in. No usable VPN tool or command was available; a limited check of common installed VPN clients returned none. **These are country/language-configured spot checks, not verified searches from a North Macedonian IP or a national ranking measurement.** Do not describe them as a completed VPN test.
+
+| Query | Observed result |
+|---|---|
+| `CV` | No cvhapi.com heading-linked result on the five pages inspected. Page counts vary; do not convert this into an exact “rank >50”. |
+| `CV на македонски` | `/mk/cv-obrazec/` was the second ordinary web result on page 2; `/mk/kako-da-napisam-cv/` was the fifth on page 3. Pages 1–5 inspected. Ads, AI answers and image modules were not counted as ordinary web results. |
+| `CV образец` | `/mk/soveti-za-cv/` was the third ordinary web result on page 1. Only page 1 inspected for this query. |
+
+Search Console performance still reported two impressions, zero clicks, both Norway; its country picker offered Norway only. The data was last updated 17 hours earlier. There is no observed North Macedonian average position to report; absence from the country table does not establish absence of every possible impression. The general index coverage report was dated 4 October and must not be used as the current total for the new release. Its duplicate example was `/en/`, not `/mk/`.
+
+Fresh individual inspection of `https://www.cvhapi.com/mk/` confirmed indexed, fetch successful, crawl/indexing allowed and Google-selected canonical matching the inspected self-canonical URL. Googlebot smartphone last crawl was displayed as 6 October 2026 05:04:55, with no timezone supplied in that field. The inspection's sitemap discovery field still reported a temporary processing error; this is not evidence that the page is excluded from Google. The evening report separately verified the sitemap as Success with 12 discovered URLs and the resource hub as indexed.
+
+Diagnosis: the entire Macedonian site is not blocked from indexing. Specific Macedonian search intent already produces visible results, while the broad `CV` query remains weak in this spot check. Priorities: obtain a verified North Macedonian-IP baseline; strengthen the existing high-intent pages and their useful internal links after native-language review; pursue individually authorised relevant Macedonian distribution. No purchased links, messages, VPN subscriptions, campaign changes or source deployment were performed in this diagnosis.
+
 ## Verified baseline
 
 Google Ads account 297-799-3323: campaign and all three ads paused; 0 impressions, 0 clicks, NOK 0 spend for 4–6 October. Macedonian ad disapproved for Unsupported language. Keep paused. Macedonian-only requirement rules out an English workaround. Organic improvements cannot remove an Ads language restriction. No budget increase or new paid channel authorised by this document.
